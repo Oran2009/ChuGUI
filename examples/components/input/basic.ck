@@ -1,16 +1,14 @@
-@import "../../../ChuGUI.ck"
+@import "../../../src/ChuGUI.ck"
 
 GG.camera().orthographic();
 GG.scene().backgroundColor(Color.WHITE);
 
 ChuGUI gui --> GG.scene();
 
-@(1, 0, 0) => vec3 color;
+string input;
 
-while(true) {
+while (true) {
     GG.nextFrame() => now; // must be called before rendering any components
 
-    gui.colorPicker("Default", @(0, 0), color) => color;
-
-    <<< "Color:", color >>>;
+    gui.input("Input", @(0, 0), input, "Input...") => input;
 }

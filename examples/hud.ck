@@ -1,4 +1,4 @@
-@import "../ChuGUI.ck"
+@import "../src/ChuGUI.ck"
 
 GG.camera().orthographic();
 GG.scene().backgroundColor(@(0.12, 0.12, 0.16));

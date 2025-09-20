@@ -1,4 +1,4 @@
-@import "../../../ChuGUI.ck"
+@import "../../../src/ChuGUI.ck"
 
 GG.camera().orthographic();
 GG.scene().light().intensity(0.0);
