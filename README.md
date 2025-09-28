@@ -7,8 +7,6 @@
 **ChuGUI v0.1.0-alpha** — [**ChuGUI API Reference**](./api/)
 • [**Examples**](./examples/)
 
----
-
 ## Installing ChuGUI
 
 1. Download ChucK version 1.5.5.0 or later. You can get the latest version [here](https://chuck.stanford.edu/release/).
