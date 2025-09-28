@@ -1,8 +1,4 @@
-<div align="center">
-
 <h2>ChuGUI: A flexible immediate-mode 2D GUI toolkit for ChuGL.</h2>
-
-</div> <!-- end center -->
 
 **ChuGUI v0.1.0-alpha** — [**ChuGUI API Reference**](https://ccrma.stanford.edu/~hoangben/ChuGUI/api/)
 • [**Examples**](https://ccrma.stanford.edu/~hoangben/ChuGUI/examples/)
@@ -42,3 +38,6 @@ Congrats, you now have ChuGUI properly installed!
 - For an overview of ChuGUI's components and styling system, check out the [API Reference](https://ccrma.stanford.edu/~hoangben/ChuGUI/api/).
 - Check out the [Examples](https://ccrma.stanford.edu/~hoangben/ChuGUI/examples/) to get started using ChuGUI.
 
+## Authors
+
+ChuGUI was created and is maintained by <a target="_blank" href="https://ccrma.stanford.edu/~hoangben/">Ben Hoang</a>.
