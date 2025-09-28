@@ -27,10 +27,10 @@ while(true) {
     UIStyle.pushVar(UIStyle.VAR_BUTTON_SIZE, ChuGUI.NDCToWorldSize(@(0.35, 0.12)));
     
     // Row 1: Basic buttons
-    gui.button("Default", "", @(-0.95, 0.55));
+    gui.button("Default", @(-0.95, 0.55));
     
     UIStyle.pushColor(UIStyle.COL_BUTTON, Color.GRAY);
-    gui.button("Disabled", "", @(-0.55, 0.55), true);
+    gui.button("Disabled", @(-0.55, 0.55), true);
     UIStyle.popColor();
     
     // Row 2: Buttons with icons
@@ -43,14 +43,14 @@ while(true) {
     // Row 3: Colored buttons
     UIStyle.pushColor(UIStyle.COL_BUTTON, Color.BLUE);
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT, Color.WHITE);
-    gui.button("Blue", "", @(-0.95, 0.25));
+    gui.button("Blue", @(-0.95, 0.25));
     UIStyle.popColor(2);
     
     UIStyle.pushColor(UIStyle.COL_BUTTON, Color.RED);
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT, Color.WHITE);
     UIStyle.pushColor(UIStyle.COL_BUTTON_BORDER, Color.MAROON);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_BORDER_WIDTH, 0.15);
-    gui.button("Red", "", @(-0.55, 0.25));
+    gui.button("Red", @(-0.55, 0.25));
     UIStyle.popVar();
     UIStyle.popColor(3);
     
@@ -58,7 +58,7 @@ while(true) {
     UIStyle.pushColor(UIStyle.COL_BUTTON, Color.GREEN);
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT, Color.WHITE);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_BORDER_RADIUS, 0.5);
-    gui.button("Green", "", @(-0.95, 0.1));
+    gui.button("Green", @(-0.95, 0.1));
     UIStyle.popVar();
     UIStyle.popColor(2);
     
@@ -67,7 +67,7 @@ while(true) {
     UIStyle.pushColor(UIStyle.COL_BUTTON_BORDER, Color.ORANGE);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_BORDER_WIDTH, 0.1);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_BORDER_RADIUS, 1.0);
-    gui.button("Round", "", @(-0.55, 0.1));
+    gui.button("Round", @(-0.55, 0.1));
     UIStyle.popVar(2);
     UIStyle.popColor(3);
     
@@ -84,7 +84,7 @@ while(true) {
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT, Color.BLACK);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_TEXT_SIZE, 0.15);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_SIZE, ChuGUI.NDCToWorldSize(@(0.25, 0.08)));
-    gui.button("Small", "", @(-0.55, -0.05));
+    gui.button("Small", @(-0.55, -0.05));
     UIStyle.popVar(2);
     UIStyle.popColor(2);
     
@@ -93,8 +93,8 @@ while(true) {
     gui.label("Toggle Buttons", @(-0.95, -0.25));
             
     // Row 1: Basic toggles
-    gui.toggleButton("Toggle 1", "", @(-0.95, -0.4), toggle1) => toggle1;
-    gui.toggleButton("Disabled", "", @(-0.55, -0.4), toggle2, true) => toggle2;
+    gui.toggleButton("Toggle 1", @(-0.95, -0.4), toggle1) => toggle1;
+    gui.toggleButton("Disabled", @(-0.55, -0.4), toggle2, true) => toggle2;
     
     // Row 2: Icon toggles
     UIStyle.pushColor(UIStyle.COL_BUTTON, @(0.3, 0.3, 0.3));
@@ -120,7 +120,7 @@ while(true) {
     UIStyle.pushColor(UIStyle.COL_BUTTON_BORDER, Color.WHITE);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_BORDER_WIDTH, toggle5 ? 0.2 : 0.05);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_BORDER_RADIUS, 0.3);
-    gui.toggleButton("Alert", "", @(-0.95, -0.7), toggle5) => toggle5;
+    gui.toggleButton("Alert", @(-0.95, -0.7), toggle5) => toggle5;
     UIStyle.popVar(2);
     UIStyle.popColor(4);
     

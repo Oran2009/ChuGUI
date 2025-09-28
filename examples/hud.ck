@@ -1,7 +1,7 @@
 @import "../src/ChuGUI.ck"
 
 GG.camera().orthographic();
-GG.scene().backgroundColor(@(0.12, 0.12, 0.16));
+GG.scene().backgroundColor(@(0.5, 0.5, 0.5));
 
 ChuGUI gui --> GG.scene();
 
