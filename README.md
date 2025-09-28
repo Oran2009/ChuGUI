@@ -4,8 +4,8 @@
 
 </div> <!-- end center -->
 
-**ChuGUI v0.1.0-alpha** — [**ChuGUI API Reference**](./api/)
-• [**Examples**](./examples/)
+**ChuGUI v0.1.0-alpha** — [**ChuGUI API Reference**](https://ccrma.stanford.edu/~hoangben/ChuGUI/api/)
+• [**Examples**](https://ccrma.stanford.edu/~hoangben/ChuGUI/examples/)
 
 ## Installing ChuGUI
 
@@ -39,6 +39,6 @@ If the ChuGUI library is properly loaded, the following example will run without
 Congrats, you now have ChuGUI properly installed!
 
 ## Learning ChuGUI
-- For an overview of ChuGUI's components and styling system, check out the [API Reference](./api/).
-- Check out the [Examples](./examples/) to get started using ChuGUI.
+- For an overview of ChuGUI's components and styling system, check out the [API Reference](https://ccrma.stanford.edu/~hoangben/ChuGUI/api/).
+- Check out the [Examples](https://ccrma.stanford.edu/~hoangben/ChuGUI/examples/) to get started using ChuGUI.
 
