@@ -1,6 +1,6 @@
 <h2>ChuGUI: A flexible immediate-mode 2D GUI toolkit for ChuGL.</h2>
 
-**ChuGUI v0.1.0-alpha** — [**ChuGUI API Reference**](https://ccrma.stanford.edu/~hoangben/ChuGUI/api/)
+**ChuGUI (v0.1.0-alpha)** — [**ChuGUI API Reference**](https://ccrma.stanford.edu/~hoangben/ChuGUI/api/)
 • [**Examples**](https://ccrma.stanford.edu/~hoangben/ChuGUI/examples/)
 
 ## Installing ChuGUI
@@ -19,7 +19,6 @@ To update to the latest version of SMucK, run the following command:
 ```txt
 chump update ChuGUI
 ```
-
 
 ## Running ChuGUI
 
