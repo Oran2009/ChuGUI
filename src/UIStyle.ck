@@ -347,7 +347,7 @@ public class UIStyle {
     "checkbox.border_radius"      => static string VAR_CHECKBOX_BORDER_RADIUS;
     @doc "Apply with pushVar(), using a float value."
     "checkbox.border_width"       => static string VAR_CHECKBOX_BORDER_WIDTH;
-    @doc "Apply with pushVar(), using a string value. Available icons can be found here: https://phosphoricons.com."
+    @doc "Apply with pushVar(), using a string value that denotes the image path."
     "checkbox.icon"               => static string VAR_CHECKBOX_ICON;
     @doc "Apply with pushVar(), using a float value."
     "checkbox.icon_size"          => static string VAR_CHECKBOX_ICON_SIZE;

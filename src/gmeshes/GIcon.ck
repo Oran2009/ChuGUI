@@ -1,6 +1,6 @@
 @import "../lib/Cache.ck"
 
-@doc "Render an icon from Phosphor's icon library: https://phosphoricons.com/"
+@doc "Render an icon"
 public class GIcon extends GMesh {
     FlatMaterial _mat;
 

@@ -214,11 +214,11 @@ public class ChuGUI extends GGen {
     }
 
     // Icon
-    @doc "Render a GIcon at the given position in NDC coordinates. Available icons can be found here: https://phosphoricons.com"
-    fun void icon(string iconName, vec2 pos) {
+    @doc "Render a GIcon with the given image path at the given position in NDC coordinates."
+    fun void icon(string iconPath, vec2 pos) {
         if (iconCount == iconPool.size()) iconPool << new Icon();
         iconPool[iconCount] @=> Icon icon;
-        icon.icon(iconName);
+        icon.icon(iconPath);
 
         icon.pos(pos);
 
