@@ -1,4 +1,4 @@
-@import "../src/ChuGUI.ck"
+@import "../../src/ChuGUI.ck"
 
 GG.camera().orthographic();
 GG.scene().backgroundColor(@(0.5, 0.5, 0.5));
@@ -116,7 +116,7 @@ while (true) {
     for (0 => int i; i < actionIcons.size(); i++) {
         cooldowns[i] > 0.0 || mana < manaCost => int btnDisabled;
         gui.pushID(actionIcons[i] + i);
-        gui.button("", actionIcons[i], @(centeredActionStartX + i * 0.13, -1 + pad * 2.5), btnDisabled) => int pressed;
+        gui.button("", me.dir() + "assets/" + actionIcons[i] + ".png", @(centeredActionStartX + i * 0.13, -1 + pad * 2.5), btnDisabled) => int pressed;
         if (gui.hovered()) {
             // render action label
             UIStyle.pushVar(UIStyle.VAR_LABEL_CONTROL_POINTS, @(0.5, 0.5));

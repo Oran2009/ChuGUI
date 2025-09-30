@@ -1,6 +1,7 @@
+@import "../lib/Cache.ck"
+
 @doc "Render an icon from Phosphor's icon library: https://phosphoricons.com/"
 public class GIcon extends GMesh {
-    me.dir() + "../assets/icons/" => string _iconsPath;
     FlatMaterial _mat;
 
     @doc "Default constructor for GIcon."
@@ -11,11 +12,15 @@ public class GIcon extends GMesh {
     }
 
     @doc "Set the icon to be rendered."
-    fun void icon(string name) {
-        _iconsPath + name + ".png" => string path;
-        TextureLoadDesc desc;
-        true => desc.flip_y;
-        Texture.load(path, desc) => _mat.colorMap;
+    fun void icon(string path) {
+        IconCache.get(path) @=> Texture tex;
+        if (tex == null) {
+            TextureLoadDesc desc;
+            true => desc.flip_y;
+            Texture.load(path, desc) @=> tex;
+            IconCache.set(path, tex);
+        }
+        tex => _mat.colorMap;
     }
 
     @doc "Set the color of the icon."
