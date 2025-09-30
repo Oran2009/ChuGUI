@@ -23,28 +23,28 @@ PackageVersion ver("ChuGUI", "0.1.0-alpha");
 "any" => ver.os;
 "all" => ver.arch;
 
-ver.addFile("../src/components/Button.ck");
-ver.addFile("../src/components/Checkbox.ck");
-ver.addFile("../src/components/ColorPicker.ck");
-ver.addFile("../src/components/Dropdown.ck");
-ver.addFile("../src/components/Icon.ck");
-ver.addFile("../src/components/Input.ck");
-ver.addFile("../src/components/Knob.ck");
-ver.addFile("../src/components/Label.ck");
-ver.addFile("../src/components/Meter.ck");
-ver.addFile("../src/components/Radio.ck");
-ver.addFile("../src/components/Rect.ck");
-ver.addFile("../src/components/Slider.ck");
+ver.addFile("../src/components/Button.ck", "components");
+ver.addFile("../src/components/Checkbox.ck", "components");
+ver.addFile("../src/components/ColorPicker.ck", "components");
+ver.addFile("../src/components/Dropdown.ck", "components");
+ver.addFile("../src/components/Icon.ck", "components");
+ver.addFile("../src/components/Input.ck", "components");
+ver.addFile("../src/components/Knob.ck", "components");
+ver.addFile("../src/components/Label.ck", "components");
+ver.addFile("../src/components/Meter.ck", "components");
+ver.addFile("../src/components/Radio.ck", "components");
+ver.addFile("../src/components/Rect.ck", "components");
+ver.addFile("../src/components/Slider.ck", "components");
 
-ver.addFile("../src/gmeshes/GIcon.ck");
-ver.addFile("../src/gmeshes/GRect.ck");
+ver.addFile("../src/gmeshes/GIcon.ck", "gmeshes");
+ver.addFile("../src/gmeshes/GRect.ck", "gmeshes");
 
-ver.addFile("../src/lib/Cache.ck");
-ver.addFile("../src/lib/GComponent.ck");
-ver.addFile("../src/lib/MouseState.ck");
-ver.addFile("../src/lib/Util.ck");
+ver.addFile("../src/lib/Cache.ck", "lib");
+ver.addFile("../src/lib/GComponent.ck", "lib");
+ver.addFile("../src/lib/MouseState.ck", "lib");
+ver.addFile("../src/lib/Util.ck", "lib");
 
-ver.addFile("../src/materials/RectMaterial.ck");
+ver.addFile("../src/materials/RectMaterial.ck", "materials");
 
 ver.addFile("../src/ChuGUI.ck");
 ver.addFile("../src/UIStyle.ck");
