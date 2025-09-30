@@ -23,6 +23,18 @@ PackageVersion ver("ChuGUI", "0.1.0-alpha");
 "any" => ver.os;
 "all" => ver.arch;
 
+ver.addFile("../src/assets/icons/arrow-down.png", "assets/icons");
+ver.addFile("../src/assets/icons/arrow-left.png", "assets/icons");
+ver.addFile("../src/assets/icons/arrow-right.png", "assets/icons");
+ver.addFile("../src/assets/icons/arrow-up.png", "assets/icons");
+ver.addFile("../src/assets/icons/check.png", "assets/icons");
+ver.addFile("../src/assets/icons/gear.png", "assets/icons");
+ver.addFile("../src/assets/icons/magnifying-glass.png", "assets/icons");
+ver.addFile("../src/assets/icons/minus.png", "assets/icons");
+ver.addFile("../src/assets/icons/plus.png", "assets/icons");
+ver.addFile("../src/assets/icons/user.png", "assets/icons");
+ver.addFile("../src/assets/icons/x.png", "assets/icons");
+
 ver.addFile("../src/components/Button.ck", "components");
 ver.addFile("../src/components/Checkbox.ck", "components");
 ver.addFile("../src/components/ColorPicker.ck", "components");

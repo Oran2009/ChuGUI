@@ -550,6 +550,7 @@ public class ChuGUI extends GGen {
 
     // ==== Provided Icons ====
 
+    @doc "(hidden)"
     me.dir() + "assets/icons/" => string iconDir;
 
     static string ARROW_RIGHT;
