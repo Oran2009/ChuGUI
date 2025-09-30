@@ -1,3 +1,10 @@
+//-----------------------------------------------------------------------------
+// name: style.ck
+// desc: this example shows how to render and style checkboxes
+//
+// author: Ben Hoang (https://ccrma.stanford.edu/~hoangben/)
+//-----------------------------------------------------------------------------
+
 @import "../../../src/ChuGUI.ck"
 
 GG.camera().orthographic();

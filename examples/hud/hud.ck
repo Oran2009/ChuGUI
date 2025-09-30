@@ -1,3 +1,10 @@
+//-----------------------------------------------------------------------------
+// name: hud.ck
+// desc: this example builds a HUD from ChuGUI components
+//
+// author: Ben Hoang (https://ccrma.stanford.edu/~hoangben/)
+//-----------------------------------------------------------------------------
+
 @import "../../src/ChuGUI.ck"
 
 GG.camera().orthographic();

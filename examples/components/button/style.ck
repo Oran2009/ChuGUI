@@ -1,3 +1,10 @@
+//-----------------------------------------------------------------------------
+// name: style.ck
+// desc: this example shows how to render and style momentary and toggle buttons
+//
+// author: Ben Hoang (https://ccrma.stanford.edu/~hoangben/)
+//-----------------------------------------------------------------------------
+
 @import "../../../src/ChuGUI.ck"
 
 GG.camera().orthographic();
