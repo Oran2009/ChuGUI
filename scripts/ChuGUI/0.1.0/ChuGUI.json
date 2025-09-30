@@ -1,0 +1,19 @@
+{
+    "arch": "all",
+    "files": [
+        {
+            "checksum": "e780dc4ff8589f7eb19bd833e99a5370ba301ada8b0a76a404fa85d0fa2afcd5",
+            "file_type": "zip",
+            "local_dir": "./",
+            "url": "https://chuck.stanford.edu/release/chump/ChuGUI/files/0.1.0/ChuGUI.zip"
+        }
+    ],
+    "language_version_min": {
+        "major": 5,
+        "mega": 1,
+        "minor": 5,
+        "patch": 0
+    },
+    "os": "any",
+    "version": "0.1.0"
+}

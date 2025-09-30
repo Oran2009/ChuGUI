@@ -55,7 +55,6 @@ ver.addExampleFile("../examples/components/checkbox/basic.ck", "components/check
 ver.addExampleFile("../examples/components/checkbox/style.ck", "components/checkbox");
 ver.addExampleFile("../examples/components/colorpicker/basic.ck", "components/colorpicker");
 ver.addExampleFile("../examples/components/dropdown/basic.ck", "components/dropdown");
-ver.addExampleFile("../examples/components/icon/basic.ck", "components/icon");
 ver.addExampleFile("../examples/components/input/basic.ck", "components/input");
 ver.addExampleFile("../examples/components/input/style.ck", "components/input");
 ver.addExampleFile("../examples/components/knob/basic.ck", "components/knob");
@@ -65,7 +64,27 @@ ver.addExampleFile("../examples/components/meter/style.ck", "components/meter");
 ver.addExampleFile("../examples/components/radio/basic.ck", "components/radio");
 ver.addExampleFile("../examples/components/slider/basic.ck", "components/slider");
 ver.addExampleFile("../examples/components/slider/style.ck", "components/slider");
+
+ver.addExampleFile("../examples/components/icon/basic.ck", "components/icon");
+ver.addExampleFile("../examples/components/icon/icons/acorn.png", "components/icon/icons");
+ver.addExampleFile("../examples/components/icon/icons/bell.png", "components/icon/icons");
+ver.addExampleFile("../examples/components/icon/icons/chuck.png", "components/icon/icons");
+ver.addExampleFile("../examples/components/icon/icons/cookie.png", "components/icon/icons");
+ver.addExampleFile("../examples/components/icon/icons/heart.png", "components/icon/icons");
+ver.addExampleFile("../examples/components/icon/icons/music-note.png", "components/icon/icons");
+ver.addExampleFile("../examples/components/icon/icons/smiley.png", "components/icon/icons");
+ver.addExampleFile("../examples/components/icon/icons/star.png", "components/icon/icons");
+
 ver.addExampleFile("../examples/hud/hud.ck", "hud");
+ver.addExampleFile("../examples/hud/assets/bed.png", "hud/assets");
+ver.addExampleFile("../examples/hud/assets/cloud-lightning.png", "hud/assets");
+ver.addExampleFile("../examples/hud/assets/fire.png", "hud/assets");
+ver.addExampleFile("../examples/hud/assets/hand-fist.png", "hud/assets");
+ver.addExampleFile("../examples/hud/assets/heartbeat.png", "hud/assets");
+ver.addExampleFile("../examples/hud/assets/paw-print.png", "hud/assets");
+ver.addExampleFile("../examples/hud/assets/sword.png", "hud/assets");
+ver.addExampleFile("../examples/hud/assets/syringe.png", "hud/assets");
+ver.addExampleFile("../examples/hud/assets/tornado.png", "hud/assets");
 
 "ChuGUI/files/" + ver.version() + "/ChuGUI.zip" => string path; // path?
 

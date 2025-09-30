@@ -47,5 +47,7 @@ while (true) {
 
     gui.icon(iconDir + "chuck.png", @(-0.75, -0.5));
 
+    gui.icon(ChuGUI.SEARCH, @(0.75, -0.5));
+
     UIStyle.popColor();
 }

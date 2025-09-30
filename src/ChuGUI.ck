@@ -547,4 +547,31 @@ public class ChuGUI extends GGen {
         radio @=> lastComponent;
         return radio.selectedIndex();
     }
+
+    // ==== Provided Icons ====
+
+    me.dir() + "assets/icons/" => string iconDir;
+
+    static string ARROW_RIGHT;
+    iconDir + "arrow-right.png" => ARROW_RIGHT;
+    static string ARROW_LEFT;
+    iconDir + "arrow-left.png" => ARROW_LEFT;
+    static string ARROW_DOWN;
+    iconDir + "arrow-down.png" => ARROW_DOWN;
+    static string ARROW_UP;
+    iconDir + "arrow-up.png" => ARROW_UP;
+    static string X;
+    iconDir + "x.png" => X;
+    static string PLUS;
+    iconDir + "plus.png" => PLUS;
+    static string MINUS;
+    iconDir + "minus.png" => MINUS;
+    static string USER;
+    iconDir + "user.png" => USER;
+    static string GEAR;
+    iconDir + "gear.png" => GEAR;
+    static string CHECK;
+    iconDir + "check.png" => CHECK;
+    static string SEARCH;
+    iconDir + "magnifying-glass.png" => SEARCH;
 }

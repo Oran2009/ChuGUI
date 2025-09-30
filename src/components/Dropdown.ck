@@ -24,7 +24,7 @@ public class Dropdown extends GComponent {
     -1 => int _hoveredIndex;
 
     fun Dropdown() {
-        gArrow.icon("arrow-down");
+        gArrow.icon(me.dir() + "../assets/icons/arrow-down.png");
     }
 
     // ==== Getters and Setters ====

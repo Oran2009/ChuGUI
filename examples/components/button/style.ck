@@ -34,10 +34,10 @@ while(true) {
     UIStyle.popColor();
     
     // Row 2: Buttons with icons
-    gui.button("Cookie", "cookie", @(-0.95, 0.4));
+    gui.button("Add", ChuGUI.PLUS, @(-0.95, 0.4));
     
     UIStyle.pushVar(UIStyle.VAR_BUTTON_ICON_POSITION, "right");
-    gui.button("Acorn", "acorn", @(-0.55, 0.4));
+    gui.button("Subtract", ChuGUI.MINUS, @(-0.55, 0.4));
     UIStyle.popVar();
     
     // Row 3: Colored buttons
@@ -76,7 +76,7 @@ while(true) {
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT, Color.WHITE);
     UIStyle.pushColor(UIStyle.COL_BUTTON_ICON, Color.YELLOW);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_ICON_SIZE, 0.3);
-    gui.button("Star", "star", @(-0.95, -0.05));
+    gui.button("User", ChuGUI.USER, @(-0.95, -0.05));
     UIStyle.popVar();
     UIStyle.popColor(3);
     
@@ -101,7 +101,7 @@ while(true) {
     UIStyle.pushColor(UIStyle.COL_BUTTON_PRESSED, Color.ORANGE);
     UIStyle.pushColor(UIStyle.COL_BUTTON_ICON, Color.WHITE);
     UIStyle.pushColor(UIStyle.COL_BUTTON_ICON_PRESSED, Color.BLACK);
-    gui.toggleButton("Heart", "heart", @(-0.95, -0.55), toggle3) => toggle3;
+    gui.toggleButton("Search", ChuGUI.SEARCH, @(-0.95, -0.55), toggle3) => toggle3;
     UIStyle.popColor(4);
     
     UIStyle.pushColor(UIStyle.COL_BUTTON, @(0.2, 0.2, 0.2));
@@ -109,7 +109,7 @@ while(true) {
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT, Color.GRAY);
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT_PRESSED, Color.WHITE);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_ICON_POSITION, "right");
-    gui.toggleButton("Play", "play", @(-0.55, -0.55), toggle4) => toggle4;
+    gui.toggleButton("Check", ChuGUI.CHECK, @(-0.55, -0.55), toggle4) => toggle4;
     UIStyle.popVar();
     UIStyle.popColor(4);
     
@@ -128,8 +128,8 @@ while(true) {
     UIStyle.pushColor(UIStyle.COL_BUTTON_PRESSED, Color.YELLOW);
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT, Color.BLACK);
     UIStyle.pushVar(UIStyle.VAR_BUTTON_BORDER_RADIUS, 1.0);
-    UIStyle.pushVar(UIStyle.VAR_BUTTON_SIZE, ChuGUI.NDCToWorldSize(@(0.25, 0.1)));
-    gui.toggleButton("Power", "power", @(-0.55, -0.7), toggle6) => toggle6;
+    UIStyle.pushVar(UIStyle.VAR_BUTTON_SIZE, ChuGUI.NDCToWorldSize(@(0.3, 0.1)));
+    gui.toggleButton("", ChuGUI.GEAR, @(-0.55, -0.7), toggle6) => toggle6;
     UIStyle.popVar(2);
     UIStyle.popColor(3);
     
