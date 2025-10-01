@@ -2,10 +2,10 @@
     "arch": "all",
     "files": [
         {
-            "checksum": "63d27c4c870e297c08eda967a4a0dd37fba82bd45fd47b37b4bfe1d911a66266",
+            "checksum": "991afa4a4d032b363127aa6a7dbdf713440e71ad23165220e54856a44b4b63e1",
             "file_type": "zip",
             "local_dir": "./",
-            "url": "https://chuck.stanford.edu/release/chump/ChuGUI/files/0.1.0/ChuGUI.zip"
+            "url": "https://ccrma.stanford.edu/~hoangben/ChuGUI/releases/ChuGUI/files/0.1.0/ChuGUI.zip"
         }
     ],
     "language_version_min": {

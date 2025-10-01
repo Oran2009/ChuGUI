@@ -102,6 +102,6 @@ ver.addExampleFile("../examples/hud/assets/tornado.png", "hud/assets");
 
 // wrap up all our files into a zip file, and tell Chumpinate what URL
 // this zip file will be located at.
-ver.generateVersion("./", "ChuGUI", "https://chuck.stanford.edu/release/chump/" + path);
+ver.generateVersion("../releases/" + ver.version(), "ChuGUI", "https://ccrma.stanford.edu/~hoangben/ChuGUI/releases/" + path);
 
 ver.generateVersionDefinition("ChuGUI", "./");
