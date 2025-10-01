@@ -4,7 +4,7 @@
 // instantiate a CKDoc object
 CKDoc doc; // documentation orchestra
 // set the examples root
-"../examples/" => doc.examplesRoot;
+"../src/examples/" => doc.examplesRoot;
 
 // add group
 doc.addGroup(
