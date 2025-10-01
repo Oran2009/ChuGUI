@@ -98,10 +98,8 @@ ver.addExampleFile("../examples/hud/assets/sword.png", "hud/assets");
 ver.addExampleFile("../examples/hud/assets/syringe.png", "hud/assets");
 ver.addExampleFile("../examples/hud/assets/tornado.png", "hud/assets");
 
-"ChuGUI/files/" + ver.version() + "/ChuGUI.zip" => string path; // path?
-
 // wrap up all our files into a zip file, and tell Chumpinate what URL
 // this zip file will be located at.
-ver.generateVersion("../releases/" + ver.version(), "ChuGUI", "https://ccrma.stanford.edu/~hoangben/ChuGUI/releases/" + path);
+ver.generateVersion("../releases/" + ver.version(), "ChuGUI", "https://ccrma.stanford.edu/~hoangben/ChuGUI/releases/" + ver.version() + "/ChuGUI.zip");
 
 ver.generateVersionDefinition("ChuGUI", "./");
