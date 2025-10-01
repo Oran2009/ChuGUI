@@ -1,22 +1,22 @@
 //-----------------------------------------------------------------------------
 // name: basic.ck
-// desc: this example shows how to render a knob
+// desc: this example shows how to render checkboxes
 //
 // author: Ben Hoang (https://ccrma.stanford.edu/~hoangben/)
 //-----------------------------------------------------------------------------
 
-@import "../../../src/ChuGUI.ck"
+@import "../../../ChuGUI.ck"
 
 GG.camera().orthographic();
 
 ChuGUI gui --> GG.scene();
 
-float val;
+0 => int checked;
 
-while (true) {
+while(true) {
     GG.nextFrame() => now; // must be called before rendering any components
 
-    gui.knob("Knob", @(0, 0), 0, 1, val) => val;
+    gui.checkbox("Basic", @(0, 0), checked) => checked;
 
-    <<< "Value:", val >>>;
+    <<< "Checked:", checked >>>;
 }

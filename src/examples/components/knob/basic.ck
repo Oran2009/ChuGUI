@@ -1,21 +1,22 @@
 //-----------------------------------------------------------------------------
 // name: basic.ck
-// desc: this example shows how to render an input field
+// desc: this example shows how to render a knob
 //
 // author: Ben Hoang (https://ccrma.stanford.edu/~hoangben/)
 //-----------------------------------------------------------------------------
 
-@import "../../../src/ChuGUI.ck"
+@import "../../../ChuGUI.ck"
 
 GG.camera().orthographic();
-GG.scene().backgroundColor(Color.WHITE);
 
 ChuGUI gui --> GG.scene();
 
-string input;
+float val;
 
 while (true) {
     GG.nextFrame() => now; // must be called before rendering any components
 
-    gui.input("Input", @(0, 0), input, "Input...") => input;
+    gui.knob("Knob", @(0, 0), 0, 1, val) => val;
+
+    <<< "Value:", val >>>;
 }

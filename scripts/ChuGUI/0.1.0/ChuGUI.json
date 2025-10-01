@@ -2,7 +2,7 @@
     "arch": "all",
     "files": [
         {
-            "checksum": "991afa4a4d032b363127aa6a7dbdf713440e71ad23165220e54856a44b4b63e1",
+            "checksum": "13926b956716b72b13cc8229bdbfb0f27b9bd1458a924cf2f8622829b23777bc",
             "file_type": "zip",
             "local_dir": "./",
             "url": "https://ccrma.stanford.edu/~hoangben/ChuGUI/releases/0.1.0/ChuGUI.zip"

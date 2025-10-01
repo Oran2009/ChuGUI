@@ -5,7 +5,7 @@
 // author: Ben Hoang (https://ccrma.stanford.edu/~hoangben/)
 //-----------------------------------------------------------------------------
 
-@import "../../src/ChuGUI.ck"
+@import "../../ChuGUI.ck"
 
 GG.camera().orthographic();
 GG.scene().backgroundColor(@(0.5, 0.5, 0.5));
