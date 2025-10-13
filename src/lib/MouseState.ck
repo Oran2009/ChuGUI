@@ -1,5 +1,5 @@
 @import "../gmeshes/GRect.ck"
-@import "Util.ck"
+@import "UIUtil.ck"
 
 public class CursorState {
     static MouseState @ _states[0];
@@ -14,7 +14,7 @@ public class CursorState {
 
     fun static void update() {
         for (MouseState state : _states) {
-            if (Util.hovered(state.element(), state.rect()) && state.disabled()) {
+            if (UIUtil.hovered(state.element(), state.rect()) && state.disabled()) {
                 UI.setMouseCursor(UI_MouseCursor.NotAllowed);
                 break;
             } else {
@@ -75,7 +75,7 @@ public class MouseState {
     // ==== Update ====
 
     fun void update() {
-        Util.hovered(_element, _rect) => _hovered;
+        UIUtil.hovered(_element, _rect) => _hovered;
 
         GWindow.mouseLeftDown() => _mouseDown;
         _mouseDown && _hovered => _clicked;

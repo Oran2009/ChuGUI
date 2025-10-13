@@ -1,6 +1,6 @@
 @import "../gmeshes/GRect.ck"
 
-public class Util {
+public class UIUtil {
     fun static int hovered(GGen ggen, GRect gRect) {
         GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 1) => vec3 mouseWorld;
 

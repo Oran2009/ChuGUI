@@ -1,3 +1,4 @@
+@import "lib/UIGlobals.ck"
 @import "lib/GComponent.ck"
 @import "lib/MouseState.ck"
 @import "UIStyle.ck"
@@ -17,7 +18,7 @@
 @doc "ChuGUI is a flexible immediate-mode 2D GUI toolkit for ChuGL."
 public class ChuGUI extends GGen {
     @doc "(hidden)"
-    "0.1.0-alpha" => static string version;
+    "0.1.1-alpha" => static string version;
 
     @doc "(hidden)"
     GComponent @ lastComponent;
@@ -179,7 +180,14 @@ public class ChuGUI extends GGen {
         return id;
     }
 
-    // ==== Util Functions ====
+    // ==== Globals ====
+
+    @doc "Set the unit system for the position of components. Either ChuGUI.NDC or ChuGUI.WORLD."
+    fun void units(string unit) {
+        unit => UIGlobals.units;
+    }
+
+    // ==== UIUtil Functions ====
 
     @doc "Convert NDC size to world size."
     fun static vec2 NDCToWorldSize(vec2 ndcSize) {
@@ -547,6 +555,10 @@ public class ChuGUI extends GGen {
         radio @=> lastComponent;
         return radio.selectedIndex();
     }
+
+    // Enums
+    "NDC" => static string NDC;
+    "WORLD" => static string WORLD;
 
     // ==== Provided Icons ====
 

@@ -1,4 +1,4 @@
-@import "../lib/Util.ck"
+@import "../lib/UIUtil.ck"
 @import "../lib/MouseState.ck"
 @import "../lib/GComponent.ck"
 @import "../gmeshes/GRect.ck"
@@ -203,7 +203,7 @@ public class Dropdown extends GComponent {
 
             if (_open) {
                 for (0 => int i; i < _options.size(); i++) {
-                    Util.hovered(this, gItemRects[i]) => int hovered;
+                    UIUtil.hovered(this, gItemRects[i]) => int hovered;
                     if (hovered && _state.mouseState()) {
                         i => _selectedIndex;
                         clampSelection();

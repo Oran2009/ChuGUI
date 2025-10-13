@@ -1,4 +1,4 @@
-@import "../lib/Util.ck"
+@import "../lib/UIUtil.ck"
 @import "../lib/MouseState.ck"
 @import "../lib/GComponent.ck"
 @import "../gmeshes/GIcon.ck"
@@ -47,7 +47,7 @@ public class Button extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_RADIUS, 0) => float borderRadius;
         UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_WIDTH, 0) => float borderWidth;
         UIStyle.varString(UIStyle.VAR_BUTTON_FONT, "") => string font;
-        UIStyle.varString(UIStyle.VAR_BUTTON_ICON_POSITION, "left") => string iconPos;
+        UIStyle.varString(UIStyle.VAR_BUTTON_ICON_POSITION, UIStyle.LEFT) => string iconPos;
 
         UIStyle.varVec2(UIStyle.VAR_BUTTON_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_BUTTON_Z_INDEX, 0) => float zIndex;
@@ -85,8 +85,8 @@ public class Button extends GComponent {
         if (textW == 0 || iconW == 0) { 0. => spacing; }
         textW + iconW + ((_label!="" && _icon!="") ? spacing : 0.) => float totalW;
         -totalW * 0.5 => float startX;
-        startX + ((iconPos == "right") ? textW + spacing + iconW*0.5 : iconW*0.5) => float iconX;
-        startX + ((iconPos == "right") ? textW*0.5 : iconW + spacing + textW*0.5) => float textX;
+        startX + ((iconPos == UIStyle.RIGHT) ? textW + spacing + iconW*0.5 : iconW*0.5) => float iconX;
+        startX + ((iconPos == UIStyle.RIGHT) ? textW*0.5 : iconW + spacing + textW*0.5) => float textX;
 
         // text
         if (_label != "") {

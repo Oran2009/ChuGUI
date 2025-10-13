@@ -1,4 +1,4 @@
-@import "../lib/Util.ck"
+@import "../lib/UIUtil.ck"
 @import "../lib/MouseState.ck"
 @import "../lib/GComponent.ck"
 @import "../UIStyle.ck"

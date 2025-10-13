@@ -1,4 +1,5 @@
 @import "Chumpinate"
+@import "../src/ChuGUI.ck"
 
 // instantiate a Chumpinate package
 Package pkg("ChuGUI");
@@ -16,7 +17,7 @@ Package pkg("ChuGUI");
 
 "./" => pkg.generatePackageDefinition;
 
-PackageVersion ver("ChuGUI", "0.1.0-alpha");
+PackageVersion ver("ChuGUI", ChuGUI.version);
 
 "1.5.5.0" => ver.languageVersionMin;
 
@@ -54,7 +55,7 @@ ver.addFile("../src/gmeshes/GRect.ck", "gmeshes");
 ver.addFile("../src/lib/Cache.ck", "lib");
 ver.addFile("../src/lib/GComponent.ck", "lib");
 ver.addFile("../src/lib/MouseState.ck", "lib");
-ver.addFile("../src/lib/Util.ck", "lib");
+ver.addFile("../src/lib/UIUtil.ck", "lib");
 
 ver.addFile("../src/materials/RectMaterial.ck", "materials");
 

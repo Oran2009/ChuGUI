@@ -43,7 +43,7 @@ while(true) {
     // Row 2: Buttons with icons
     gui.button("Add", ChuGUI.PLUS, @(-0.95, 0.4));
     
-    UIStyle.pushVar(UIStyle.VAR_BUTTON_ICON_POSITION, "right");
+    UIStyle.pushVar(UIStyle.VAR_BUTTON_ICON_POSITION, UIStyle.RIGHT);
     gui.button("Subtract", ChuGUI.MINUS, @(-0.55, 0.4));
     UIStyle.popVar();
     
@@ -115,7 +115,7 @@ while(true) {
     UIStyle.pushColor(UIStyle.COL_BUTTON_PRESSED, Color.BLUE);
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT, Color.GRAY);
     UIStyle.pushColor(UIStyle.COL_BUTTON_TEXT_PRESSED, Color.WHITE);
-    UIStyle.pushVar(UIStyle.VAR_BUTTON_ICON_POSITION, "right");
+    UIStyle.pushVar(UIStyle.VAR_BUTTON_ICON_POSITION, UIStyle.RIGHT);
     gui.toggleButton("Check", ChuGUI.CHECK, @(-0.55, -0.55), toggle4) => toggle4;
     UIStyle.popVar();
     UIStyle.popColor(4);

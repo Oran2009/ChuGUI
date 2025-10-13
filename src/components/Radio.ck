@@ -1,4 +1,4 @@
-@import "../lib/Util.ck"
+@import "../lib/UIUtil.ck"
 @import "../lib/MouseState.ck"
 @import "../lib/GComponent.ck"
 @import "../gmeshes/GRect.ck"
@@ -121,7 +121,7 @@ public class Radio extends GComponent {
         }
     }
 
-    // ==== Utility ====
+    // ==== UIUtility ====
 
     fun int optionsChanged(string options[]) {
         if (options.size() != _optionLabels.size()) {

@@ -1,5 +1,11 @@
 @doc "ChuGUI's styling system."
 public class UIStyle {
+    // ==== Enums ====
+
+    "LEFT" => static string LEFT;
+    "RIGHT" => static string RIGHT;
+    "CENTER" => static string CENTER;
+
     // ==== Color Keys ====
 
     // Rect
@@ -289,6 +295,12 @@ public class UIStyle {
     "label.antialias"             => static string VAR_LABEL_ANTIALIAS;
     @doc "Apply with pushVar(), using a float value."
     "label.spacing"               => static string VAR_LABEL_SPACING;
+    @doc "Apply with pushVar(), using UIStyle.LEFT, UIStyle.CENTER, or UIStyle.RIGHT."
+    "label.align"                 => static string VAR_LABEL_ALIGN;
+    @doc "Apply with pushVar(), using a int value."
+    "label.characters"            => static string VAR_LABEL_CHARACTERS;
+    @doc "Apply with pushVar(), using a float value. Default 0.0, meaning no text wrap."
+    "label.max_width"             => static string VAR_LABEL_MAX_WIDTH;
     @doc "Apply with pushVar(), using a float value."
     "label.z_index"               => static string VAR_LABEL_Z_INDEX;
     @doc "Apply with pushVar(), using a float value."
@@ -313,7 +325,7 @@ public class UIStyle {
     "button.z_index"              => static string VAR_BUTTON_Z_INDEX;
     @doc "Apply with pushVar(), using a float value."
     "button.icon_size"            => static string VAR_BUTTON_ICON_SIZE;
-    @doc "Apply with pushVar(), using a string value of 'left' or 'right'."
+    @doc "Apply with pushVar(), using UIStyle.LEFT or UIStyle.RIGHT."
     "button.icon_position"        => static string VAR_BUTTON_ICON_POSITION;
 
     // Slider

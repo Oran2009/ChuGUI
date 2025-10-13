@@ -23,6 +23,9 @@ public class Label extends GComponent {
         UIStyle.varString(UIStyle.VAR_LABEL_FONT, "") => string font;
         UIStyle.varFloat(UIStyle.VAR_LABEL_ANTIALIAS, 1) => float antialias;
         UIStyle.varFloat(UIStyle.VAR_LABEL_SPACING, 1.0) => float spacing;
+        UIStyle.varString(UIStyle.VAR_LABEL_ALIGN, UIStyle.LEFT) => string align;
+        UIStyle.varFloat(UIStyle.VAR_LABEL_CHARACTERS, Math.exp2(31)-1) $ int => int characters;
+        UIStyle.varFloat(UIStyle.VAR_LABEL_MAX_WIDTH, 0.0) => float maxWidth;
 
         UIStyle.varVec2(UIStyle.VAR_LABEL_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_LABEL_Z_INDEX, 0.0) => float zIndex;
@@ -34,6 +37,16 @@ public class Label extends GComponent {
         gLabel.font(font);
         gLabel.antialias(antialias);
         gLabel.spacing(spacing);
+        gLabel.characters(characters);
+        gLabel.maxWidth(maxWidth);
+
+        if (align == UIStyle.CENTER) {
+            gLabel.align(1);
+        } else if (align == UIStyle.RIGHT) {
+            gLabel.align(2);
+        } else {
+            gLabel.align(0);
+        }
 
         this.posX(_pos.x);
         this.posY(_pos.y);
