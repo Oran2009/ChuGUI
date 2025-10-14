@@ -98,7 +98,7 @@ public class ColorPicker extends GComponent {
 
         // Labels
         sliderTrackHeight * 1.0 => float letterSize;
-        UIStyle.color(UIStyle.COL_COLOR_PICKER_LABEL, @(0,0,0,1)) => vec4 letterColor;
+        UIStyle.color(UIStyle.COL_COLOR_PICKER_LABEL, @(0, 0, 0, 1)) => vec4 letterColor;
 
         previewX + previewWidth / 2 => float previewRightX;
         sliderX - sliderWidth / 2 - handleSize.x / 2 => float sliderTrackLeftX;

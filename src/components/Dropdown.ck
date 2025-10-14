@@ -68,9 +68,9 @@ public class Dropdown extends GComponent {
     // ==== Update ====
 
     fun void updateUI() {
-        UIStyle.color(UIStyle.COL_DROPDOWN, @(0.5,0.5,0.5,1)) => vec4 color;
-        UIStyle.color(UIStyle.COL_DROPDOWN_BORDER, @(0,0,0,1)) => vec4 borderColor;
-        UIStyle.color(UIStyle.COL_DROPDOWN_TEXT, @(0,0,0,1)) => vec4 textColor;
+        UIStyle.color(UIStyle.COL_DROPDOWN, @(0.5, 0.5, 0.5, 1)) => vec4 color;
+        UIStyle.color(UIStyle.COL_DROPDOWN_BORDER, @(0, 0, 0, 1)) => vec4 borderColor;
+        UIStyle.color(UIStyle.COL_DROPDOWN_TEXT, @(0, 0, 0, 1)) => vec4 textColor;
         UIStyle.color(UIStyle.COL_DROPDOWN_ARROW, textColor) => vec4 arrowColor;
 
         UIStyle.varVec2(UIStyle.VAR_DROPDOWN_SIZE, @(3, 0.4)) => vec2 size;

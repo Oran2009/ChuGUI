@@ -26,9 +26,9 @@ public class Meter extends GComponent {
     // ==== Update ====
 
     fun void updateUI() {
-        UIStyle.color(UIStyle.COL_METER_TRACK, @(0.8,0.8,0.8,1)) => vec4 trackColor;
-        UIStyle.color(UIStyle.COL_METER_FILL, @(0.2,0.8,0.2,1)) => vec4 fillColor;
-        UIStyle.color(UIStyle.COL_METER_TRACK_BORDER, @(0.5,0.5,0.5,1)) => vec4 trackBorderColor;
+        UIStyle.color(UIStyle.COL_METER_TRACK, @(0.8, 0.8, 0.8, 1)) => vec4 trackColor;
+        UIStyle.color(UIStyle.COL_METER_FILL, @(0.2, 0.8, 0.2, 1)) => vec4 fillColor;
+        UIStyle.color(UIStyle.COL_METER_TRACK_BORDER, @(0.5, 0.5, 0.5, 1)) => vec4 trackBorderColor;
 
         UIStyle.varVec2(UIStyle.VAR_METER_SIZE, @(3.0, 0.3)) => vec2 size;
         UIStyle.varFloat(UIStyle.VAR_METER_BORDER_RADIUS, 0) => float borderRadius;

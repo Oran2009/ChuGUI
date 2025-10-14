@@ -169,7 +169,7 @@ public class DiscreteSlider extends Slider {
         2 * (halfW - cornerR) => float span;
 
         UIStyle.varVec2(UIStyle.VAR_SLIDER_TICK_SIZE, @(0.05, 0.2)) => vec2 tickSize;
-        UIStyle.color(UIStyle.COL_SLIDER_TICK, @(0.2,0.2,0.2,1)) => vec4 tickColor;
+        UIStyle.color(UIStyle.COL_SLIDER_TICK, @(0.2, 0.2, 0.2, 1)) => vec4 tickColor;
 
         for (0 => int i; i < _steps; i++) {
             GRect tick;
@@ -255,7 +255,7 @@ public class DiscreteSlider extends Slider {
         UIStyle.varFloat(UIStyle.VAR_SLIDER_ROTATE, 0) => float rotate;
 
         UIStyle.varVec2(UIStyle.VAR_SLIDER_TICK_SIZE, @(0.05, 0.2)) => vec2 tickSize;
-        UIStyle.color(UIStyle.COL_SLIDER_TICK, @(0.2,0.2,0.2,1)) => vec4 tickColor;
+        UIStyle.color(UIStyle.COL_SLIDER_TICK, @(0.2, 0.2, 0.2, 1)) => vec4 tickColor;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_SLIDER_TRACK_DISABLED, trackColor) => trackColor;

@@ -55,6 +55,7 @@ ver.addFile("../src/gmeshes/GRect.ck", "gmeshes");
 ver.addFile("../src/lib/Cache.ck", "lib");
 ver.addFile("../src/lib/GComponent.ck", "lib");
 ver.addFile("../src/lib/MouseState.ck", "lib");
+ver.addFile("../src/lib/UIGlobals.ck", "lib");
 ver.addFile("../src/lib/UIUtil.ck", "lib");
 
 ver.addFile("../src/materials/RectMaterial.ck", "materials");

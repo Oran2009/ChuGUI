@@ -157,11 +157,11 @@ public class Input extends GComponent {
     // ==== Update ====
 
     fun void updateUI() {
-        UIStyle.color(UIStyle.COL_INPUT, @(1,1,1,1)) => vec4 fieldColor;
-        UIStyle.color(UIStyle.COL_INPUT_TEXT, @(0,0,0,1)) => vec4 textColor;
-        UIStyle.color(UIStyle.COL_INPUT_BORDER, @(0.3,0.3,0.3,1)) => vec4 borderColor;
+        UIStyle.color(UIStyle.COL_INPUT, @(1, 1, 1, 1)) => vec4 fieldColor;
+        UIStyle.color(UIStyle.COL_INPUT_TEXT, @(0, 0, 0, 1)) => vec4 textColor;
+        UIStyle.color(UIStyle.COL_INPUT_BORDER, @(0.3, 0.3, 0.3, 1)) => vec4 borderColor;
         UIStyle.color(UIStyle.COL_INPUT_PLACEHOLDER, @(textColor.x, textColor.y, textColor.z, textColor.w / 1.5)) => vec4 placeholderColor;
-        UIStyle.color(UIStyle.COL_INPUT_CURSOR, @(0,0,0,1)) => vec4 cursorColor;
+        UIStyle.color(UIStyle.COL_INPUT_CURSOR, @(0, 0, 0, 1)) => vec4 cursorColor;
 
         UIStyle.varVec2(UIStyle.VAR_INPUT_SIZE, @(3, 0.4)) => vec2 fieldSize;
         UIStyle.varFloat(UIStyle.VAR_INPUT_TEXT_SIZE, 0.15) => float textSize;

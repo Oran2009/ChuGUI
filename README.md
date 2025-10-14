@@ -1,7 +1,8 @@
 <h2>ChuGUI: A flexible immediate-mode 2D GUI toolkit for ChuGL.</h2>
 
-**ChuGUI (v0.1.0-alpha)** — [**ChuGUI API Reference**](https://ccrma.stanford.edu/~hoangben/ChuGUI/api/)
+**ChuGUI (v0.1.1-alpha)** — [**ChuGUI API Reference**](https://ccrma.stanford.edu/~hoangben/ChuGUI/api/)
 • [**Examples**](https://ccrma.stanford.edu/~hoangben/ChuGUI/examples/)
+• [**Changelog**](https://ccrma.stanford.edu/~hoangben/ChuGUI/releases/VERSIONS)
 
 ## Installing ChuGUI
 

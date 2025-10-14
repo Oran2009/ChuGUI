@@ -27,11 +27,11 @@ public class RadioOption extends GComponent {
     // ==== Update ====
 
     fun void updateUI() {
-        UIStyle.color(UIStyle.COL_RADIO_OPTION, @(1,1,1,1)) => vec4 buttonColor;
-        UIStyle.color(UIStyle.COL_RADIO_BORDER, @(0.3,0.3,0.3,1)) => vec4 borderColor;
-        UIStyle.color(UIStyle.COL_RADIO_LABEL, @(0,0,0,1)) => vec4 labelColor;
+        UIStyle.color(UIStyle.COL_RADIO_OPTION, @(1, 1, 1, 1)) => vec4 buttonColor;
+        UIStyle.color(UIStyle.COL_RADIO_BORDER, @(0.3, 0.3, 0.3, 1)) => vec4 borderColor;
+        UIStyle.color(UIStyle.COL_RADIO_LABEL, @(0, 0, 0, 1)) => vec4 labelColor;
 
-        UIStyle.varVec2(UIStyle.VAR_RADIO_SIZE, @(0.3,0.3)) => vec2 buttonSize;
+        UIStyle.varVec2(UIStyle.VAR_RADIO_SIZE, @(0.3, 0.3)) => vec2 buttonSize;
         UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_RADIUS, 0) => float borderRadius;
         UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_WIDTH, 0.1) => float borderWidth;
         UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SPACING, 0.1) => float labelSpacing;
@@ -42,16 +42,16 @@ public class RadioOption extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_RADIO_ROTATE, 0) => float rotate;
 
         if (_disabled) {
-            UIStyle.color(UIStyle.COL_RADIO_OPTION_DISABLED, @(0.9,0.9,0.9,1)) => buttonColor;
-            UIStyle.color(UIStyle.COL_RADIO_BORDER_DISABLED, @(0.7,0.7,0.7,1)) => borderColor;
-            UIStyle.color(UIStyle.COL_RADIO_LABEL_DISABLED, @(0.5,0.5,0.5,1)) => labelColor;
+            UIStyle.color(UIStyle.COL_RADIO_OPTION_DISABLED, @(0.9, 0.9, 0.9, 1)) => buttonColor;
+            UIStyle.color(UIStyle.COL_RADIO_BORDER_DISABLED, @(0.7, 0.7, 0.7, 1)) => borderColor;
+            UIStyle.color(UIStyle.COL_RADIO_LABEL_DISABLED, @(0.5, 0.5, 0.5, 1)) => labelColor;
         } else if (_state.pressed()) {
             UIStyle.color(UIStyle.COL_RADIO_OPTION_PRESSED, @(0.8, 0.8, 1, 1)) => buttonColor;
-            UIStyle.color(UIStyle.COL_RADIO_BORDER_PRESSED, @(0,0,1,1)) => borderColor;
+            UIStyle.color(UIStyle.COL_RADIO_BORDER_PRESSED, @(0, 0, 1, 1)) => borderColor;
             UIStyle.color(UIStyle.COL_RADIO_LABEL_PRESSED, labelColor) => labelColor;
         } else if (_state.hovered()) {
             UIStyle.color(UIStyle.COL_RADIO_OPTION_HOVERED, @(0.9, 0.9, 1, 1)) => buttonColor;
-            UIStyle.color(UIStyle.COL_RADIO_BORDER_HOVERED, @(0.5,0.5,1,1)) => borderColor;
+            UIStyle.color(UIStyle.COL_RADIO_BORDER_HOVERED, @(0.5, 0.5, 1, 1)) => borderColor;
             UIStyle.color(UIStyle.COL_RADIO_LABEL_HOVERED, labelColor) => labelColor;
         }
 

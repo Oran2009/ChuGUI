@@ -11,7 +11,7 @@ public class Rect extends GComponent {
         UIStyle.color(UIStyle.COL_RECT, @(0, 0, 0, 1)) => vec4 color;
         UIStyle.color(UIStyle.COL_RECT_BORDER, @(0, 0, 0, 1)) => vec4 borderColor;
 
-        UIStyle.varVec2(UIStyle.VAR_RECT_SIZE, @(0.3,0.3)) => vec2 size;
+        UIStyle.varVec2(UIStyle.VAR_RECT_SIZE, @(0.3, 0.3)) => vec2 size;
         UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_RADIUS, 0) => float borderRadius;
         UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_WIDTH, 0) => float borderWidth;
 

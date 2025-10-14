@@ -35,9 +35,9 @@ public class Button extends GComponent {
 
     fun void updateUI() {
         // colors
-        UIStyle.color(UIStyle.COL_BUTTON, @(0.7,0.7,0.7,1)) => vec4 color;
-        UIStyle.color(UIStyle.COL_BUTTON_BORDER, @(0,0,0,1)) => vec4 borderColor;
-        UIStyle.color(UIStyle.COL_BUTTON_TEXT, @(0,0,0,1)) => vec4 textColor;
+        UIStyle.color(UIStyle.COL_BUTTON, @(0.7, 0.7, 0.7, 1)) => vec4 color;
+        UIStyle.color(UIStyle.COL_BUTTON_BORDER, @(0, 0, 0, 1)) => vec4 borderColor;
+        UIStyle.color(UIStyle.COL_BUTTON_TEXT, @(0, 0, 0, 1)) => vec4 textColor;
         UIStyle.color(UIStyle.COL_BUTTON_ICON, textColor) => vec4 iconColor;
 
         // vars
@@ -55,7 +55,7 @@ public class Button extends GComponent {
 
         // state
         if (_disabled) {
-            UIStyle.color(UIStyle.COL_BUTTON_DISABLED, @(0.7,0.7,0.7,0.5)) => color;
+            UIStyle.color(UIStyle.COL_BUTTON_DISABLED, @(0.7, 0.7, 0.7, 0.5)) => color;
             UIStyle.color(UIStyle.COL_BUTTON_BORDER_DISABLED, borderColor) => borderColor;
             UIStyle.color(UIStyle.COL_BUTTON_TEXT_DISABLED, textColor) => textColor;
             UIStyle.color(UIStyle.COL_BUTTON_ICON_DISABLED, iconColor) => iconColor;

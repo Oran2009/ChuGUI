@@ -21,7 +21,7 @@ public class Icon extends GComponent {
     fun void updateUI() {
         UIStyle.color(UIStyle.COL_ICON, Color.WHITE) => vec4 color;
 
-        UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(0.3, 0.3)) => vec2 size;
+        UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(1, 1)) => vec2 size;
         
         UIStyle.varVec2(UIStyle.VAR_ICON_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_ICON_Z_INDEX, 0.0) => float zIndex;

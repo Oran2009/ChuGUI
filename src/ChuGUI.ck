@@ -18,7 +18,7 @@
 @doc "ChuGUI is a flexible immediate-mode 2D GUI toolkit for ChuGL."
 public class ChuGUI extends GGen {
     @doc "(hidden)"
-    "0.1.1-alpha" => static string version;
+    "0.1.1" => static string version;
 
     @doc "(hidden)"
     GComponent @ lastComponent;
