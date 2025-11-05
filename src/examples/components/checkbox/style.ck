@@ -100,10 +100,9 @@ while(true) {
     UIStyle.popColor();
 
     // --- Row 3: Icon 'check' scaled large ---
-    UIStyle.pushVar(UIStyle.VAR_CHECKBOX_ICON, "check");
     UIStyle.pushVar(UIStyle.VAR_CHECKBOX_ICON_SIZE, 0.8);
     gui.checkbox("Large Check Icon", @(xRight, baseY - spacingY * 3), checked8) => checked8;
-    UIStyle.popVar(2);
+    UIStyle.popVar();
 
     // --- Row 4: Minimalist, transparent background checkbox ---
     UIStyle.pushColor(UIStyle.COL_CHECKBOX, @(0, 0, 0, 0));

@@ -46,12 +46,12 @@ public class RadioOption extends GComponent {
             UIStyle.color(UIStyle.COL_RADIO_BORDER_DISABLED, @(0.7, 0.7, 0.7, 1)) => borderColor;
             UIStyle.color(UIStyle.COL_RADIO_LABEL_DISABLED, @(0.5, 0.5, 0.5, 1)) => labelColor;
         } else if (_state.pressed()) {
-            UIStyle.color(UIStyle.COL_RADIO_OPTION_PRESSED, @(0.8, 0.8, 1, 1)) => buttonColor;
-            UIStyle.color(UIStyle.COL_RADIO_BORDER_PRESSED, @(0, 0, 1, 1)) => borderColor;
+            UIStyle.color(UIStyle.COL_RADIO_OPTION_PRESSED, @(buttonColor.x, buttonColor.y, buttonColor.z, buttonColor.a/4)) => buttonColor;
+            UIStyle.color(UIStyle.COL_RADIO_BORDER_PRESSED, @(borderColor.x, borderColor.y, borderColor.z, borderColor.a/4)) => borderColor;
             UIStyle.color(UIStyle.COL_RADIO_LABEL_PRESSED, labelColor) => labelColor;
         } else if (_state.hovered()) {
-            UIStyle.color(UIStyle.COL_RADIO_OPTION_HOVERED, @(0.9, 0.9, 1, 1)) => buttonColor;
-            UIStyle.color(UIStyle.COL_RADIO_BORDER_HOVERED, @(0.5, 0.5, 1, 1)) => borderColor;
+            UIStyle.color(UIStyle.COL_RADIO_OPTION_HOVERED, @(buttonColor.x, buttonColor.y, buttonColor.z, buttonColor.a/2)) => buttonColor;
+            UIStyle.color(UIStyle.COL_RADIO_BORDER_HOVERED, @(borderColor.x, borderColor.y, borderColor.z, borderColor.a/2)) => borderColor;
             UIStyle.color(UIStyle.COL_RADIO_LABEL_HOVERED, labelColor) => labelColor;
         }
 
@@ -77,7 +77,7 @@ public class RadioOption extends GComponent {
         gLabel.text(_label);
         gLabel.font(font);
         gLabel.color(labelColor);
-        gLabel.sca(labelSize);
+        gLabel.size(labelSize);
         gLabel.controlPoints(@(0, 0.5));
         gLabel.posX(buttonSize.x / 2 + labelSpacing);
 

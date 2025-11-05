@@ -6,7 +6,8 @@ public class GIcon extends GMesh {
 
     @doc "Default constructor for GIcon."
     fun GIcon() {
-        true => _mat.transparent;
+        _mat.transparent(true);
+        _mat.sampler(TextureSampler.nearest());
         _mat => this.mat;
         new PlaneGeometry() => this.geo;
     }
@@ -27,4 +28,9 @@ public class GIcon extends GMesh {
     fun void color(vec3 c) { _mat.color(c); }
     @doc "Set the color of the icon."
     fun void color(vec4 c) { _mat.color(c); }
+
+    @doc "Set whether the icon is transparent or not."
+    fun void transparent(int transparent) { _mat.transparent(transparent); }
+
+    fun void sampler(TextureSampler sampler) { _mat.sampler(sampler); }
 }

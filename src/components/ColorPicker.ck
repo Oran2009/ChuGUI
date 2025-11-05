@@ -2,16 +2,18 @@
 @import "../lib/MouseState.ck"
 @import "../lib/GComponent.ck"
 @import "../UIStyle.ck"
-@import "../components/Slider.ck"
+@import "Rect.ck"
+@import "Slider.ck"
+@import "Label.ck"
 
 public class ColorPicker extends GComponent {
-    GRect gPreviewRect --> this;
+    Rect previewRect --> this;
     Slider hueSlider --> this;
     Slider satSlider --> this;
     Slider valSlider --> this;
-    GText hueLabel --> this;
-    GText satLabel --> this;
-    GText valLabel --> this;
+    Label hueLabel --> this;
+    Label satLabel --> this;
+    Label valLabel --> this;
 
     0 => float hue;        // 0..360
     1 => float saturation; // 0..1
@@ -30,9 +32,9 @@ public class ColorPicker extends GComponent {
         valSlider.max(1);
         valSlider.val(value);
 
-        hueLabel.text("H");
-        satLabel.text("S");
-        valLabel.text("V");
+        hueLabel.gLabel.text("H");
+        satLabel.gLabel.text("S");
+        valLabel.gLabel.text("V");
     }
 
     // ==== Getters and Setters ====
@@ -46,9 +48,25 @@ public class ColorPicker extends GComponent {
 
     fun void color(vec3 rgb) {
         Color.rgb2hsv(rgb) => vec3 hsv;
+
+        if (hsv.x >= 360) 0 => hsv.x;
+
+        if (hsv.y == 0 || hsv.z == 0) {
+            hue => hsv.x;
+        }
+
+        if (hsv.z == 0) {
+            saturation => hsv.y;
+        }
+
+        if (hsv.y == 0) {
+            value => hsv.z;
+        }
+
         hsv.x => hue;
         hsv.y => saturation;
         hsv.z => value;
+
         updateUI();
     }
     fun vec3 color() {
@@ -72,10 +90,8 @@ public class ColorPicker extends GComponent {
         leftEdge + previewWidth / 2 => float previewX;
         leftEdge + previewWidth + spacing + sliderWidth / 2 => float sliderX;
 
-        gPreviewRect.pos(@(previewX, 0, 0));
-        gPreviewRect.size(@(previewWidth, pickerSize.y));
-        gPreviewRect.borderRadius(0.1);
-        gPreviewRect.borderWidth(0.1);
+        previewRect.pos(@(previewX, 0, 0));
+        previewRect.gRect.size(@(previewWidth, pickerSize.y));
 
         pickerSize.y * 0.15 => float sliderTrackHeight;
 
@@ -98,28 +114,24 @@ public class ColorPicker extends GComponent {
 
         // Labels
         sliderTrackHeight * 1.0 => float letterSize;
-        UIStyle.color(UIStyle.COL_COLOR_PICKER_LABEL, @(0, 0, 0, 1)) => vec4 letterColor;
 
         previewX + previewWidth / 2 => float previewRightX;
         sliderX - sliderWidth / 2 - handleSize.x / 2 => float sliderTrackLeftX;
 
         (previewRightX + sliderTrackLeftX) / 2 => float labelX;
 
-        hueLabel.color(letterColor);
-        hueLabel.sca(letterSize);
-        hueLabel.pos(@(labelX, sliderHeightSpacing, 0));
+        hueLabel.gLabel.size(letterSize);
+        hueLabel.gLabel.pos(@(labelX, sliderHeightSpacing, 0));
 
-        satLabel.color(letterColor);
-        satLabel.sca(letterSize);
-        satLabel.pos(@(labelX, 0, 0));
+        satLabel.gLabel.size(letterSize);
+        satLabel.gLabel.pos(@(labelX, 0, 0));
 
-        valLabel.color(letterColor);
-        valLabel.sca(letterSize);
-        valLabel.pos(@(labelX, -sliderHeightSpacing, 0));
+        valLabel.gLabel.size(letterSize);
+        valLabel.gLabel.pos(@(labelX, -sliderHeightSpacing, 0));
 
         // Slider colors
         Color.hsv2rgb(@(hue, saturation, value)) => vec3 rgb;
-        gPreviewRect.color(@(rgb.x, rgb.y, rgb.z, 1));
+        previewRect.gRect.color(@(rgb.x, rgb.y, rgb.z, 1));
 
         Color.hsv2rgb(@(hue, 1, 1)) => vec3 hueColor;
         hueSlider.gTrack.color(@(hueColor.x, hueColor.y, hueColor.z, 1));
@@ -142,20 +154,21 @@ public class ColorPicker extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_Z_INDEX, 0.0) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_ROTATE, 0.0) => float rotate;
 
-
         (totalWidth + sliderHandleSize) * (0.5 - controlPoints.x) => float offsetX;
         pickerSize.y * (0.5 - controlPoints.y) => float offsetY;
 
         this.posX(_pos.x + offsetX);
         this.posY(_pos.y + offsetY);
         this.posZ(zIndex);
-        gPreviewRect.rotX(rotate);
+        previewRect.rotX(rotate);
         hueSlider.rotX(rotate);
         satSlider.rotX(rotate);
         valSlider.rotX(rotate);
     }
 
     fun void update() {
+        previewRect.update();
+
         // Update sliders and get new values
         hueSlider.update();
         hueSlider.val() => hue;
@@ -165,6 +178,10 @@ public class ColorPicker extends GComponent {
 
         valSlider.update();
         valSlider.val() => value;
+        
+        hueLabel.update();
+        satLabel.update();
+        valLabel.update();
 
         updateUI();
     }

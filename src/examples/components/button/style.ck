@@ -37,8 +37,12 @@ while(true) {
     gui.button("Default", @(-0.95, 0.55));
     
     UIStyle.pushColor(UIStyle.COL_BUTTON, Color.GRAY);
-    gui.button("Disabled", @(-0.55, 0.55), true);
+    gui.button("Disabled", @(-0.55, 0.55), true) => int clicked;
     UIStyle.popColor();
+
+    if (clicked) {
+        <<< "Disabled button clicked!" >>>;
+    }
     
     // Row 2: Buttons with icons
     gui.button("Add", ChuGUI.PLUS, @(-0.95, 0.4));
@@ -94,7 +98,6 @@ while(true) {
     gui.button("Small", @(-0.55, -0.05));
     UIStyle.popVar(2);
     UIStyle.popColor(2);
-    
     
     // Toggle Buttons Section
     gui.label("Toggle Buttons", @(-0.95, -0.25));

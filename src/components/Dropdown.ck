@@ -109,8 +109,6 @@ public class Dropdown extends GComponent {
         UIStyle.color(UIStyle.COL_DROPDOWN_ITEM_HOVERED, @(itemColor.x, itemColor.y, itemColor.z, itemColor.a / 2)) => vec4 itemHoveredColor;
         UIStyle.color(UIStyle.COL_DROPDOWN_ITEM_SELECTED, itemColor) => vec4 itemSelectedColor;
 
-
-
         gField.size(size);
         gField.color(color);
         gField.borderRadius(borderRadius);
@@ -120,7 +118,7 @@ public class Dropdown extends GComponent {
         gLabel.text(_selectedIndex>=0 ? _options[_selectedIndex] : _placeholder);
         gLabel.font(font);
         gLabel.color(textColor);
-        gLabel.sca(textSize);
+        gLabel.size(textSize);
         gLabel.controlPoints(@(0,0.5));
         gLabel.posX(-size.x/2 + 0.1);
         gLabel.posZ(0.1);

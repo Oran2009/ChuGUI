@@ -38,8 +38,6 @@ public class Input extends GComponent {
     fun string placeholder() { return _placeholder; }
     fun void placeholder(string placeholder) { placeholder => _placeholder; }
 
-    
-
     fun int focused() { return _focused; }
 
     // ==== Interaction ====
@@ -198,7 +196,8 @@ public class Input extends GComponent {
         } else {
             gText.color(placeholderColor);
         }
-        gText.sca(textSize);
+        gText.size(textSize);
+        gText.maxWidth(fieldSize.x - 0.1);
         gText.posZ(0.1);
         gText.controlPoints(@(0, 0.5));
         
@@ -207,7 +206,7 @@ public class Input extends GComponent {
         gText.posX(-halfW + 0.05); // 0.05 padding from left edge
 
         // Cursor styling
-        @(0.02, fieldSize.y * 0.8) => vec2 cursorSize;
+        @(0.02, textSize) => vec2 cursorSize;
         gCursor.size(cursorSize);
         gCursor.color(cursorColor);
         gCursor.borderRadius(0);
@@ -241,7 +240,7 @@ public class Input extends GComponent {
     fun void updateCursor() {
         if (!_focused) return;
 
-        gText.sca().x => float textSize;
+        gText.size() => float textSize;
         
         textSize * 0.6 => float charWidth;
         _cursorPos $ float * charWidth => float cursorOffset;

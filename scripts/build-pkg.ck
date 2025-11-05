@@ -48,6 +48,7 @@ ver.addFile("../src/components/Meter.ck", "components");
 ver.addFile("../src/components/Radio.ck", "components");
 ver.addFile("../src/components/Rect.ck", "components");
 ver.addFile("../src/components/Slider.ck", "components");
+ver.addFile("../src/components/Spinner.ck", "components");
 
 ver.addFile("../src/gmeshes/GIcon.ck", "gmeshes");
 ver.addFile("../src/gmeshes/GRect.ck", "gmeshes");
@@ -78,6 +79,7 @@ ver.addExampleFile("../src/examples/components/meter/style.ck", "components/mete
 ver.addExampleFile("../src/examples/components/radio/basic.ck", "components/radio");
 ver.addExampleFile("../src/examples/components/slider/basic.ck", "components/slider");
 ver.addExampleFile("../src/examples/components/slider/style.ck", "components/slider");
+ver.addExampleFile("../src/examples/components/spinner/basic.ck", "components/spinner");
 
 ver.addExampleFile("../src/examples/components/icon/basic.ck", "components/icon");
 ver.addExampleFile("../src/examples/components/icon/icons/acorn.png", "components/icon/icons");

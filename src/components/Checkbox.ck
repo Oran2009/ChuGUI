@@ -26,9 +26,9 @@ public class Checkbox extends GComponent {
         UIStyle.color(UIStyle.COL_CHECKBOX_ICON, @(1, 1, 1, 1)) => vec4 iconColor;
 
         UIStyle.varVec2(UIStyle.VAR_CHECKBOX_SIZE, @(0.3, 0.3)) => vec2 boxSize;
-        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_RADIUS, 0.25) => float borderRadius;
-        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_WIDTH, 0.1) => float borderWidth;
-        UIStyle.varString(UIStyle.VAR_CHECKBOX_ICON, "check") => string icon;
+        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_RADIUS, 0) => float borderRadius;
+        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_WIDTH, 0) => float borderWidth;
+        UIStyle.varString(UIStyle.VAR_CHECKBOX_ICON, me.dir() + "../assets/icons/check.png") => string icon;
 
         UIStyle.varVec2(UIStyle.VAR_CHECKBOX_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_CHECKBOX_Z_INDEX, 0) => float zIndex;
@@ -41,11 +41,11 @@ public class Checkbox extends GComponent {
             UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_DISABLED, borderColor) => borderColor;
             if (_state.toggled()) gIcon --> this;
         } else if (_state.toggled()) {
-            UIStyle.color(UIStyle.COL_CHECKBOX_PRESSED, Color.BLUE) => boxColor;
+            UIStyle.color(UIStyle.COL_CHECKBOX_PRESSED, @(boxColor.x, boxColor.y, boxColor.z, boxColor.a/4)) => boxColor;
             UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_PRESSED, borderColor) => borderColor;
             gIcon --> this;
         } else if (_state.hovered()) {
-            UIStyle.color(UIStyle.COL_CHECKBOX_HOVERED, @(0, 0, 1, 0.5)) => boxColor;
+            UIStyle.color(UIStyle.COL_CHECKBOX_HOVERED, @(boxColor.x, boxColor.y, boxColor.z, boxColor.a/2)) => boxColor;
             UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_HOVERED, borderColor) => borderColor;
         }
 

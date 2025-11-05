@@ -22,13 +22,17 @@ public class Icon extends GComponent {
         UIStyle.color(UIStyle.COL_ICON, Color.WHITE) => vec4 color;
 
         UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(1, 1)) => vec2 size;
-        
+        UIStyle.varFloat(UIStyle.VAR_ICON_TRANSPARENT, 1) $ int => int transparent;
+        UIStyle.varString(UIStyle.VAR_ICON_SAMPLER, UIStyle.LINEAR) => string sampler;
+
         UIStyle.varVec2(UIStyle.VAR_ICON_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_ICON_Z_INDEX, 0.0) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_ICON_ROTATE, 0.0) => float rotate;
 
         gIcon.sca(size);
         gIcon.color(color);
+        gIcon.transparent(transparent);
+        gIcon.sampler(sampler == UIStyle.NEAREST ? TextureSampler.nearest() : TextureSampler.linear());
 
         size.x * (0.5 - controlPoints.x) => float offsetX;
         size.y * (0.5 - controlPoints.y) => float offsetY;

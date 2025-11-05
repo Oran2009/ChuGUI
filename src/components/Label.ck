@@ -32,7 +32,7 @@ public class Label extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_LABEL_ROTATE, 0.0) => float rotate;
 
         gLabel.color(color);
-        gLabel.sca(size);
+        gLabel.size(size);
         gLabel.controlPoints(controlPoints);
         gLabel.font(font);
         gLabel.antialias(antialias);

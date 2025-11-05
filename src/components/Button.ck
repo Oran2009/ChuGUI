@@ -128,13 +128,13 @@ public class Button extends GComponent {
 public class MomentaryButton extends Button {
     // ==== Getters and Setters ====
 
-    fun int clicked() { return _state.clicked(); }
+    fun int clicked() { return _disabled ? false : _state.clicked(); }
 }
 
 public class ToggleButton extends Button {
     // ==== Getters and Setters ====
 
-    fun int toggled() { return _state.toggled(); }
+    fun int toggled() { return _disabled ? false : _state.toggled(); }
     fun void toggled(int toggled) { _state.toggled(toggled); }
 
     // ==== Update ====

@@ -2,6 +2,9 @@
 public class UIStyle {
     // ==== Enums ====
 
+    "NEAREST" => static string NEAREST;
+    "LINEAR" => static string LINEAR;
+
     "LEFT" => static string LEFT;
     "RIGHT" => static string RIGHT;
     "CENTER" => static string CENTER;
@@ -190,10 +193,6 @@ public class UIStyle {
     @doc "Apply with pushColor(), using a vec3 or vec4 value."
     "dropdown.item.text.selected"   => static string COL_DROPDOWN_ITEM_TEXT_SELECTED;
 
-    // Color Picker
-    @doc "Apply with pushColor(), using a vec3 or vec4 value."
-    "color_picker.label"            => static string COL_COLOR_PICKER_LABEL;
-
     // Knob
     @doc "Apply with pushColor(), using a vec3 or vec4 value."
     "knob"                        => static string COL_KNOB;
@@ -258,6 +257,20 @@ public class UIStyle {
     @doc "Apply with pushColor(), using a vec3 or vec4 value."
     "radio.label.disabled"        => static string COL_RADIO_LABEL_DISABLED;
 
+    // Spinner
+    @doc "Apply with pushColor(), using a vec3 or vec4 value."
+    "spinner"                     => static string COL_SPINNER;
+    @doc "Apply with pushColor(), using a vec3 or vec4 value."
+    "spinner.text"                => static string COL_SPINNER_TEXT;
+    @doc "Apply with pushColor(), using a vec3 or vec4 value."
+    "spinner.disabled"            => static string COL_SPINNER_DISABLED;
+    @doc "Apply with pushColor(), using a vec3 or vec4 value."
+    "spinner.text.disabled"       => static string COL_SPINNER_TEXT_DISABLED;
+    @doc "Apply with pushColor(), using a vec3 or vec4 value."
+    "spinner.button"              => static string COL_SPINNER_BUTTON;
+    @doc "Apply with pushColor(), using a vec3 or vec4 value."
+    "spinner.button.disabled"     => static string COL_SPINNER_BUTTON_DISABLED;
+
     // ==== Var Keys ====
 
     // Rect
@@ -275,6 +288,10 @@ public class UIStyle {
     "rect.rotate"                 => static string VAR_RECT_ROTATE;
 
     // Icon
+    @doc "Apply with pushVar(), using an int value."
+    "icon.transparent"            => static string VAR_ICON_TRANSPARENT;
+    @doc "Apply with pushVar(), using UIStyle.NEAREST or UIStyle.LINEAR."
+    "icon.sampler"                => static string VAR_ICON_SAMPLER;
     @doc "Apply with pushVar(), using a vec2 value."
     "icon.control_points"         => static string VAR_ICON_CONTROL_POINTS;
     @doc "Apply with pushVar(), using a vec2 value."
@@ -287,7 +304,7 @@ public class UIStyle {
     // Label
     @doc "Apply with pushVar(), using a vec2 value."
     "label.control_points"        => static string VAR_LABEL_CONTROL_POINTS;
-    @doc "Apply with pushVar(), using a vec2 value."
+    @doc "Apply with pushVar(), using a float value."
     "label.size"                  => static string VAR_LABEL_SIZE;
     @doc "Apply with pushVar(), using a string value."
     "label.font"                  => static string VAR_LABEL_FONT;
@@ -470,6 +487,23 @@ public class UIStyle {
     @doc "Apply with pushVar(), using a float value."
     "radio.rotate"                => static string VAR_RADIO_ROTATE;
 
+    // Spinner
+    @doc "Apply with pushVar(), using a vec2 value."
+    "spinner.control_points"      => static string VAR_SPINNER_CONTROL_POINTS;
+    @doc "Apply with pushVar(), using a vec2 value."
+    "spinner.size"                => static string VAR_SPINNER_SIZE;
+    @doc "Apply with pushVar(), using a vec2 value."
+    "spinner.button_size"        => static string VAR_SPINNER_BUTTON_SIZE;
+    @doc "Apply with pushVar(), using a float value."
+    "spinner.text_size"           => static string VAR_SPINNER_TEXT_SIZE;
+    @doc "Apply with pushVar(), using a float value."
+    "spinner.spacing"             => static string VAR_SPINNER_SPACING;
+    @doc "Apply with pushVar(), using a string value."
+    "spinner.font"                  => static string VAR_SPINNER_FONT;
+    @doc "Apply with pushVar(), using a float value."
+    "spinner.z_index"             => static string VAR_SPINNER_Z_INDEX;
+    @doc "Apply with pushVar(), using a float value."
+    "spinner.rotate"              => static string VAR_SPINNER_ROTATE;
 
     // ==== Internal Stacks and Value Arrays ====
 

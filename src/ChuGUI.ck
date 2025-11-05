@@ -14,11 +14,12 @@
 @import "components/Knob.ck"
 @import "components/Meter.ck"
 @import "components/Radio.ck"
+@import "components/Spinner.ck"
 
 @doc "ChuGUI is a flexible immediate-mode 2D GUI toolkit for ChuGL."
 public class ChuGUI extends GGen {
     @doc "(hidden)"
-    "0.1.1" => static string version;
+    "0.1.2" => static string version;
 
     @doc "(hidden)"
     GComponent @ lastComponent;
@@ -75,6 +76,9 @@ public class ChuGUI extends GGen {
     @doc "(hidden)"
     Radio radios[0];
 
+    @doc "(hidden)"
+    Spinner spinners[0];
+
     // ==== Frame Management ====
 
     @doc "(hidden)"
@@ -115,7 +119,9 @@ public class ChuGUI extends GGen {
     @doc "(hidden)"
     fun void update(float dt) {
         currentFrame++;
-        (GG.fps() != 0) ? GG.fps() $ int : 60 %=> currentFrame;
+        
+        GG.fps() $ int => int fps;
+        (fps != 0) ? fps : 60 %=> currentFrame;
 
         null => lastComponent;
 
@@ -141,6 +147,7 @@ public class ChuGUI extends GGen {
         cleanupMap(colorPickers);
         cleanupMap(knobs);
         cleanupMap(radios);
+        cleanupMap(spinners);
 
         resetFrame(buttons);
         resetFrame(toggleBtns);
@@ -152,6 +159,7 @@ public class ChuGUI extends GGen {
         resetFrame(colorPickers);
         resetFrame(knobs);
         resetFrame(radios);
+        resetFrame(spinners);
 
         idStack.clear();
     }
@@ -554,6 +562,33 @@ public class ChuGUI extends GGen {
         radio.update();
         radio @=> lastComponent;
         return radio.selectedIndex();
+    }
+
+    // Spinner
+    @doc "Render a spinner at the given position in NDC coordinates; returns the value at the current frame."
+    fun int spinner(string id, vec2 pos, int min, int max, int num) { return spinner(id, pos, min, max, num, false); }
+    @doc "Render a spinner at the given position in NDC coordinates; returns the value at the current frame."
+    fun int spinner(string id, vec2 pos, int min, int max, int num, int disabled) {
+        getID() != "" ? getID() : id => string _id;
+        if (!spinners.isInMap(_id)) {
+            new Spinner() @=> spinners[_id];
+        }
+        spinners[_id] @=> Spinner spinner;
+        spinner.min(min);
+        spinner.num(num);
+        spinner.max(max);
+        spinner.disabled(disabled);
+
+        spinner.pos(pos);
+
+        if (spinner.parent() == null) {
+            spinner --> this;
+        }
+
+        spinner.frame(currentFrame);
+        spinner.update();
+        spinner @=> lastComponent;
+        return spinner.num();
     }
 
     // Enums
