@@ -10,7 +10,7 @@ public class GRect extends GMesh {
     @doc "Default constructor for GRect."
     fun GRect() {
         _mat.init();
-        _mat => this.material;
+       _mat => this.material;
         _geo.build(_size.x, _size.y, 1, 1);
         _geo => this.geo;
     }
@@ -53,4 +53,7 @@ public class GRect extends GMesh {
     fun vec4 borderColor() { return _mat.borderColor(); }
     @doc "Set the border color."
     fun void borderColor(vec4 borderColor) { _mat.borderColor(borderColor); }
+
+    @doc "Set whether the rect is transparent or not."
+    fun void transparent(int transparent) { _mat.transparent(transparent); }
 }

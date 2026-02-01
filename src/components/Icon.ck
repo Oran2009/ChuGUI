@@ -23,7 +23,11 @@ public class Icon extends GComponent {
 
         UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(1, 1)) => vec2 size;
         UIStyle.varFloat(UIStyle.VAR_ICON_TRANSPARENT, 1) $ int => int transparent;
-        UIStyle.varString(UIStyle.VAR_ICON_SAMPLER, UIStyle.LINEAR) => string sampler;
+        UIStyle.varString(UIStyle.VAR_ICON_SAMPLER, UIStyle.LINEAR) => string samplerOption;
+
+        UIStyle.varFloat(UIStyle.VAR_ICON_WRAP_U, TextureSampler.Wrap_Repeat) $ int => int wrapU;
+        UIStyle.varFloat(UIStyle.VAR_ICON_WRAP_V, TextureSampler.Wrap_Repeat) $ int => int wrapV;
+        UIStyle.varFloat(UIStyle.VAR_ICON_WRAP_W, TextureSampler.Wrap_Repeat) $ int => int wrapW;
 
         UIStyle.varVec2(UIStyle.VAR_ICON_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_ICON_Z_INDEX, 0.0) => float zIndex;
@@ -32,7 +36,12 @@ public class Icon extends GComponent {
         gIcon.sca(size);
         gIcon.color(color);
         gIcon.transparent(transparent);
-        gIcon.sampler(sampler == UIStyle.NEAREST ? TextureSampler.nearest() : TextureSampler.linear());
+
+        samplerOption == UIStyle.NEAREST ? TextureSampler.nearest() : TextureSampler.linear() @=> TextureSampler sampler;
+        wrapU => sampler.wrapU;
+        wrapV => sampler.wrapV;
+        wrapW => sampler.wrapW;
+        gIcon.sampler(sampler);
 
         size.x * (0.5 - controlPoints.x) => float offsetX;
         size.y * (0.5 - controlPoints.y) => float offsetY;

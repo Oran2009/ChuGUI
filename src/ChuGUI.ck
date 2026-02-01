@@ -204,6 +204,13 @@ public class ChuGUI extends GGen {
         return @(Math.fabs(worldPos.x - origin.x), Math.fabs(worldPos.y - origin.y));
     }
 
+    @doc "Convert world size to NDC size."
+    fun static vec2 worldToNDCSize(vec2 worldSize) {
+        GG.camera().worldPosToNDC(@(worldSize.x, worldSize.y, 0)) => vec3 ndcPos;
+        GG.camera().worldPosToNDC(@(0, 0, 0)) => vec3 origin;
+        return @(Math.fabs(ndcPos.x - origin.x), Math.fabs(ndcPos.y - origin.y));
+    }
+
     @doc "Returns whether the last component rendered is hovered or not."
     fun int hovered() {
         return lastComponent._state.hovered();

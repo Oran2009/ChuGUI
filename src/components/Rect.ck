@@ -3,7 +3,9 @@
 @import "../UIStyle.ck"
 
 public class Rect extends GComponent {
-    GRect gRect --> this;    
+    GRect gRect --> this;
+
+    new MouseState(this, gRect) @=> _state;
 
     // ==== Update ====
 
@@ -12,6 +14,7 @@ public class Rect extends GComponent {
         UIStyle.color(UIStyle.COL_RECT_BORDER, @(0, 0, 0, 1)) => vec4 borderColor;
 
         UIStyle.varVec2(UIStyle.VAR_RECT_SIZE, @(0.3, 0.3)) => vec2 size;
+        UIStyle.varFloat(UIStyle.VAR_RECT_TRANSPARENT, 0) $ int => int transparent;
         UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_RADIUS, 0) => float borderRadius;
         UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_WIDTH, 0) => float borderWidth;
 
@@ -20,6 +23,7 @@ public class Rect extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_RECT_ROTATE, 0.0) => float rotate;
 
         gRect.size(size);
+        gRect.transparent(transparent);
         gRect.color(color);
         gRect.borderRadius(borderRadius);
         gRect.borderWidth(borderWidth);
@@ -35,6 +39,7 @@ public class Rect extends GComponent {
     }
 
     fun void update() {
+        _state.update();
         updateUI();
     }
 }

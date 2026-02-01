@@ -274,6 +274,8 @@ public class UIStyle {
     // ==== Var Keys ====
 
     // Rect
+    @doc "Apply with pushVar(), using an int value."
+    "rect.transparent"            => static string VAR_RECT_TRANSPARENT;
     @doc "Apply with pushVar(), using a vec2 value."
     "rect.control_points"         => static string VAR_RECT_CONTROL_POINTS;
     @doc "Apply with pushVar(), using a vec2 value."
@@ -292,6 +294,12 @@ public class UIStyle {
     "icon.transparent"            => static string VAR_ICON_TRANSPARENT;
     @doc "Apply with pushVar(), using UIStyle.NEAREST or UIStyle.LINEAR."
     "icon.sampler"                => static string VAR_ICON_SAMPLER;
+    @doc "Apply with pushVar(), using TextureSampler.Wrap_Repeat, TextureSampler.Wrap_Mirror, or TextureSampler.Wrap_Clamp."
+    "icon.wrap_u"                 => static string VAR_ICON_WRAP_U;
+    @doc "Apply with pushVar(), using TextureSampler.Wrap_Repeat, TextureSampler.Wrap_Mirror, or TextureSampler.Wrap_Clamp."
+    "icon.wrap_v"                 => static string VAR_ICON_WRAP_V;
+    @doc "Apply with pushVar(), using TextureSampler.Wrap_Repeat, TextureSampler.Wrap_Mirror, or TextureSampler.Wrap_Clamp."
+    "icon.wrap_w"                 => static string VAR_ICON_WRAP_W;
     @doc "Apply with pushVar(), using a vec2 value."
     "icon.control_points"         => static string VAR_ICON_CONTROL_POINTS;
     @doc "Apply with pushVar(), using a vec2 value."

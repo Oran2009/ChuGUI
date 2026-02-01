@@ -94,7 +94,7 @@ public class Button extends GComponent {
             gText.font(font);
             gText.text(_label);
             gText.color(textColor);
-            gText.sca(textSize);
+            gText.size(textSize);
             gText.pos(@(textX, 0, 0.1));
         } else {
             if (gText.parent() != null) gText --< this;

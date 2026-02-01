@@ -15,7 +15,7 @@ chump install ChuGUI
 
 ## Updating ChuGUI
 
-To update to the latest version of SMucK, run the following command:
+To update to the latest version of ChuGUI, run the following command:
 
 ```txt
 chump update ChuGUI
