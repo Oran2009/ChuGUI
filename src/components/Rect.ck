@@ -1,4 +1,5 @@
 @import "../lib/GComponent.ck"
+@import "../lib/UIUtil.ck"
 @import "../gmeshes/GRect.ck"
 @import "../UIStyle.ck"
 
@@ -13,10 +14,11 @@ public class Rect extends GComponent {
         UIStyle.color(UIStyle.COL_RECT, @(0, 0, 0, 1)) => vec4 color;
         UIStyle.color(UIStyle.COL_RECT_BORDER, @(0, 0, 0, 1)) => vec4 borderColor;
 
-        UIStyle.varVec2(UIStyle.VAR_RECT_SIZE, @(0.3, 0.3)) => vec2 size;
+        // Convert size from current unit system to world coordinates
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_RECT_SIZE, @(0.3, 0.3))) => vec2 size;
         UIStyle.varFloat(UIStyle.VAR_RECT_TRANSPARENT, 0) $ int => int transparent;
-        UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_RADIUS, 0) => float borderRadius;
-        UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_WIDTH, 0) => float borderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_RADIUS, 0)) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_WIDTH, 0)) => float borderWidth;
 
         UIStyle.varVec2(UIStyle.VAR_RECT_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_RECT_Z_INDEX, 0.0) => float zIndex;
@@ -29,13 +31,7 @@ public class Rect extends GComponent {
         gRect.borderWidth(borderWidth);
         gRect.borderColor(borderColor);
 
-        size.x * (0.5 - controlPoints.x) => float offsetX;
-        size.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(size, controlPoints, zIndex, rotate);
     }
 
     fun void update() {

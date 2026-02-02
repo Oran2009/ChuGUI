@@ -161,10 +161,10 @@ public class Input extends GComponent {
         UIStyle.color(UIStyle.COL_INPUT_PLACEHOLDER, @(textColor.x, textColor.y, textColor.z, textColor.w / 1.5)) => vec4 placeholderColor;
         UIStyle.color(UIStyle.COL_INPUT_CURSOR, @(0, 0, 0, 1)) => vec4 cursorColor;
 
-        UIStyle.varVec2(UIStyle.VAR_INPUT_SIZE, @(3, 0.4)) => vec2 fieldSize;
-        UIStyle.varFloat(UIStyle.VAR_INPUT_TEXT_SIZE, 0.15) => float textSize;
-        UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_RADIUS, 0.1) => float borderRadius;
-        UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_WIDTH, 0.05) => float borderWidth;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_INPUT_SIZE, @(3, 0.4))) => vec2 fieldSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_TEXT_SIZE, 0.15)) => float textSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_RADIUS, 0.1)) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_WIDTH, 0.05)) => float borderWidth;
         UIStyle.varString(UIStyle.VAR_INPUT_FONT, "") => string font;
 
         UIStyle.varVec2(UIStyle.VAR_INPUT_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
@@ -220,13 +220,7 @@ public class Input extends GComponent {
             gCursor --< this;
         }
 
-        fieldSize.x * (0.5 - controlPoints.x) => float offsetX;
-        fieldSize.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(fieldSize, controlPoints, zIndex, rotate);
     }
 
     fun void updateText() {

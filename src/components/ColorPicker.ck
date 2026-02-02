@@ -77,7 +77,7 @@ public class ColorPicker extends GComponent {
     // ==== Update ====
 
     fun void updateUI() {
-        UIStyle.varVec2(UIStyle.VAR_COLOR_PICKER_SIZE, @(2.0, 1.0)) => vec2 pickerSize;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_COLOR_PICKER_SIZE, @(2.0, 1.0))) => vec2 pickerSize;
         UIStyle.varVec2(UIStyle.VAR_COLOR_PICKER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
 
         pickerSize.x * 0.3 => float previewWidth;
@@ -154,12 +154,7 @@ public class ColorPicker extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_Z_INDEX, 0.0) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_ROTATE, 0.0) => float rotate;
 
-        (totalWidth + sliderHandleSize) * (0.5 - controlPoints.x) => float offsetX;
-        pickerSize.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
+        applyLayout(@(totalWidth + sliderHandleSize, pickerSize.y), controlPoints, zIndex, rotate);
         previewRect.rotX(rotate);
         hueSlider.rotX(rotate);
         satSlider.rotX(rotate);

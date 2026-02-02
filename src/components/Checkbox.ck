@@ -25,9 +25,9 @@ public class Checkbox extends GComponent {
         UIStyle.color(UIStyle.COL_CHECKBOX_BORDER, @(0.3, 0.3, 0.3, 1)) => vec4 borderColor;
         UIStyle.color(UIStyle.COL_CHECKBOX_ICON, @(1, 1, 1, 1)) => vec4 iconColor;
 
-        UIStyle.varVec2(UIStyle.VAR_CHECKBOX_SIZE, @(0.3, 0.3)) => vec2 boxSize;
-        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_RADIUS, 0) => float borderRadius;
-        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_WIDTH, 0) => float borderWidth;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_CHECKBOX_SIZE, @(0.3, 0.3))) => vec2 boxSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_RADIUS, 0)) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_WIDTH, 0)) => float borderWidth;
         UIStyle.varString(UIStyle.VAR_CHECKBOX_ICON, me.dir() + "../assets/icons/check.png") => string icon;
 
         UIStyle.varVec2(UIStyle.VAR_CHECKBOX_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
@@ -65,13 +65,7 @@ public class Checkbox extends GComponent {
         }
         icon => _icon;
 
-        boxSize.x * (0.5 - controlPoints.x) => float offsetX;
-        boxSize.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(boxSize, controlPoints, zIndex, rotate);
     }
 
     fun void update() {

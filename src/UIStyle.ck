@@ -295,6 +295,8 @@ public class UIStyle {
     @doc "Apply with pushVar(), using UIStyle.NEAREST or UIStyle.LINEAR."
     "icon.sampler"                => static string VAR_ICON_SAMPLER;
     @doc "Apply with pushVar(), using TextureSampler.Wrap_Repeat, TextureSampler.Wrap_Mirror, or TextureSampler.Wrap_Clamp."
+    "icon.wrap"                 => static string VAR_ICON_WRAP;
+    @doc "Apply with pushVar(), using TextureSampler.Wrap_Repeat, TextureSampler.Wrap_Mirror, or TextureSampler.Wrap_Clamp."
     "icon.wrap_u"                 => static string VAR_ICON_WRAP_U;
     @doc "Apply with pushVar(), using TextureSampler.Wrap_Repeat, TextureSampler.Wrap_Mirror, or TextureSampler.Wrap_Clamp."
     "icon.wrap_v"                 => static string VAR_ICON_WRAP_V;

@@ -31,11 +31,11 @@ public class RadioOption extends GComponent {
         UIStyle.color(UIStyle.COL_RADIO_BORDER, @(0.3, 0.3, 0.3, 1)) => vec4 borderColor;
         UIStyle.color(UIStyle.COL_RADIO_LABEL, @(0, 0, 0, 1)) => vec4 labelColor;
 
-        UIStyle.varVec2(UIStyle.VAR_RADIO_SIZE, @(0.3, 0.3)) => vec2 buttonSize;
-        UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_RADIUS, 0) => float borderRadius;
-        UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_WIDTH, 0.1) => float borderWidth;
-        UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SPACING, 0.1) => float labelSpacing;
-        UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SIZE, 0.20) => float labelSize;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_RADIO_SIZE, @(0.3, 0.3))) => vec2 buttonSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_RADIUS, 0)) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_WIDTH, 0.1)) => float borderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SPACING, 0.1)) => float labelSpacing;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SIZE, 0.20)) => float labelSize;
         UIStyle.varString(UIStyle.VAR_RADIO_FONT, "") => string font;
 
         UIStyle.varFloat(UIStyle.VAR_RADIO_Z_INDEX, 0) => float zIndex;
@@ -144,7 +144,7 @@ public class Radio extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_CHECKBOX_ROTATE, 0) => float rotate;
 
         UIStyle.varVec2(UIStyle.VAR_RADIO_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_RADIO_SPACING, 0.4) => float spacing;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_SPACING, 0.4)) => float spacing;
         UIStyle.varString(UIStyle.VAR_RADIO_LAYOUT, "column") => string layout;
 
         for (0 => int i; i < _options.size(); i++) {
@@ -157,10 +157,7 @@ public class Radio extends GComponent {
             }
         }
 
-        this.posX(_pos.x);
-        this.posY(_pos.y);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(@(0, 0), controlPoints, zIndex, rotate);
     }
 
     fun void updateOptions() {

@@ -1,6 +1,45 @@
 @import "../gmeshes/GRect.ck"
+@import "UIGlobals.ck"
 
 public class UIUtil {
+    // ==== Unit Conversion ====
+
+    // Convert NDC size to world size
+    fun static vec2 NDCToWorldSize(vec2 ndcSize) {
+        GG.camera().NDCToWorldPos(@(ndcSize.x, ndcSize.y, 0)) => vec3 worldPos;
+        GG.camera().NDCToWorldPos(@(0, 0, 0)) => vec3 origin;
+        return @(Math.fabs(worldPos.x - origin.x), Math.fabs(worldPos.y - origin.y));
+    }
+
+    // Convert world size to NDC size
+    fun static vec2 worldToNDCSize(vec2 worldSize) {
+        GG.camera().worldPosToNDC(@(worldSize.x, worldSize.y, 0)) => vec3 ndcPos;
+        GG.camera().worldPosToNDC(@(0, 0, 0)) => vec3 origin;
+        return @(Math.fabs(ndcPos.x - origin.x), Math.fabs(ndcPos.y - origin.y));
+    }
+
+    // Convert size from current unit system to world coordinates
+    // Respects the global units() setting
+    fun static vec2 sizeToWorld(vec2 size) {
+        if (UIGlobals.units == "WORLD") {
+            return size;
+        } else {
+            return NDCToWorldSize(size);
+        }
+    }
+
+    // Convert single float size from current unit system to world coordinates
+    fun static float sizeToWorld(float size) {
+        if (UIGlobals.units == "WORLD") {
+            return size;
+        } else {
+            NDCToWorldSize(@(size, size)) => vec2 worldSize;
+            return worldSize.x;
+        }
+    }
+
+    // ==== Collision Detection ====
+
     fun static int hovered(GGen ggen, GRect gRect) {
         GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 1) => vec3 mouseWorld;
 

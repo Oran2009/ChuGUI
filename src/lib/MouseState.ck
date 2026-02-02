@@ -2,25 +2,27 @@
 @import "UIUtil.ck"
 
 public class CursorState {
-    static MouseState @ _states[0];
+    static MouseState @ _activeStates[0];
 
+    // Called at start of each frame to clear active states
     fun static void clearStates() {
-        _states.clear();
+        _activeStates.clear();
     }
 
-    fun static void addState(MouseState @ state) {
-        _states << state;
+    // Called by MouseState.update() to register as active this frame
+    fun static void registerActive(MouseState @ state) {
+        _activeStates << state;
     }
 
+    // Update cursor based on active states only
     fun static void update() {
-        for (MouseState state : _states) {
+        for (MouseState state : _activeStates) {
             if (UIUtil.hovered(state.element(), state.rect()) && state.disabled()) {
                 UI.setMouseCursor(UI_MouseCursor.NotAllowed);
-                break;
-            } else {
-                UI.setMouseCursor(UI_MouseCursor.Arrow);
+                return;
             }
         }
+        UI.setMouseCursor(UI_MouseCursor.Arrow);
     }
 }
 
@@ -29,7 +31,7 @@ public class MouseState {
     GRect _rect;
 
     int _disabled;
-    
+
     int _mouseDown;
     int _mouseState;
 
@@ -43,8 +45,7 @@ public class MouseState {
     fun MouseState(GGen element, GRect rect) {
         element @=> _element;
         rect @=> _rect;
-
-        CursorState.addState(this);
+        // No longer register in constructor - register during update() instead
     }
 
     // ==== Getters and Setters ====
@@ -75,6 +76,9 @@ public class MouseState {
     // ==== Update ====
 
     fun void update() {
+        // Register as active this frame (for cursor state tracking)
+        CursorState.registerActive(this);
+
         UIUtil.hovered(_element, _rect) => _hovered;
 
         GWindow.mouseLeftDown() => _mouseDown;

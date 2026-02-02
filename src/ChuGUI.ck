@@ -1,6 +1,7 @@
 @import "lib/UIGlobals.ck"
 @import "lib/GComponent.ck"
 @import "lib/MouseState.ck"
+@import "lib/UIUtil.ck"
 @import "UIStyle.ck"
 @import "components/Rect.ck"
 @import "components/Icon.ck"
@@ -126,6 +127,7 @@ public class ChuGUI extends GGen {
         null => lastComponent;
 
         UIStyle.clearStacks();
+        CursorState.clearStates();
 
         cleanupPool(rectPool, rectCount);
         cleanupPool(iconPool, iconCount);
@@ -199,16 +201,12 @@ public class ChuGUI extends GGen {
 
     @doc "Convert NDC size to world size."
     fun static vec2 NDCToWorldSize(vec2 ndcSize) {
-        GG.camera().NDCToWorldPos(@(ndcSize.x, ndcSize.y, 0)) => vec3 worldPos;
-        GG.camera().NDCToWorldPos(@(0, 0, 0)) => vec3 origin;
-        return @(Math.fabs(worldPos.x - origin.x), Math.fabs(worldPos.y - origin.y));
+        return UIUtil.NDCToWorldSize(ndcSize);
     }
 
     @doc "Convert world size to NDC size."
     fun static vec2 worldToNDCSize(vec2 worldSize) {
-        GG.camera().worldPosToNDC(@(worldSize.x, worldSize.y, 0)) => vec3 ndcPos;
-        GG.camera().worldPosToNDC(@(0, 0, 0)) => vec3 origin;
-        return @(Math.fabs(ndcPos.x - origin.x), Math.fabs(ndcPos.y - origin.y));
+        return UIUtil.worldToNDCSize(worldSize);
     }
 
     @doc "Returns whether the last component rendered is hovered or not."
