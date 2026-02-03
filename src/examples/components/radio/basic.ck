@@ -11,6 +11,7 @@ GG.camera().orthographic();
 GG.scene().backgroundColor(Color.WHITE);
 
 ChuGUI gui --> GG.scene();
+gui.sizeUnits(ChuGUI.WORLD);
 
 ["Red", "Green", "Blue"] @=> string colors[];
 0 => int colorIx;

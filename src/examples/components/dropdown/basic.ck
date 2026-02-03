@@ -11,6 +11,7 @@ GG.camera().orthographic();
 GG.scene().backgroundColor(Color.WHITE);
 
 ChuGUI gui --> GG.scene();
+gui.sizeUnits(ChuGUI.WORLD);
 
 ["Option 1", "Option 2", "Option 3"] @=> string options[];
 -1 => int selected;

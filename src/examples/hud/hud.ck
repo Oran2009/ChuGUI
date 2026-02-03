@@ -11,6 +11,7 @@ GG.camera().orthographic();
 GG.scene().backgroundColor(@(0.5, 0.5, 0.5));
 
 ChuGUI gui --> GG.scene();
+gui.sizeUnits(ChuGUI.WORLD);
 
 // --- Data ---
 

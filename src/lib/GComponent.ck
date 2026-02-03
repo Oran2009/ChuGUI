@@ -17,7 +17,7 @@ public class GComponent extends GGen {
     fun void frame(int frame) { frame => _frame; }
 
     fun GGen pos(vec2 pos) {
-        if (UIGlobals.units == "WORLD") {
+        if (UIGlobals.posUnits == "WORLD") {
             pos => _pos;
         } else {
             GG.camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 worldPos;

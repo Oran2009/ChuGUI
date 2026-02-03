@@ -13,6 +13,7 @@ GG.scene().ambient(Color.WHITE);
 GG.scene().backgroundColor(Color.BLACK);
 
 ChuGUI gui --> GG.scene();
+gui.sizeUnits(ChuGUI.WORLD);
 
 0 => int checked0;
 0 => int checked1;

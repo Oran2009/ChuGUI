@@ -19,9 +19,9 @@ public class UIUtil {
     }
 
     // Convert size from current unit system to world coordinates
-    // Respects the global units() setting
+    // Respects the global sizeUnits() setting
     fun static vec2 sizeToWorld(vec2 size) {
-        if (UIGlobals.units == "WORLD") {
+        if (UIGlobals.sizeUnits == "WORLD") {
             return size;
         } else {
             return NDCToWorldSize(size);
@@ -30,11 +30,22 @@ public class UIUtil {
 
     // Convert single float size from current unit system to world coordinates
     fun static float sizeToWorld(float size) {
-        if (UIGlobals.units == "WORLD") {
+        if (UIGlobals.sizeUnits == "WORLD") {
             return size;
         } else {
             NDCToWorldSize(@(size, size)) => vec2 worldSize;
             return worldSize.x;
+        }
+    }
+
+    // Convert position from current unit system to world coordinates
+    // Respects the global posUnits() setting
+    fun static vec2 posToWorld(vec2 pos) {
+        if (UIGlobals.posUnits == "WORLD") {
+            return pos;
+        } else {
+            GG.camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 worldPos;
+            return @(worldPos.x, worldPos.y);
         }
     }
 
