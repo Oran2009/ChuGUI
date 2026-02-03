@@ -66,10 +66,10 @@ public class Knob extends GComponent {
         UIStyle.color(UIStyle.COL_KNOB_BORDER, @(0.2, 0.2, 0.2, 1)) => vec4 knobBorderColor;
         UIStyle.color(UIStyle.COL_KNOB_INDICATOR, @(0.2, 0.2, 0.2, 1)) => vec4 indicatorColor;
 
-        UIStyle.varVec2(UIStyle.VAR_KNOB_SIZE, @(0.5, 0.5)) => vec2 knobSize;
-        UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_RADIUS, 1.0) => float knobBorderRadius;
-        UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_WIDTH, 0.1) => float knobBorderWidth;
-        UIStyle.varVec2(UIStyle.VAR_KNOB_INDICATOR_SIZE, @(0.04, 0.15)) => vec2 indicatorSize;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_KNOB_SIZE, @(0.5, 0.5))) => vec2 knobSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_RADIUS, 1.0)) => float knobBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_WIDTH, 0.1)) => float knobBorderWidth;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_KNOB_INDICATOR_SIZE, @(0.04, 0.15))) => vec2 indicatorSize;
 
         UIStyle.varVec2(UIStyle.VAR_KNOB_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_KNOB_Z_INDEX, 0) => float zIndex;
@@ -100,13 +100,7 @@ public class Knob extends GComponent {
         gIndicator.borderRadius(indicatorSize.x / 2);
         gIndicator.borderWidth(0);
 
-        knobSize.x * (0.5 - controlPoints.x) => float offsetX;
-        knobSize.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(knobSize, controlPoints, zIndex, rotate);
     }
 
 

@@ -57,13 +57,14 @@ public class Slider extends GComponent {
         UIStyle.color(UIStyle.COL_SLIDER_HANDLE, @(0, 0, 0, 1)) => vec4 handleColor;
         UIStyle.color(UIStyle.COL_SLIDER_HANDLE_BORDER, @(0, 0, 0, 1)) => vec4 handleBorderColor;
 
-        UIStyle.varVec2(UIStyle.VAR_SLIDER_TRACK_SIZE, @(3.5, 0.2)) => vec2 trackSize;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_RADIUS, 0) => float trackBorderRadius;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_WIDTH, 0) => float trackBorderWidth;
+        // Convert sizes from current unit system to world coordinates
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_TRACK_SIZE, @(3.5, 0.2))) => vec2 trackSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_RADIUS, 0)) => float trackBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_WIDTH, 0)) => float trackBorderWidth;
 
-        UIStyle.varVec2(UIStyle.VAR_SLIDER_HANDLE_SIZE, @(0.3, 0.3)) => vec2 handleSize;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, 0) => float handleBorderRadius;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, 0) => float handleBorderWidth;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_HANDLE_SIZE, @(0.3, 0.3))) => vec2 handleSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, 0)) => float handleBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, 0)) => float handleBorderWidth;
 
         UIStyle.varVec2(UIStyle.VAR_SLIDER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_SLIDER_Z_INDEX, 0) => float zIndex;
@@ -99,13 +100,7 @@ public class Slider extends GComponent {
         gHandle.borderColor(handleBorderColor);
         gHandle.posZ(0.2);
 
-        (trackSize.x + handleSize.x) * (0.5 - controlPoints.x) => float offsetX;
-        handleSize.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(@(trackSize.x + handleSize.x, handleSize.y), controlPoints, zIndex, rotate);
     }
 
     fun void update() {
@@ -168,7 +163,7 @@ public class DiscreteSlider extends Slider {
         -halfW + cornerR => float startX;
         2 * (halfW - cornerR) => float span;
 
-        UIStyle.varVec2(UIStyle.VAR_SLIDER_TICK_SIZE, @(0.05, 0.2)) => vec2 tickSize;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_TICK_SIZE, @(0.05, 0.2))) => vec2 tickSize;
         UIStyle.color(UIStyle.COL_SLIDER_TICK, @(0.2, 0.2, 0.2, 1)) => vec4 tickColor;
 
         for (0 => int i; i < _steps; i++) {
@@ -242,19 +237,20 @@ public class DiscreteSlider extends Slider {
         UIStyle.color(UIStyle.COL_SLIDER_HANDLE, @(0, 0, 0, 1)) => vec4 handleColor;
         UIStyle.color(UIStyle.COL_SLIDER_HANDLE_BORDER, @(0, 0, 0, 1)) => vec4 handleBorderColor;
 
-        UIStyle.varVec2(UIStyle.VAR_SLIDER_TRACK_SIZE, @(3.5, 0.2)) => vec2 trackSize;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_RADIUS, 0) => float trackBorderRadius;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_WIDTH, 0) => float trackBorderWidth;
+        // Convert sizes from current unit system to world coordinates
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_TRACK_SIZE, @(3.5, 0.2))) => vec2 trackSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_RADIUS, 0)) => float trackBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_WIDTH, 0)) => float trackBorderWidth;
 
-        UIStyle.varVec2(UIStyle.VAR_SLIDER_HANDLE_SIZE, @(0.3, 0.3)) => vec2 handleSize;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, 0) => float handleBorderRadius;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, 0) => float handleBorderWidth;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_HANDLE_SIZE, @(0.3, 0.3))) => vec2 handleSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, 0)) => float handleBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, 0)) => float handleBorderWidth;
 
         UIStyle.varVec2(UIStyle.VAR_SLIDER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_SLIDER_Z_INDEX, 0) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_SLIDER_ROTATE, 0) => float rotate;
 
-        UIStyle.varVec2(UIStyle.VAR_SLIDER_TICK_SIZE, @(0.05, 0.2)) => vec2 tickSize;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_TICK_SIZE, @(0.05, 0.2))) => vec2 tickSize;
         UIStyle.color(UIStyle.COL_SLIDER_TICK, @(0.2, 0.2, 0.2, 1)) => vec4 tickColor;
 
         if (_disabled) {
@@ -300,12 +296,7 @@ public class DiscreteSlider extends Slider {
             ticks[i].color(tickColor);
         }
 
-        (trackSize.x + handleSize.x) * (0.5 - controlPoints.x) => float offsetX;
-        (handleSize.y) * (0.5 - controlPoints.y) => float offsetY;
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(@(trackSize.x + handleSize.x, handleSize.y), controlPoints, zIndex, rotate);
     }
 
     fun void update() {

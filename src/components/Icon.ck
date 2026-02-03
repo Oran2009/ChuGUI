@@ -1,4 +1,5 @@
 @import "../lib/GComponent.ck"
+@import "../lib/UIUtil.ck"
 @import "../gmeshes/GIcon.ck"
 @import "../UIStyle.ck"
 
@@ -21,9 +22,15 @@ public class Icon extends GComponent {
     fun void updateUI() {
         UIStyle.color(UIStyle.COL_ICON, Color.WHITE) => vec4 color;
 
-        UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(1, 1)) => vec2 size;
+        // Convert size from current unit system to world coordinates
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(1, 1))) => vec2 size;
         UIStyle.varFloat(UIStyle.VAR_ICON_TRANSPARENT, 1) $ int => int transparent;
-        UIStyle.varString(UIStyle.VAR_ICON_SAMPLER, UIStyle.LINEAR) => string sampler;
+        UIStyle.varString(UIStyle.VAR_ICON_SAMPLER, UIStyle.LINEAR) => string samplerOption;
+
+        UIStyle.varFloat(UIStyle.VAR_ICON_WRAP, -1) $ int => int wrap;
+        UIStyle.varFloat(UIStyle.VAR_ICON_WRAP_U, TextureSampler.Wrap_Repeat) $ int => int wrapU;
+        UIStyle.varFloat(UIStyle.VAR_ICON_WRAP_V, TextureSampler.Wrap_Repeat) $ int => int wrapV;
+        UIStyle.varFloat(UIStyle.VAR_ICON_WRAP_W, TextureSampler.Wrap_Repeat) $ int => int wrapW;
 
         UIStyle.varVec2(UIStyle.VAR_ICON_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_ICON_Z_INDEX, 0.0) => float zIndex;
@@ -32,15 +39,17 @@ public class Icon extends GComponent {
         gIcon.sca(size);
         gIcon.color(color);
         gIcon.transparent(transparent);
-        gIcon.sampler(sampler == UIStyle.NEAREST ? TextureSampler.nearest() : TextureSampler.linear());
 
-        size.x * (0.5 - controlPoints.x) => float offsetX;
-        size.y * (0.5 - controlPoints.y) => float offsetY;
+        samplerOption == UIStyle.NEAREST ? TextureSampler.nearest() : TextureSampler.linear() @=> TextureSampler sampler;
+        wrapU => sampler.wrapU;
+        wrapV => sampler.wrapV;
+        wrapW => sampler.wrapW;
+        if (wrap != -1) {
+            wrap => sampler.wrapU => sampler.wrapV => sampler.wrapW;
+        }
+        gIcon.sampler(sampler);
 
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(size, controlPoints, zIndex, rotate);
     }
 
     fun void update() {

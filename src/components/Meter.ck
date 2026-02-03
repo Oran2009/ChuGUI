@@ -1,4 +1,5 @@
 @import "../lib/GComponent.ck"
+@import "../lib/UIUtil.ck"
 @import "../gmeshes/GRect.ck"
 @import "../UIStyle.ck"
 
@@ -6,12 +7,12 @@ public class Meter extends GComponent {
     GRect gTrack --> this;
     GRect gFill --> this;
 
-    float _min; 
+    float _min;
     float _max;
     float _val;
 
     // ==== Getters and Setters ====
-    
+
     fun float min() { return _min; }
     fun void min(float min) { min => _min; }
 
@@ -30,9 +31,10 @@ public class Meter extends GComponent {
         UIStyle.color(UIStyle.COL_METER_FILL, @(0.2, 0.8, 0.2, 1)) => vec4 fillColor;
         UIStyle.color(UIStyle.COL_METER_TRACK_BORDER, @(0.5, 0.5, 0.5, 1)) => vec4 trackBorderColor;
 
-        UIStyle.varVec2(UIStyle.VAR_METER_SIZE, @(3.0, 0.3)) => vec2 size;
-        UIStyle.varFloat(UIStyle.VAR_METER_BORDER_RADIUS, 0) => float borderRadius;
-        UIStyle.varFloat(UIStyle.VAR_METER_BORDER_WIDTH, 0.05) => float borderWidth;
+        // Convert sizes from current unit system to world coordinates
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_METER_SIZE, @(3.0, 0.3))) => vec2 size;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_RADIUS, 0)) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_WIDTH, 0.05)) => float borderWidth;
 
         UIStyle.varVec2(UIStyle.VAR_METER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_METER_Z_INDEX, 0) => float zIndex;
@@ -71,13 +73,7 @@ public class Meter extends GComponent {
             gFill.size(@(0, 0));
         }
 
-        size.x * (0.5 - controlPoints.x) => float offsetX;
-        size.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(size, controlPoints, zIndex, rotate);
     }
 
     fun void update() {

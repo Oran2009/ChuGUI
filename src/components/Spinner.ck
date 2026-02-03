@@ -46,10 +46,10 @@ public class Spinner extends GComponent {
     fun void updateUI() {
         UIStyle.color(UIStyle.COL_SPINNER_TEXT, @(0, 0, 0, 1)) => vec4 textColor;
 
-        UIStyle.varVec2(UIStyle.VAR_SPINNER_SIZE, @(3.0, 0.5)) => vec2 size;
-        UIStyle.varVec2(UIStyle.VAR_SPINNER_BUTTON_SIZE, @(0.25, 0.25)) => vec2 buttonSize;
-        UIStyle.varFloat(UIStyle.VAR_SPINNER_TEXT_SIZE, 0.2) => float textSize;
-        UIStyle.varFloat(UIStyle.VAR_SPINNER_SPACING, 0.1) => float spacing;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SPINNER_SIZE, @(3.0, 0.5))) => vec2 size;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SPINNER_BUTTON_SIZE, @(0.25, 0.25))) => vec2 buttonSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SPINNER_TEXT_SIZE, 0.2)) => float textSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SPINNER_SPACING, 0.1)) => float spacing;
         UIStyle.varString(UIStyle.VAR_SPINNER_FONT, "") => string font;
 
         UIStyle.varVec2(UIStyle.VAR_SPINNER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
@@ -73,13 +73,7 @@ public class Spinner extends GComponent {
         textSize * Std.itoa(_num).length() $ float => float labelWidth; // estimate for 3-digit numbers
 
         minusWidth + spacing + labelWidth + spacing + plusWidth => float totalWidth;
-        totalWidth * (0.5 - controlPoints.x) => float offsetX;
-        size.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(@(totalWidth, size.y), controlPoints, zIndex, rotate);
 
         -totalWidth * 0.5 => float currentX;
         currentX + minusWidth * 0.5 => minusButton.posX;

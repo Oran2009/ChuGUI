@@ -10,6 +10,7 @@
 GG.camera().orthographic();
 
 ChuGUI gui --> GG.scene();
+gui.sizeUnits(ChuGUI.WORLD);
 
 int state;
 int toggleState;

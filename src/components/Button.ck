@@ -40,12 +40,12 @@ public class Button extends GComponent {
         UIStyle.color(UIStyle.COL_BUTTON_TEXT, @(0, 0, 0, 1)) => vec4 textColor;
         UIStyle.color(UIStyle.COL_BUTTON_ICON, textColor) => vec4 iconColor;
 
-        // vars
-        UIStyle.varVec2(UIStyle.VAR_BUTTON_SIZE, @(3, 0.5)) => vec2 size;
-        UIStyle.varFloat(UIStyle.VAR_BUTTON_TEXT_SIZE, 0.2) => float textSize;
-        UIStyle.varFloat(UIStyle.VAR_BUTTON_ICON_SIZE, textSize) => float iconSize;
-        UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_RADIUS, 0) => float borderRadius;
-        UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_WIDTH, 0) => float borderWidth;
+        // vars (convert sizes from current unit system to world coordinates)
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_BUTTON_SIZE, @(3, 0.5))) => vec2 size;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_TEXT_SIZE, 0.2)) => float textSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_ICON_SIZE, textSize)) => float iconSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_RADIUS, 0)) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_WIDTH, 0)) => float borderWidth;
         UIStyle.varString(UIStyle.VAR_BUTTON_FONT, "") => string font;
         UIStyle.varString(UIStyle.VAR_BUTTON_ICON_POSITION, UIStyle.LEFT) => string iconPos;
 
@@ -94,7 +94,7 @@ public class Button extends GComponent {
             gText.font(font);
             gText.text(_label);
             gText.color(textColor);
-            gText.sca(textSize);
+            gText.size(textSize);
             gText.pos(@(textX, 0, 0.1));
         } else {
             if (gText.parent() != null) gText --< this;
@@ -110,13 +110,7 @@ public class Button extends GComponent {
             if (gIcon.parent() != null) gIcon --< this;
         }
 
-        size.x * (0.5 - controlPoints.x) => float offsetX;
-        size.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(size, controlPoints, zIndex, rotate);
     }
 
     fun void update() {

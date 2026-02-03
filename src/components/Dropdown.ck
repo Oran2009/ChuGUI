@@ -73,10 +73,10 @@ public class Dropdown extends GComponent {
         UIStyle.color(UIStyle.COL_DROPDOWN_TEXT, @(0, 0, 0, 1)) => vec4 textColor;
         UIStyle.color(UIStyle.COL_DROPDOWN_ARROW, textColor) => vec4 arrowColor;
 
-        UIStyle.varVec2(UIStyle.VAR_DROPDOWN_SIZE, @(3, 0.4)) => vec2 size;
-        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_TEXT_SIZE, 0.2) => float textSize;
-        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_RADIUS, 0) => float borderRadius;
-        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_WIDTH, 0.1) => float borderWidth;
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_DROPDOWN_SIZE, @(3, 0.4))) => vec2 size;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_TEXT_SIZE, 0.2)) => float textSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_RADIUS, 0)) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_WIDTH, 0.1)) => float borderWidth;
         UIStyle.varString(UIStyle.VAR_DROPDOWN_FONT, "") => string font;
 
         UIStyle.varVec2(UIStyle.VAR_DROPDOWN_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
@@ -120,20 +120,14 @@ public class Dropdown extends GComponent {
         gLabel.color(textColor);
         gLabel.size(textSize);
         gLabel.controlPoints(@(0,0.5));
-        gLabel.posX(-size.x/2 + 0.1);
+        gLabel.posX(-size.x/2 + 0.1 * size.x);
         gLabel.posZ(0.1);
 
         gArrow.color(arrowColor);
         gArrow.sca(@(textSize,textSize));
         gArrow.posX(size.x/2 - textSize);
 
-        size.x * (0.5 - controlPoints.x) => float offsetX;
-        size.y * (0.5 - controlPoints.y) => float offsetY;
-
-        this.posX(_pos.x + offsetX);
-        this.posY(_pos.y + offsetY);
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        applyLayout(size, controlPoints, zIndex, rotate);
 
         if (_open) {
             _options.size() * size.y => float listH;
@@ -175,7 +169,7 @@ public class Dropdown extends GComponent {
                 t.sca(textSize);
                 t.controlPoints(@(0,0.5));
                 t.posY(r.pos().y);
-                t.posX(-size.x/2 + 0.1);
+                t.posX(-size.x/2 + 0.1 * size.x);
                 t.posZ(0.1);
             }
         } else {

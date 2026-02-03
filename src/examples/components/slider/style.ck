@@ -11,6 +11,7 @@ GG.camera().orthographic();
 GG.scene().backgroundColor(Color.WHITE);
 
 ChuGUI gui --> GG.scene();
+gui.sizeUnits(ChuGUI.WORLD);
 
 0.2 => float value1;
 0.5 => float value2;

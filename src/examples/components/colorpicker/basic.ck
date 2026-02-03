@@ -11,6 +11,7 @@ GG.camera().orthographic();
 GG.scene().backgroundColor(Color.WHITE);
 
 ChuGUI gui --> GG.scene();
+gui.sizeUnits(ChuGUI.WORLD);
 
 @(1, 0, 0) => vec3 color;
 
