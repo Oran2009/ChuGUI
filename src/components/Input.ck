@@ -69,7 +69,6 @@ public class Input extends GComponent {
                 k==GWindow.Key_Semicolon    ||
                 k==GWindow.Key_LeftBracket  ||
                 k==GWindow.Key_RightBracket ||
-                k==GWindow.Key_Semicolon    ||
                 k==GWindow.Key_Apostrophe   ||
                 k==GWindow.Key_Minus        ||
                 k==GWindow.Key_Equal        ||
