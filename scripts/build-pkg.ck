@@ -58,6 +58,8 @@ ver.addFile("../src/lib/GComponent.ck", "lib");
 ver.addFile("../src/lib/MouseState.ck", "lib");
 ver.addFile("../src/lib/UIGlobals.ck", "lib");
 ver.addFile("../src/lib/UIUtil.ck", "lib");
+ver.addFile("../src/lib/ComponentStyleMap.ck", "lib");
+ver.addFile("../src/lib/DebugStyles.ck", "lib");
 
 ver.addFile("../src/materials/RectMaterial.ck", "materials");
 
@@ -101,6 +103,8 @@ ver.addExampleFile("../src/examples/hud/assets/paw-print.png", "hud/assets");
 ver.addExampleFile("../src/examples/hud/assets/sword.png", "hud/assets");
 ver.addExampleFile("../src/examples/hud/assets/syringe.png", "hud/assets");
 ver.addExampleFile("../src/examples/hud/assets/tornado.png", "hud/assets");
+
+ver.addExampleFile("../src/examples/debug/debug_test.ck", "debug");
 
 // wrap up all our files into a zip file, and tell Chumpinate what URL
 // this zip file will be located at.
