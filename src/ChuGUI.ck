@@ -587,6 +587,394 @@ public class ChuGUI extends GGen {
         }
     }
 
+    // ==== Scenegraph Debug View ====
+
+    @doc "Render the scenegraph debug view. Call this each frame when debug mode is enabled."
+    fun void debugScenegraph() {
+        if (!_debugEnabled) return;
+
+        // Count active map components
+        0 => int btnActive;
+        string btnKeys[0];
+        buttons.getKeys(btnKeys);
+        for (string k : btnKeys) {
+            if (buttons[k].parent() != null) btnActive++;
+        }
+
+        0 => int toggleActive;
+        string toggleKeys[0];
+        toggleBtns.getKeys(toggleKeys);
+        for (string k : toggleKeys) {
+            if (toggleBtns[k].parent() != null) toggleActive++;
+        }
+
+        0 => int sliderActive;
+        string sliderKeys[0];
+        sliders.getKeys(sliderKeys);
+        for (string k : sliderKeys) {
+            if (sliders[k].parent() != null) sliderActive++;
+        }
+
+        0 => int discreteSliderActive;
+        string discreteSliderKeys[0];
+        discreteSliders.getKeys(discreteSliderKeys);
+        for (string k : discreteSliderKeys) {
+            if (discreteSliders[k].parent() != null) discreteSliderActive++;
+        }
+
+        0 => int checkboxActive;
+        string checkboxKeys[0];
+        checkboxes.getKeys(checkboxKeys);
+        for (string k : checkboxKeys) {
+            if (checkboxes[k].parent() != null) checkboxActive++;
+        }
+
+        0 => int inputActive;
+        string inputKeys[0];
+        inputs.getKeys(inputKeys);
+        for (string k : inputKeys) {
+            if (inputs[k].parent() != null) inputActive++;
+        }
+
+        0 => int dropdownActive;
+        string dropdownKeys[0];
+        dropdowns.getKeys(dropdownKeys);
+        for (string k : dropdownKeys) {
+            if (dropdowns[k].parent() != null) dropdownActive++;
+        }
+
+        0 => int colorPickerActive;
+        string colorPickerKeys[0];
+        colorPickers.getKeys(colorPickerKeys);
+        for (string k : colorPickerKeys) {
+            if (colorPickers[k].parent() != null) colorPickerActive++;
+        }
+
+        0 => int knobActive;
+        string knobKeys[0];
+        knobs.getKeys(knobKeys);
+        for (string k : knobKeys) {
+            if (knobs[k].parent() != null) knobActive++;
+        }
+
+        0 => int radioActive;
+        string radioKeys[0];
+        radios.getKeys(radioKeys);
+        for (string k : radioKeys) {
+            if (radios[k].parent() != null) radioActive++;
+        }
+
+        0 => int spinnerActive;
+        string spinnerKeys[0];
+        spinners.getKeys(spinnerKeys);
+        for (string k : spinnerKeys) {
+            if (spinners[k].parent() != null) spinnerActive++;
+        }
+
+        rectCount + iconCount + labelCount + meterCount => int poolTotal;
+        btnActive + toggleActive + sliderActive + discreteSliderActive +
+        checkboxActive + inputActive + dropdownActive + colorPickerActive +
+        knobActive + radioActive + spinnerActive => int mapTotal;
+
+        UI.begin("ChuGUI Scenegraph");
+
+        UI.text("Active Components: " + (poolTotal + mapTotal));
+        UI.text("Frame: " + currentFrame);
+        UI.separator();
+
+        // === Pools ===
+        if (UI.treeNode("Pools (" + poolTotal + " active)")) {
+
+            // Rects
+            if (rectCount > 0 && UI.treeNode("Rect (" + rectCount + ")")) {
+                for (0 => int i; i < rectCount; i++) {
+                    "Rect_" + i => string nodeId;
+                    if (UI.treeNode(nodeId)) {
+                        UI.text("Pos: (" + rectPool[i].posX() + ", " + rectPool[i].posY() + ")");
+                        UI.text("Z-Index: " + rectPool[i].posZ());
+                        UI.text("Rotation: " + rectPool[i].rotZ());
+                        UI.text("Hovered: " + (rectPool[i]._state.hovered() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Icons
+            if (iconCount > 0 && UI.treeNode("Icon (" + iconCount + ")")) {
+                for (0 => int i; i < iconCount; i++) {
+                    "Icon_" + i => string nodeId;
+                    if (UI.treeNode(nodeId)) {
+                        UI.text("Pos: (" + iconPool[i].posX() + ", " + iconPool[i].posY() + ")");
+                        UI.text("Z-Index: " + iconPool[i].posZ());
+                        UI.text("Rotation: " + iconPool[i].rotZ());
+                        UI.text("Path: " + iconPool[i]._icon);
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Labels
+            if (labelCount > 0 && UI.treeNode("Label (" + labelCount + ")")) {
+                for (0 => int i; i < labelCount; i++) {
+                    "Label_" + i => string nodeId;
+                    if (UI.treeNode(nodeId)) {
+                        UI.text("Pos: (" + labelPool[i].posX() + ", " + labelPool[i].posY() + ")");
+                        UI.text("Z-Index: " + labelPool[i].posZ());
+                        UI.text("Rotation: " + labelPool[i].rotZ());
+                        UI.text("Text: " + labelPool[i]._label);
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Meters
+            if (meterCount > 0 && UI.treeNode("Meter (" + meterCount + ")")) {
+                for (0 => int i; i < meterCount; i++) {
+                    "Meter_" + i => string nodeId;
+                    if (UI.treeNode(nodeId)) {
+                        UI.text("Pos: (" + meterPool[i].posX() + ", " + meterPool[i].posY() + ")");
+                        UI.text("Z-Index: " + meterPool[i].posZ());
+                        UI.text("Rotation: " + meterPool[i].rotZ());
+                        UI.text("Value: " + meterPool[i].val() + " [" + meterPool[i].min() + ", " + meterPool[i].max() + "]");
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            UI.treePop();
+        }
+
+        // === Maps ===
+        if (UI.treeNode("Maps (" + mapTotal + " active)")) {
+
+            // Buttons
+            if (btnActive > 0 && UI.treeNode("Button (" + btnActive + ")")) {
+                for (string k : btnKeys) {
+                    buttons[k] @=> MomentaryButton b;
+                    if (b.parent() == null) continue;
+                    if (UI.treeNode("Button: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + b.posX() + ", " + b.posY() + ")");
+                        UI.text("Z-Index: " + b.posZ());
+                        UI.text("Rotation: " + b.rotZ());
+                        UI.text("Label: " + b.label());
+                        UI.text("Icon: " + b.icon());
+                        UI.text("Disabled: " + (b.disabled() ? "Yes" : "No"));
+                        UI.text("Hovered: " + (b._state.hovered() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Toggle Buttons
+            if (toggleActive > 0 && UI.treeNode("ToggleButton (" + toggleActive + ")")) {
+                for (string k : toggleKeys) {
+                    toggleBtns[k] @=> ToggleButton tb;
+                    if (tb.parent() == null) continue;
+                    if (UI.treeNode("ToggleButton: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + tb.posX() + ", " + tb.posY() + ")");
+                        UI.text("Z-Index: " + tb.posZ());
+                        UI.text("Rotation: " + tb.rotZ());
+                        UI.text("Label: " + tb.label());
+                        UI.text("Icon: " + tb.icon());
+                        UI.text("Toggled: " + (tb.toggled() ? "Yes" : "No"));
+                        UI.text("Disabled: " + (tb.disabled() ? "Yes" : "No"));
+                        UI.text("Hovered: " + (tb._state.hovered() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Sliders
+            if (sliderActive > 0 && UI.treeNode("Slider (" + sliderActive + ")")) {
+                for (string k : sliderKeys) {
+                    sliders[k] @=> Slider s;
+                    if (s.parent() == null) continue;
+                    if (UI.treeNode("Slider: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + s.posX() + ", " + s.posY() + ")");
+                        UI.text("Z-Index: " + s.posZ());
+                        UI.text("Rotation: " + s.rotZ());
+                        UI.text("Value: " + s.val());
+                        UI.text("Range: [" + s.min() + ", " + s.max() + "]");
+                        UI.text("Disabled: " + (s.disabled() ? "Yes" : "No"));
+                        UI.text("Hovered: " + (s._state.hovered() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Discrete Sliders
+            if (discreteSliderActive > 0 && UI.treeNode("DiscreteSlider (" + discreteSliderActive + ")")) {
+                for (string k : discreteSliderKeys) {
+                    discreteSliders[k] @=> DiscreteSlider ds;
+                    if (ds.parent() == null) continue;
+                    if (UI.treeNode("DiscreteSlider: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + ds.posX() + ", " + ds.posY() + ")");
+                        UI.text("Z-Index: " + ds.posZ());
+                        UI.text("Rotation: " + ds.rotZ());
+                        UI.text("Value: " + ds.val());
+                        UI.text("Range: [" + ds.min() + ", " + ds.max() + "]");
+                        UI.text("Steps: " + ds.steps());
+                        UI.text("Disabled: " + (ds.disabled() ? "Yes" : "No"));
+                        UI.text("Hovered: " + (ds._state.hovered() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Checkboxes
+            if (checkboxActive > 0 && UI.treeNode("Checkbox (" + checkboxActive + ")")) {
+                for (string k : checkboxKeys) {
+                    checkboxes[k] @=> Checkbox c;
+                    if (c.parent() == null) continue;
+                    if (UI.treeNode("Checkbox: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + c.posX() + ", " + c.posY() + ")");
+                        UI.text("Z-Index: " + c.posZ());
+                        UI.text("Rotation: " + c.rotZ());
+                        UI.text("Checked: " + (c.checked() ? "Yes" : "No"));
+                        UI.text("Disabled: " + (c.disabled() ? "Yes" : "No"));
+                        UI.text("Hovered: " + (c._state.hovered() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Inputs
+            if (inputActive > 0 && UI.treeNode("Input (" + inputActive + ")")) {
+                for (string k : inputKeys) {
+                    inputs[k] @=> Input inp;
+                    if (inp.parent() == null) continue;
+                    if (UI.treeNode("Input: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + inp.posX() + ", " + inp.posY() + ")");
+                        UI.text("Z-Index: " + inp.posZ());
+                        UI.text("Rotation: " + inp.rotZ());
+                        UI.text("Value: " + inp.value());
+                        UI.text("Placeholder: " + inp.placeholder());
+                        UI.text("Focused: " + (inp.focused() ? "Yes" : "No"));
+                        UI.text("Disabled: " + (inp.disabled() ? "Yes" : "No"));
+                        UI.text("Hovered: " + (inp._state.hovered() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Dropdowns
+            if (dropdownActive > 0 && UI.treeNode("Dropdown (" + dropdownActive + ")")) {
+                for (string k : dropdownKeys) {
+                    dropdowns[k] @=> Dropdown d;
+                    if (d.parent() == null) continue;
+                    if (UI.treeNode("Dropdown: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + d.posX() + ", " + d.posY() + ")");
+                        UI.text("Z-Index: " + d.posZ());
+                        UI.text("Rotation: " + d.rotZ());
+                        UI.text("Selected Index: " + d.selectedIndex());
+                        UI.text("Open: " + (d._open ? "Yes" : "No"));
+                        UI.text("Disabled: " + (d.disabled() ? "Yes" : "No"));
+                        UI.text("Hovered: " + (d._state.hovered() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // ColorPickers
+            if (colorPickerActive > 0 && UI.treeNode("ColorPicker (" + colorPickerActive + ")")) {
+                for (string k : colorPickerKeys) {
+                    colorPickers[k] @=> ColorPicker cp;
+                    if (cp.parent() == null) continue;
+                    if (UI.treeNode("ColorPicker: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + cp.posX() + ", " + cp.posY() + ")");
+                        UI.text("Z-Index: " + cp.posZ());
+                        UI.text("Rotation: " + cp.rotZ());
+                        cp.color() => vec3 col;
+                        UI.text("Color RGB: (" + col.x + ", " + col.y + ", " + col.z + ")");
+                        UI.text("Disabled: " + (cp.disabled() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Knobs
+            if (knobActive > 0 && UI.treeNode("Knob (" + knobActive + ")")) {
+                for (string k : knobKeys) {
+                    knobs[k] @=> Knob kb;
+                    if (kb.parent() == null) continue;
+                    if (UI.treeNode("Knob: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + kb.posX() + ", " + kb.posY() + ")");
+                        UI.text("Z-Index: " + kb.posZ());
+                        UI.text("Rotation: " + kb.rotZ());
+                        UI.text("Value: " + kb.val());
+                        UI.text("Range: [" + kb.min() + ", " + kb.max() + "]");
+                        UI.text("Disabled: " + (kb.disabled() ? "Yes" : "No"));
+                        UI.text("Hovered: " + (kb._state.hovered() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Radios
+            if (radioActive > 0 && UI.treeNode("Radio (" + radioActive + ")")) {
+                for (string k : radioKeys) {
+                    radios[k] @=> Radio r;
+                    if (r.parent() == null) continue;
+                    if (UI.treeNode("Radio: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + r.posX() + ", " + r.posY() + ")");
+                        UI.text("Z-Index: " + r.posZ());
+                        UI.text("Rotation: " + r.rotZ());
+                        UI.text("Selected Index: " + r.selectedIndex());
+                        UI.text("Disabled: " + (r.disabled() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            // Spinners
+            if (spinnerActive > 0 && UI.treeNode("Spinner (" + spinnerActive + ")")) {
+                for (string k : spinnerKeys) {
+                    spinners[k] @=> Spinner sp;
+                    if (sp.parent() == null) continue;
+                    if (UI.treeNode("Spinner: " + k)) {
+                        UI.text("ID: " + k);
+                        UI.text("Pos: (" + sp.posX() + ", " + sp.posY() + ")");
+                        UI.text("Z-Index: " + sp.posZ());
+                        UI.text("Rotation: " + sp.rotZ());
+                        UI.text("Value: " + sp.num());
+                        UI.text("Range: [" + sp._min + ", " + sp._max + "]");
+                        UI.text("Disabled: " + (sp.disabled() ? "Yes" : "No"));
+                        UI.treePop();
+                    }
+                }
+                UI.treePop();
+            }
+
+            UI.treePop();
+        }
+
+        UI.end();
+    }
+
     // ==== Pooled Components (Stateless) ====
     
     // Rect

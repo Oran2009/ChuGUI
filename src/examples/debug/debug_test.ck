@@ -36,6 +36,7 @@ while (true) {
     gui.label("Hello World", @(-0.5, -0.1));
     gui.debugAdd();
 
-    // Render the debug panel
+    // Render the debug panel and scenegraph view
     gui.debug();
+    gui.debugScenegraph();
 }
