@@ -106,6 +106,14 @@ public class ChuGUI extends GGen {
     @doc "(hidden)"
     UI_Float _floatWrappers[0];
     @doc "(hidden)"
+    UI_Float _sliderMins[0];
+    @doc "(hidden)"
+    UI_Float _sliderMaxs[0];
+    @doc "(hidden)"
+    UI_Float _vec2SliderMins[0];
+    @doc "(hidden)"
+    UI_Float _vec2SliderMaxs[0];
+    @doc "(hidden)"
     UI_Float2 _vec2Wrappers[0];
 
     // ==== Frame Management ====
@@ -426,12 +434,73 @@ public class ChuGUI extends GGen {
     }
 
     @doc "(hidden)"
+    fun void getDefaultSliderRange(string key, float currentVal, UI_Float minW, UI_Float maxW) {
+        if (key.find("transparent") >= 0 || key.find("antialias") >= 0 ||
+            key.find("border_radius") >= 0 || key.find("border_width") >= 0 ||
+            key.find("check_width") >= 0) {
+            0.0 => minW.val;
+            1.0 => maxW.val;
+        } else if (key.find("blend_mode") >= 0) {
+            0.0 => minW.val;
+            5.0 => maxW.val;
+        } else if (key.find("wrap") >= 0) {
+            0.0 => minW.val;
+            2.0 => maxW.val;
+        } else if (key.find("rotate") >= 0) {
+            -360.0 => minW.val;
+            360.0 => maxW.val;
+        } else if (key.find("z_index") >= 0) {
+            -10.0 => minW.val;
+            10.0 => maxW.val;
+        } else if (key.find("characters") >= 0) {
+            0.0 => minW.val;
+            100.0 => maxW.val;
+        } else if (key.find("max_width") >= 0) {
+            0.0 => minW.val;
+            10.0 => maxW.val;
+        } else if (key.find("spacing") >= 0) {
+            0.0 => minW.val;
+            2.0 => maxW.val;
+        } else if (key.find("size") >= 0) {
+            0.0 => minW.val;
+            5.0 => maxW.val;
+        } else {
+            -10.0 => minW.val;
+            10.0 => maxW.val;
+        }
+
+        // Expand range to include the current value
+        if (currentVal < minW.val()) currentVal => minW.val;
+        if (currentVal > maxW.val()) currentVal => maxW.val;
+    }
+
+    @doc "(hidden)"
+    fun void getDefaultVec2SliderRange(string key, vec2 currentVal, UI_Float minW, UI_Float maxW) {
+        if (key.find("control_points") >= 0) {
+            0.0 => minW.val;
+            1.0 => maxW.val;
+        } else if (key.find("size") >= 0) {
+            0.0 => minW.val;
+            5.0 => maxW.val;
+        } else {
+            -10.0 => minW.val;
+            10.0 => maxW.val;
+        }
+
+        // Expand range to include both components of the current value
+        Math.min(currentVal.x, currentVal.y) => float lower;
+        Math.max(currentVal.x, currentVal.y) => float upper;
+        if (lower < minW.val()) lower => minW.val;
+        if (upper > maxW.val()) upper => maxW.val;
+    }
+
+    @doc "(hidden)"
     fun void renderFloatEditors(string compId, string keys[]) {
         for (string key : keys) {
             // Compound key for flat map
             compId + "/" + key => string wrapperKey;
 
-            // Get or create wrapper
+            // Get or create value wrapper
             if (!_floatWrappers.isInMap(wrapperKey)) {
                 new UI_Float @=> _floatWrappers[wrapperKey];
             }
@@ -440,29 +509,31 @@ public class ChuGUI extends GGen {
             // Load current value
             DebugStyles.getFloat(compId, key) => wrapper.val;
 
+            // Get or create min/max wrappers with defaults
+            if (!_sliderMins.isInMap(wrapperKey)) {
+                new UI_Float @=> _sliderMins[wrapperKey];
+                new UI_Float @=> _sliderMaxs[wrapperKey];
+                getDefaultSliderRange(key, wrapper.val(), _sliderMins[wrapperKey], _sliderMaxs[wrapperKey]);
+            }
+            _sliderMins[wrapperKey] @=> UI_Float sliderMin;
+            _sliderMaxs[wrapperKey] @=> UI_Float sliderMax;
+
             // Checkbox to enable override
             UI_Bool enabled;
             DebugStyles.isFloatEnabled(compId, key) => enabled.val;
             UI.checkbox("##en_" + key, enabled);
             UI.sameLine();
 
-            // Use drag for unbounded values, slider for bounded
+            // Slider with user-editable range
             0 => int changed;
-            if (key.find("transparent") >= 0 || key.find("antialias") >= 0 ||
-                key.find("border_radius") >= 0 || key.find("border_width") >= 0 ||
-                key.find("check_width") >= 0) {
-                // Bounded 0-1
-                UI.slider(key, wrapper, 0.0, 1.0) => changed;
-            } else if (key.find("wrap") >= 0) {
-                // Wrap mode 0-2
-                UI.slider(key, wrapper, 0.0, 2.0) => changed;
-            } else if (key.find("rotate") >= 0) {
-                // Rotation -360 to 360
-                UI.slider(key, wrapper, -360.0, 360.0) => changed;
-            } else {
-                // Unbounded - use drag (z_index, size, spacing, characters, max_width, etc.)
-                UI.drag(key, wrapper) => changed;
-            }
+            UI.slider(key, wrapper, sliderMin.val(), sliderMax.val()) => changed;
+
+            // Min/max range editors
+            UI.pushItemWidth(80.0);
+            UI.drag("min##" + key, sliderMin, 0.1, 0.0, 0.0, "%.2f", 0);
+            UI.sameLine();
+            UI.drag("max##" + key, sliderMax, 0.1, 0.0, 0.0, "%.2f", 0);
+            UI.popItemWidth();
 
             if (changed) {
                 DebugStyles.setFloat(compId, key, wrapper.val());
@@ -491,31 +562,36 @@ public class ChuGUI extends GGen {
             DebugStyles.getVec2(compId, key) => vec2 val;
             wrapper.val(val);
 
+            // Get or create min/max wrappers with defaults
+            if (!_vec2SliderMins.isInMap(wrapperKey)) {
+                new UI_Float @=> _vec2SliderMins[wrapperKey];
+                new UI_Float @=> _vec2SliderMaxs[wrapperKey];
+                getDefaultVec2SliderRange(key, val, _vec2SliderMins[wrapperKey], _vec2SliderMaxs[wrapperKey]);
+            }
+            _vec2SliderMins[wrapperKey] @=> UI_Float sliderMin;
+            _vec2SliderMaxs[wrapperKey] @=> UI_Float sliderMax;
+
             // Checkbox to enable override
             UI_Bool enabled;
             DebugStyles.isVec2Enabled(compId, key) => enabled.val;
             UI.checkbox("##en_" + key, enabled);
             UI.sameLine();
 
-            // Drag input for vec2
-            if (UI.drag(key, wrapper)) {
+            // Drag input for vec2 with user-editable range
+            if (UI.drag(key, wrapper, 0.01, sliderMin.val(), sliderMax.val(), "%.3f", 0)) {
                 wrapper.val() => vec2 newVal;
-
-                // Clamp control points to 0-1
-                if (key.find("control_points") >= 0) {
-                    Math.max(0.0, Math.min(1.0, newVal.x)) => newVal.x;
-                    Math.max(0.0, Math.min(1.0, newVal.y)) => newVal.y;
-                }
-                // Clamp sizes to non-negative values
-                else if (key.find("size") >= 0) {
-                    Math.max(0.0, newVal.x) => newVal.x;
-                    Math.max(0.0, newVal.y) => newVal.y;
-                }
 
                 DebugStyles.setVec2(compId, key, newVal);
                 DebugStyles.setVec2Enabled(compId, key, true);
                 true => enabled.val;
             }
+
+            // Min/max range editors
+            UI.pushItemWidth(80.0);
+            UI.drag("min##" + key, sliderMin, 0.1, 0.0, 0.0, "%.2f", 0);
+            UI.sameLine();
+            UI.drag("max##" + key, sliderMax, 0.1, 0.0, 0.0, "%.2f", 0);
+            UI.popItemWidth();
 
             // Store checkbox state
             DebugStyles.setVec2Enabled(compId, key, enabled.val());

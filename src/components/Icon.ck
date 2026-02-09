@@ -36,9 +36,12 @@ public class Icon extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_ICON_Z_INDEX, 0.0) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_ICON_ROTATE, 0.0) => float rotate;
 
+        UIStyle.varFloat(UIStyle.VAR_ICON_BLEND_MODE, Material.BLEND_MODE_ALPHA) $ int => int blendMode;
+
         gIcon.sca(size);
         gIcon.color(color);
         gIcon.transparent(transparent);
+        gIcon.blend(blendMode);
 
         samplerOption == UIStyle.NEAREST ? TextureSampler.nearest() : TextureSampler.linear() @=> TextureSampler sampler;
         wrapU => sampler.wrapU;

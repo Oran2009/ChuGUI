@@ -310,6 +310,8 @@ public class UIStyle {
     "icon.z_index"                => static string VAR_ICON_Z_INDEX;
     @doc "Apply with pushVar(), using a float value."
     "icon.rotate"                 => static string VAR_ICON_ROTATE;
+    @doc "Apply with pushVar(), using Material.BLEND_MODE_ALPHA (0), BLEND_MODE_REPLACE (1), BLEND_MODE_ADD (2), BLEND_MODE_SUBTRACT (3), BLEND_MODE_MULTIPLY (4), or BLEND_MODE_SCREEN (5)."
+    "icon.blend_mode"             => static string VAR_ICON_BLEND_MODE;
 
     // Label
     @doc "Apply with pushVar(), using a vec2 value."

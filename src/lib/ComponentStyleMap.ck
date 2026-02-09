@@ -113,7 +113,8 @@ public class ComponentStyleMap {
             UIStyle.VAR_ICON_WRAP_V,
             UIStyle.VAR_ICON_WRAP_W,
             UIStyle.VAR_ICON_Z_INDEX,
-            UIStyle.VAR_ICON_ROTATE
+            UIStyle.VAR_ICON_ROTATE,
+            UIStyle.VAR_ICON_BLEND_MODE
         ] @=> iconFloats;
         [
             UIStyle.VAR_ICON_SIZE,

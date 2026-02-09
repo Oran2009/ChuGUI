@@ -33,4 +33,7 @@ public class GIcon extends GMesh {
     fun void transparent(int transparent) { _mat.transparent(transparent); }
 
     fun void sampler(TextureSampler sampler) { _mat.sampler(sampler); }
+
+    @doc "Set the blend mode of the icon material."
+    fun void blend(int mode) { _mat.blend(mode); }
 }
