@@ -289,6 +289,7 @@ public class DiscreteSlider extends Slider {
         if (recreateTicks) {
             createTicks();
             snapToNearestStep();
+            false => recreateTicks;
         }
 
         for (0 => int i; i < ticks.size(); i++) {

@@ -130,6 +130,7 @@ public class Dropdown extends GComponent {
         applyLayout(size, controlPoints, zIndex, rotate);
 
         if (_open) {
+            if (gList.parent() == null) gList --> this;
             _options.size() * size.y => float listH;
             gList.size(@(size.x,listH));
             gList.color(color);

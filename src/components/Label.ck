@@ -50,7 +50,9 @@ public class Label extends GComponent {
             gLabel.align(0);
         }
 
-        applyLayout(@(0, 0), @(0.5, 0.5), zIndex, rotate);
+        // for now -- we set the control points of gLabel, not the component itself
+        // this is because we don't know the dimensions of GText -- passing in controlPoints here does nothing.
+        applyLayout(@(0, 0), controlPoints, zIndex, rotate);
     }
 
     fun void update() {

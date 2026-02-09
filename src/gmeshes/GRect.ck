@@ -28,7 +28,7 @@ public class GRect extends GMesh {
 
     @doc "Get the border width."
     fun float borderWidth() { return _mat.borderWidth(); }
-    @doc "Set the border radius."
+    @doc "Set the border width."
     fun void borderWidth(float borderWidth) {
         Math.clampf(borderWidth, 0, 1) => borderWidth;
         borderWidth * Math.min(_size.x, _size.y) * 0.5 => borderWidth;
