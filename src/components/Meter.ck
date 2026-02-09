@@ -33,12 +33,12 @@ public class Meter extends GComponent {
 
         // Convert sizes from current unit system to world coordinates
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_METER_SIZE, @(3.0, 0.3))) => vec2 size;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_RADIUS, 0)) => float borderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_WIDTH, 0.05)) => float borderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.05))) => float borderWidth;
 
-        UIStyle.varVec2(UIStyle.VAR_METER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_METER_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_METER_ROTATE, 0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_METER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_METER_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_METER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         // Track
         gTrack.size(size);

@@ -32,9 +32,9 @@ public class Icon extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_ICON_WRAP_V, TextureSampler.Wrap_Repeat) $ int => int wrapV;
         UIStyle.varFloat(UIStyle.VAR_ICON_WRAP_W, TextureSampler.Wrap_Repeat) $ int => int wrapW;
 
-        UIStyle.varVec2(UIStyle.VAR_ICON_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_ICON_Z_INDEX, 0.0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_ICON_ROTATE, 0.0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_ICON_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_ICON_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0.0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_ICON_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0.0)) => float rotate;
 
         UIStyle.varFloat(UIStyle.VAR_ICON_BLEND_MODE, Material.BLEND_MODE_ALPHA) $ int => int blendMode;
 

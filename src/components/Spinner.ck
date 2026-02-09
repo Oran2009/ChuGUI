@@ -50,11 +50,11 @@ public class Spinner extends GComponent {
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SPINNER_BUTTON_SIZE, @(0.25, 0.25))) => vec2 buttonSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SPINNER_TEXT_SIZE, 0.2)) => float textSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SPINNER_SPACING, 0.1)) => float spacing;
-        UIStyle.varString(UIStyle.VAR_SPINNER_FONT, "") => string font;
+        UIStyle.varString(UIStyle.VAR_SPINNER_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
-        UIStyle.varVec2(UIStyle.VAR_SPINNER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_SPINNER_Z_INDEX, 0.0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_SPINNER_ROTATE, 0.0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_SPINNER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_SPINNER_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0.0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_SPINNER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0.0)) => float rotate;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_SPINNER_TEXT_DISABLED, textColor) => textColor;

@@ -273,6 +273,20 @@ public class UIStyle {
 
     // ==== Var Keys ====
 
+    // Global (apply to all components; overridden by component-specific keys)
+    @doc "Apply with pushVar(). Global z_index for all components; overridden by component-specific z_index."
+    "z_index"                     => static string VAR_Z_INDEX;
+    @doc "Apply with pushVar(). Global rotation for all components; overridden by component-specific rotate."
+    "rotate"                      => static string VAR_ROTATE;
+    @doc "Apply with pushVar(). Global control points for all components; overridden by component-specific control_points."
+    "control_points"              => static string VAR_CONTROL_POINTS;
+    @doc "Apply with pushVar(). Global border radius; overridden by component-specific border_radius."
+    "border_radius"               => static string VAR_BORDER_RADIUS;
+    @doc "Apply with pushVar(). Global border width; overridden by component-specific border_width."
+    "border_width"                => static string VAR_BORDER_WIDTH;
+    @doc "Apply with pushVar(). Global font; overridden by component-specific font."
+    "font"                        => static string VAR_FONT;
+
     // Rect
     @doc "Apply with pushVar(), using an int value."
     "rect.transparent"            => static string VAR_RECT_TRANSPARENT;

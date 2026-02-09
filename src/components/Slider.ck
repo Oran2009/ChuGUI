@@ -59,16 +59,16 @@ public class Slider extends GComponent {
 
         // Convert sizes from current unit system to world coordinates
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_TRACK_SIZE, @(3.5, 0.2))) => vec2 trackSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_RADIUS, 0)) => float trackBorderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_WIDTH, 0)) => float trackBorderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float trackBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float trackBorderWidth;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_HANDLE_SIZE, @(0.3, 0.3))) => vec2 handleSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, 0)) => float handleBorderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, 0)) => float handleBorderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float handleBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float handleBorderWidth;
 
-        UIStyle.varVec2(UIStyle.VAR_SLIDER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_ROTATE, 0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_SLIDER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_SLIDER_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_SLIDER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_SLIDER_TRACK_DISABLED, @(0.7, 0.7, 0.7, 1)) => trackColor;
@@ -239,16 +239,16 @@ public class DiscreteSlider extends Slider {
 
         // Convert sizes from current unit system to world coordinates
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_TRACK_SIZE, @(3.5, 0.2))) => vec2 trackSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_RADIUS, 0)) => float trackBorderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_WIDTH, 0)) => float trackBorderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float trackBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_TRACK_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float trackBorderWidth;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_HANDLE_SIZE, @(0.3, 0.3))) => vec2 handleSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, 0)) => float handleBorderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, 0)) => float handleBorderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float handleBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float handleBorderWidth;
 
-        UIStyle.varVec2(UIStyle.VAR_SLIDER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_SLIDER_ROTATE, 0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_SLIDER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_SLIDER_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_SLIDER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_TICK_SIZE, @(0.05, 0.2))) => vec2 tickSize;
         UIStyle.color(UIStyle.COL_SLIDER_TICK, @(0.2, 0.2, 0.2, 1)) => vec4 tickColor;

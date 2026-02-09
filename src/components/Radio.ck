@@ -32,14 +32,14 @@ public class RadioOption extends GComponent {
         UIStyle.color(UIStyle.COL_RADIO_LABEL, @(0, 0, 0, 1)) => vec4 labelColor;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_RADIO_SIZE, @(0.3, 0.3))) => vec2 buttonSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_RADIUS, 0)) => float borderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_WIDTH, 0.1)) => float borderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.1))) => float borderWidth;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SPACING, 0.1)) => float labelSpacing;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SIZE, 0.20)) => float labelSize;
-        UIStyle.varString(UIStyle.VAR_RADIO_FONT, "") => string font;
+        UIStyle.varString(UIStyle.VAR_RADIO_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
-        UIStyle.varFloat(UIStyle.VAR_RADIO_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_RADIO_ROTATE, 0) => float rotate;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_RADIO_OPTION_DISABLED, @(0.9, 0.9, 0.9, 1)) => buttonColor;
@@ -140,10 +140,10 @@ public class Radio extends GComponent {
     // ==== Update ====
 
     fun void updateUI() {
-        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_ROTATE, 0) => float rotate;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
-        UIStyle.varVec2(UIStyle.VAR_RADIO_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
+        UIStyle.varVec2(UIStyle.VAR_RADIO_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_SPACING, 0.4)) => float spacing;
         UIStyle.varString(UIStyle.VAR_RADIO_LAYOUT, "column") => string layout;
 

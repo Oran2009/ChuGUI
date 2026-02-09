@@ -75,13 +75,13 @@ public class Dropdown extends GComponent {
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_DROPDOWN_SIZE, @(3, 0.4))) => vec2 size;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_TEXT_SIZE, 0.2)) => float textSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_RADIUS, 0)) => float borderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_WIDTH, 0.1)) => float borderWidth;
-        UIStyle.varString(UIStyle.VAR_DROPDOWN_FONT, "") => string font;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.1))) => float borderWidth;
+        UIStyle.varString(UIStyle.VAR_DROPDOWN_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
-        UIStyle.varVec2(UIStyle.VAR_DROPDOWN_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_Z_INDEX, 0.0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_ROTATE, 0.0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_DROPDOWN_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0.0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0.0)) => float rotate;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_DROPDOWN_DISABLED, color) => color;

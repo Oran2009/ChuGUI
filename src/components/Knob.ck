@@ -67,13 +67,13 @@ public class Knob extends GComponent {
         UIStyle.color(UIStyle.COL_KNOB_INDICATOR, @(0.2, 0.2, 0.2, 1)) => vec4 indicatorColor;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_KNOB_SIZE, @(0.5, 0.5))) => vec2 knobSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_RADIUS, 1.0)) => float knobBorderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_WIDTH, 0.1)) => float knobBorderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 1.0))) => float knobBorderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.1))) => float knobBorderWidth;
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_KNOB_INDICATOR_SIZE, @(0.04, 0.15))) => vec2 indicatorSize;
 
-        UIStyle.varVec2(UIStyle.VAR_KNOB_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_KNOB_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_KNOB_ROTATE, 0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_KNOB_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_KNOB_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_KNOB_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_KNOB_DISABLED, @(0.7, 0.7, 0.7, 1)) => knobColor;
