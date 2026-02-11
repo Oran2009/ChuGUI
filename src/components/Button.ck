@@ -81,7 +81,7 @@ public class Button extends GComponent {
         // layout
         (_label != "") ? textSize * _label.length() * 0.5 : 0. => float textW;
         (_icon != "") ? iconSize : 0. => float iconW;
-        0.2 * size.y => float spacing;
+        UIStyle.varFloat(UIStyle.VAR_BUTTON_ICON_SPACING, 0.2) * size.y => float spacing;
         if (textW == 0 || iconW == 0) { 0. => spacing; }
         textW + iconW + ((_label!="" && _icon!="") ? spacing : 0.) => float totalW;
         -totalW * 0.5 => float startX;

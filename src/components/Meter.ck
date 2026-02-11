@@ -59,7 +59,7 @@ public class Meter extends GComponent {
             -size.x/2.0 + borderW/2.0 + fillW/2.0 => float fillCenterX;
 
             borderRadius * Math.min(innerW, innerH) * 0.5 => float fillRadAbs;
-            fillRadAbs / Math.min(fillW, innerH) => float fillRadFrac;
+            fillRadAbs / Math.max(0.001, Math.min(fillW, innerH)) => float fillRadFrac;
 
             gFill.size(@(fillW, innerH));
             gFill.color(fillColor);

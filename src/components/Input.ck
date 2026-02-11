@@ -20,10 +20,10 @@ public class Input extends GComponent {
 
     new MouseState(this, gField) @=> _state;
 
-    0 => static int frameCount;
+    0 => int frameCount;
     int lastKey[0];       // frame counter when key was first pressed
-    20 => int repeatDelay;   // frames before repeating
-    5 => int repeatRate;    // frames between repeats
+    20 => int repeatDelay;
+    5 => int repeatRate;
 
     // ==== Getters and Setters ====
 
@@ -44,6 +44,9 @@ public class Input extends GComponent {
 
     fun void handleInput() {
         if (!_focused) return;
+
+        UIStyle.varFloat(UIStyle.VAR_INPUT_KEY_REPEAT_DELAY, 20) $ int => repeatDelay;
+        UIStyle.varFloat(UIStyle.VAR_INPUT_KEY_REPEAT_RATE, 5) $ int => repeatRate;
 
         frameCount++;
 
@@ -202,7 +205,8 @@ public class Input extends GComponent {
         
         // Position text to left side with padding
         fieldSize.x / 2.0 => float halfW;
-        gText.posX(-halfW + 0.05); // 0.05 padding from left edge
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_TEXT_PADDING, 0.05)) => float textPadding;
+        gText.posX(-halfW + textPadding);
 
         // Cursor styling
         @(0.02, textSize) => vec2 cursorSize;
@@ -214,9 +218,9 @@ public class Input extends GComponent {
         
         // Show/hide cursor based on focus and blink state
         if (_focused && _cursorVisible) {
-            gCursor --> this;
-        } else if (gCursor.parent() != null) {
-            gCursor --< this;
+            if (gCursor.parent() == null) gCursor --> this;
+        } else {
+            if (gCursor.parent() != null) gCursor --< this;
         }
 
         applyLayout(fieldSize, controlPoints, zIndex, rotate);
@@ -235,11 +239,12 @@ public class Input extends GComponent {
 
         gText.size() => float textSize;
         
-        textSize * 0.6 => float charWidth;
+        textSize * UIStyle.varFloat(UIStyle.VAR_INPUT_CHAR_WIDTH_RATIO, 0.6) => float charWidth;
         _cursorPos $ float * charWidth => float cursorOffset;
-        
+
         gField.size().x / 2.0 => float halfW;
-        -halfW + 0.05 + cursorOffset => float cursorX;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_TEXT_PADDING, 0.05)) => float textPadding;
+        -halfW + textPadding + cursorOffset => float cursorX;
         
         gCursor.posX(cursorX);
     }
@@ -257,13 +262,16 @@ public class Input extends GComponent {
             if (_focused) {
                 handleInput();
 
-                _cursorTimer + (2.0 / GG.fps()) => _cursorTimer;
+                GG.fps() => float fps;
+                _cursorTimer + (2.0 / ((fps > 0) ? fps : 60.0)) => _cursorTimer;
                 if (_cursorTimer >= 1.0) {
                     0.0 => _cursorTimer;
                     !_cursorVisible => _cursorVisible;
                 }
             } else {
                 false => _cursorVisible;
+                lastKey.size(0);
+                0 => frameCount;
             }
         }
 

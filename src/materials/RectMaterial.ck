@@ -7,19 +7,19 @@ public class RectMaterial extends Material {
     // ---- Getters and Setters ----
 
     fun float borderRadius() { return _borderRadius; }
-    fun void borderRadius(float r) { r => _borderRadius; update(); }
+    fun void borderRadius(float r) { r => _borderRadius; uniformFloat(0, _borderRadius); }
 
     fun float borderWidth() { return _borderWidth; }
-    fun void borderWidth(float borderWidth) { borderWidth => _borderWidth; update(); }
+    fun void borderWidth(float borderWidth) { borderWidth => _borderWidth; uniformFloat(1, _borderWidth); }
 
     fun vec2 size() { return _size; }
-    fun void size(vec2 s) { s => _size; update(); }
-    
+    fun void size(vec2 s) { s => _size; uniformFloat2(2, _size); }
+
     fun vec4 color() { return _color; }
-    fun void color(vec4 c) { c => _color; update(); }
-    
+    fun void color(vec4 c) { c => _color; uniformFloat4(3, _color); }
+
     fun vec4 borderColor() { return _borderColor; }
-    fun void borderColor(vec4 borderColor) { borderColor => _borderColor; update(); }
+    fun void borderColor(vec4 borderColor) { borderColor => _borderColor; uniformFloat4(4, _borderColor); }
 
     // ---- WGSL Functions ----
 

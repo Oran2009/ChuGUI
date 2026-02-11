@@ -80,6 +80,18 @@ public class ComponentStyleMap {
     static string spinnerVec2s[0];
     static string spinnerStrings[0];
 
+    // ==== DiscreteKnob ====
+    static string discreteKnobColors[0];
+    static string discreteKnobFloats[0];
+    static string discreteKnobVec2s[0];
+    static string discreteKnobStrings[0];
+
+    // ==== Separator ====
+    static string separatorColors[0];
+    static string separatorFloats[0];
+    static string separatorVec2s[0];
+    static string separatorStrings[0];
+
     // ==== Initialization ====
 
     fun static void init() {
@@ -170,7 +182,8 @@ public class ComponentStyleMap {
             UIStyle.VAR_BUTTON_BORDER_WIDTH,
             UIStyle.VAR_BUTTON_Z_INDEX,
             UIStyle.VAR_BUTTON_ROTATE,
-            UIStyle.VAR_BUTTON_ICON_SIZE
+            UIStyle.VAR_BUTTON_ICON_SIZE,
+            UIStyle.VAR_BUTTON_ICON_SPACING
         ] @=> buttonFloats;
         [
             UIStyle.VAR_BUTTON_SIZE,
@@ -269,7 +282,11 @@ public class ComponentStyleMap {
             UIStyle.VAR_INPUT_BORDER_RADIUS,
             UIStyle.VAR_INPUT_BORDER_WIDTH,
             UIStyle.VAR_INPUT_Z_INDEX,
-            UIStyle.VAR_INPUT_ROTATE
+            UIStyle.VAR_INPUT_ROTATE,
+            UIStyle.VAR_INPUT_TEXT_PADDING,
+            UIStyle.VAR_INPUT_CHAR_WIDTH_RATIO,
+            UIStyle.VAR_INPUT_KEY_REPEAT_DELAY,
+            UIStyle.VAR_INPUT_KEY_REPEAT_RATE
         ] @=> inputFloats;
         [
             UIStyle.VAR_INPUT_SIZE,
@@ -324,7 +341,8 @@ public class ComponentStyleMap {
         colorPickerColorsEmpty @=> colorPickerColors;
         [
             UIStyle.VAR_COLOR_PICKER_Z_INDEX,
-            UIStyle.VAR_COLOR_PICKER_ROTATE
+            UIStyle.VAR_COLOR_PICKER_ROTATE,
+            UIStyle.VAR_COLOR_PICKER_PREVIEW_RATIO
         ] @=> colorPickerFloats;
         [
             UIStyle.VAR_COLOR_PICKER_SIZE,
@@ -352,7 +370,8 @@ public class ComponentStyleMap {
             UIStyle.VAR_KNOB_BORDER_RADIUS,
             UIStyle.VAR_KNOB_BORDER_WIDTH,
             UIStyle.VAR_KNOB_Z_INDEX,
-            UIStyle.VAR_KNOB_ROTATE
+            UIStyle.VAR_KNOB_ROTATE,
+            UIStyle.VAR_KNOB_INDICATOR_RADIUS
         ] @=> knobFloats;
         [
             UIStyle.VAR_KNOB_SIZE,
@@ -438,6 +457,60 @@ public class ComponentStyleMap {
         [
             UIStyle.VAR_SPINNER_FONT
         ] @=> spinnerStrings;
+
+        // DiscreteKnob (knob keys + tick keys)
+        [
+            UIStyle.COL_KNOB,
+            UIStyle.COL_KNOB_HOVERED,
+            UIStyle.COL_KNOB_PRESSED,
+            UIStyle.COL_KNOB_DISABLED,
+            UIStyle.COL_KNOB_BORDER,
+            UIStyle.COL_KNOB_BORDER_HOVERED,
+            UIStyle.COL_KNOB_BORDER_PRESSED,
+            UIStyle.COL_KNOB_BORDER_DISABLED,
+            UIStyle.COL_KNOB_INDICATOR,
+            UIStyle.COL_KNOB_INDICATOR_HOVERED,
+            UIStyle.COL_KNOB_INDICATOR_PRESSED,
+            UIStyle.COL_KNOB_INDICATOR_DISABLED,
+            UIStyle.COL_KNOB_TICK,
+            UIStyle.COL_KNOB_TICK_HOVERED,
+            UIStyle.COL_KNOB_TICK_PRESSED,
+            UIStyle.COL_KNOB_TICK_DISABLED
+        ] @=> discreteKnobColors;
+        [
+            UIStyle.VAR_KNOB_BORDER_RADIUS,
+            UIStyle.VAR_KNOB_BORDER_WIDTH,
+            UIStyle.VAR_KNOB_Z_INDEX,
+            UIStyle.VAR_KNOB_ROTATE,
+            UIStyle.VAR_KNOB_INDICATOR_RADIUS,
+            UIStyle.VAR_KNOB_TICK_RADIUS
+        ] @=> discreteKnobFloats;
+        [
+            UIStyle.VAR_KNOB_SIZE,
+            UIStyle.VAR_KNOB_INDICATOR_SIZE,
+            UIStyle.VAR_KNOB_CONTROL_POINTS,
+            UIStyle.VAR_KNOB_TICK_SIZE
+        ] @=> discreteKnobVec2s;
+        string discreteKnobStringsEmpty[0];
+        discreteKnobStringsEmpty @=> discreteKnobStrings;
+
+        // Separator
+        [
+            UIStyle.COL_SEPARATOR,
+            UIStyle.COL_SEPARATOR_BORDER
+        ] @=> separatorColors;
+        [
+            UIStyle.VAR_SEPARATOR_BORDER_RADIUS,
+            UIStyle.VAR_SEPARATOR_BORDER_WIDTH,
+            UIStyle.VAR_SEPARATOR_Z_INDEX,
+            UIStyle.VAR_SEPARATOR_ROTATE
+        ] @=> separatorFloats;
+        [
+            UIStyle.VAR_SEPARATOR_SIZE,
+            UIStyle.VAR_SEPARATOR_CONTROL_POINTS
+        ] @=> separatorVec2s;
+        string separatorStringsEmpty[0];
+        separatorStringsEmpty @=> separatorStrings;
     }
 
     // ==== Getters ====
@@ -453,9 +526,11 @@ public class ComponentStyleMap {
         if (compType == "Dropdown") return dropdownColors;
         if (compType == "ColorPicker") return colorPickerColors;
         if (compType == "Knob") return knobColors;
+        if (compType == "DiscreteKnob") return discreteKnobColors;
         if (compType == "Meter") return meterColors;
         if (compType == "Radio") return radioColors;
         if (compType == "Spinner") return spinnerColors;
+        if (compType == "Separator") return separatorColors;
         string empty[0];
         return empty;
     }
@@ -471,9 +546,11 @@ public class ComponentStyleMap {
         if (compType == "Dropdown") return dropdownFloats;
         if (compType == "ColorPicker") return colorPickerFloats;
         if (compType == "Knob") return knobFloats;
+        if (compType == "DiscreteKnob") return discreteKnobFloats;
         if (compType == "Meter") return meterFloats;
         if (compType == "Radio") return radioFloats;
         if (compType == "Spinner") return spinnerFloats;
+        if (compType == "Separator") return separatorFloats;
         string empty[0];
         return empty;
     }
@@ -489,9 +566,11 @@ public class ComponentStyleMap {
         if (compType == "Dropdown") return dropdownVec2s;
         if (compType == "ColorPicker") return colorPickerVec2s;
         if (compType == "Knob") return knobVec2s;
+        if (compType == "DiscreteKnob") return discreteKnobVec2s;
         if (compType == "Meter") return meterVec2s;
         if (compType == "Radio") return radioVec2s;
         if (compType == "Spinner") return spinnerVec2s;
+        if (compType == "Separator") return separatorVec2s;
         string empty[0];
         return empty;
     }
@@ -507,9 +586,11 @@ public class ComponentStyleMap {
         if (compType == "Dropdown") return dropdownStrings;
         if (compType == "ColorPicker") return colorPickerStrings;
         if (compType == "Knob") return knobStrings;
+        if (compType == "DiscreteKnob") return discreteKnobStrings;
         if (compType == "Meter") return meterStrings;
         if (compType == "Radio") return radioStrings;
         if (compType == "Spinner") return spinnerStrings;
+        if (compType == "Separator") return separatorStrings;
         string empty[0];
         return empty;
     }

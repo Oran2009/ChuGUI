@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------
 // name: style.ck
-// desc: this example shows how to render and style knobs
+// desc: this example shows how to render and style knobs (continuous + discrete)
 //
 // author: Ben Hoang (https://ccrma.stanford.edu/~hoangben/)
 //-----------------------------------------------------------------------------
@@ -24,6 +24,7 @@ while (true) {
 
     UIStyle.pushVar(UIStyle.VAR_KNOB_CONTROL_POINTS, @(0, 0.5));
 
+    // Left column: continuous knobs
     UIStyle.pushColor(UIStyle.COL_KNOB, @(0.30,0.93,0.93));
     UIStyle.pushColor(UIStyle.COL_KNOB_BORDER, @(0.05,0.41,0.44));
     UIStyle.pushColor(UIStyle.COL_KNOB_INDICATOR, @(0.15,0.15,0.5));
@@ -54,35 +55,41 @@ while (true) {
     UIStyle.popVar(3);
     UIStyle.popColor(3);
 
+    // Right column: discrete knobs with tick styling
     UIStyle.pushColor(UIStyle.COL_KNOB, @(0.51,0.66,0.98));
     UIStyle.pushColor(UIStyle.COL_KNOB_BORDER, @(0.00,0.16,0.61));
     UIStyle.pushColor(UIStyle.COL_KNOB_INDICATOR, @(1,0.48,0.00));
+    UIStyle.pushColor(UIStyle.COL_KNOB_TICK, @(0.00,0.16,0.61));
     UIStyle.pushVar(UIStyle.VAR_KNOB_BORDER_RADIUS, 1.00);
     UIStyle.pushVar(UIStyle.VAR_KNOB_BORDER_WIDTH, 0.10);
     UIStyle.pushVar(UIStyle.VAR_KNOB_SIZE, @(0.55, 0.55));
-    gui.knob("BlueKnob", @(0.25, 0.6), 0, 1, val4) => val4;
-    UIStyle.popVar(2);
-    UIStyle.popColor(3);
+    gui.discreteKnob("BlueDisc", @(0.25, 0.6), 0, 10, 11, val4) => val4;
+    UIStyle.popVar(3);
+    UIStyle.popColor(4);
 
     UIStyle.pushColor(UIStyle.COL_KNOB, @(1,1,0.7));
     UIStyle.pushColor(UIStyle.COL_KNOB_BORDER, @(1,0.91,0.19));
     UIStyle.pushColor(UIStyle.COL_KNOB_INDICATOR, @(0.51,0.15,0.98));
+    UIStyle.pushColor(UIStyle.COL_KNOB_TICK, @(0.51,0.15,0.98));
     UIStyle.pushVar(UIStyle.VAR_KNOB_BORDER_RADIUS, 0.4);
     UIStyle.pushVar(UIStyle.VAR_KNOB_BORDER_WIDTH, 0.22);
     UIStyle.pushVar(UIStyle.VAR_KNOB_SIZE, @(0.5, 0.5));
-    gui.knob("YellowKnob", @(0.25, 0.25), 0, 1, val5) => val5;
-    UIStyle.popVar(3);
-    UIStyle.popColor(3);
+    UIStyle.pushVar(UIStyle.VAR_KNOB_TICK_SIZE, @(0.06, 0.14));
+    gui.discreteKnob("YellowDisc", @(0.25, 0.25), 0, 4, 5, val5) => val5;
+    UIStyle.popVar(4);
+    UIStyle.popColor(4);
 
     UIStyle.pushColor(UIStyle.COL_KNOB, @(0.90,0.91,0.91));
     UIStyle.pushColor(UIStyle.COL_KNOB_BORDER, @(0.70,0.70,0.70));
     UIStyle.pushColor(UIStyle.COL_KNOB_INDICATOR, @(1,0.18,0.07));
+    UIStyle.pushColor(UIStyle.COL_KNOB_TICK, @(0.4,0.4,0.4));
     UIStyle.pushVar(UIStyle.VAR_KNOB_BORDER_RADIUS, 0.18);
     UIStyle.pushVar(UIStyle.VAR_KNOB_BORDER_WIDTH, 0.04);
     UIStyle.pushVar(UIStyle.VAR_KNOB_SIZE, @(0.45, 0.45));
-    gui.knob("LightKnob", @(0.25, -0.1), 0, 1, val6) => val6;
-    UIStyle.popVar(3);
-    UIStyle.popColor(3);
+    UIStyle.pushVar(UIStyle.VAR_KNOB_TICK_RADIUS, 0.55);
+    gui.discreteKnob("LightDisc", @(0.25, -0.1), 0, 100, 3, val6) => val6;
+    UIStyle.popVar(4);
+    UIStyle.popColor(4);
 
     UIStyle.popVar();
 }

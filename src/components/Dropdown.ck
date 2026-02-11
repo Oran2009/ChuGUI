@@ -143,8 +143,8 @@ public class Dropdown extends GComponent {
                 gItemRects[i] @=> GRect r;
                 gItems[i] @=> GText t;
 
-                r --> this;
-                t --> this;
+                if (r.parent() == null) r --> this;
+                if (t.parent() == null) t --> this;
 
                 if (i == _hoveredIndex) {
                     r.color(itemHoveredColor);
@@ -186,7 +186,7 @@ public class Dropdown extends GComponent {
 
     fun void update() {
         _state.update();
-        
+
         if (!_disabled) {
             if (_state.clicked()) {
                 !_open => _open;
@@ -195,16 +195,23 @@ public class Dropdown extends GComponent {
             -1 => _hoveredIndex;
 
             if (_open) {
+                false => int clickedOnItem;
                 for (0 => int i; i < _options.size(); i++) {
                     UIUtil.hovered(this, gItemRects[i]) => int hovered;
                     if (hovered && _state.mouseState()) {
                         i => _selectedIndex;
                         clampSelection();
                         false => _open;
+                        true => clickedOnItem;
                         break;
                     } else if (hovered) {
                         i => _hoveredIndex;
                     }
+                }
+
+                // Close dropdown when clicking outside both field and items
+                if (!clickedOnItem && GWindow.mouseLeftDown() && !_state.hovered() && _hoveredIndex == -1) {
+                    false => _open;
                 }
             }
         }

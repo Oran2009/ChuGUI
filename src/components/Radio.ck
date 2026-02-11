@@ -158,6 +158,15 @@ public class Radio extends GComponent {
         }
 
         applyLayout(@(0, 0), controlPoints, zIndex, rotate);
+
+        // Estimate size for container layout
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_RADIO_SIZE, @(0.3, 0.3))) => vec2 buttonSize;
+        _options.size() => int n;
+        if (layout == "row") {
+            @(n > 0 ? (n - 1) * spacing + n * buttonSize.x : 0.0, buttonSize.y) => _computedSize;
+        } else {
+            @(buttonSize.x, n > 0 ? (n - 1) * spacing + n * buttonSize.y : 0.0) => _computedSize;
+        }
     }
 
     fun void updateOptions() {

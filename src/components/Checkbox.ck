@@ -34,19 +34,22 @@ public class Checkbox extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_CHECKBOX_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_CHECKBOX_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
-        if (gIcon.parent() != null) { gIcon --< this; }
-
         if (_disabled) {
             UIStyle.color(UIStyle.COL_CHECKBOX_DISABLED, boxColor) => boxColor;
             UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_DISABLED, borderColor) => borderColor;
-            if (_state.toggled()) gIcon --> this;
         } else if (_state.toggled()) {
             UIStyle.color(UIStyle.COL_CHECKBOX_PRESSED, @(boxColor.x, boxColor.y, boxColor.z, boxColor.a/4)) => boxColor;
             UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_PRESSED, borderColor) => borderColor;
-            gIcon --> this;
         } else if (_state.hovered()) {
             UIStyle.color(UIStyle.COL_CHECKBOX_HOVERED, @(boxColor.x, boxColor.y, boxColor.z, boxColor.a/2)) => boxColor;
             UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_HOVERED, borderColor) => borderColor;
+        }
+
+        // Only attach/detach icon when checked state changes
+        if (_state.toggled() && gIcon.parent() == null) {
+            gIcon --> this;
+        } else if (!_state.toggled() && gIcon.parent() != null) {
+            gIcon --< this;
         }
 
         gBox.size(boxSize);

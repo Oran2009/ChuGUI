@@ -18,11 +18,26 @@ public class UIUtil {
         return @(Math.fabs(ndcPos.x - origin.x), Math.fabs(ndcPos.y - origin.y));
     }
 
+    // Convert screen-pixel size to world size
+    fun static vec2 screenToWorldSize(vec2 screenSize) {
+        GG.camera().screenCoordToWorldPos(@(0, 0), 1) => vec3 origin;
+        GG.camera().screenCoordToWorldPos(@(screenSize.x, screenSize.y), 1) => vec3 corner;
+        return @(Math.fabs(corner.x - origin.x), Math.fabs(corner.y - origin.y));
+    }
+
+    // Convert screen-pixel position to world position
+    fun static vec2 screenToWorldPos(vec2 screenPos) {
+        GG.camera().screenCoordToWorldPos(screenPos, 1) => vec3 worldPos;
+        return @(worldPos.x, worldPos.y);
+    }
+
     // Convert size from current unit system to world coordinates
     // Respects the global sizeUnits() setting
     fun static vec2 sizeToWorld(vec2 size) {
         if (UIGlobals.sizeUnits == "WORLD") {
             return size;
+        } else if (UIGlobals.sizeUnits == "SCREEN") {
+            return screenToWorldSize(size);
         } else {
             return NDCToWorldSize(size);
         }
@@ -32,6 +47,9 @@ public class UIUtil {
     fun static float sizeToWorld(float size) {
         if (UIGlobals.sizeUnits == "WORLD") {
             return size;
+        } else if (UIGlobals.sizeUnits == "SCREEN") {
+            screenToWorldSize(@(size, size)) => vec2 worldSize;
+            return worldSize.x;
         } else {
             NDCToWorldSize(@(size, size)) => vec2 worldSize;
             return worldSize.x;
@@ -43,24 +61,53 @@ public class UIUtil {
     fun static vec2 posToWorld(vec2 pos) {
         if (UIGlobals.posUnits == "WORLD") {
             return pos;
+        } else if (UIGlobals.posUnits == "SCREEN") {
+            return screenToWorldPos(pos);
         } else {
             GG.camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 worldPos;
             return @(worldPos.x, worldPos.y);
         }
     }
 
+    // ==== Mouse Cache ====
+
+    static vec3 _mouseWorld;
+
+    // Call once per frame to cache the mouse world position
+    fun static void cacheMousePos() {
+        GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 1) => _mouseWorld;
+    }
+
+    // Get cached mouse world position (avoids repeated screen-to-world conversion)
+    fun static vec3 mouseWorld() {
+        return _mouseWorld;
+    }
+
+    // ==== Rotation ====
+
+    // Compute effective world Z rotation by walking the parent chain
+    fun static float worldRotZ(GGen @ gen) {
+        0.0 => float totalRot;
+        gen @=> GGen @ current;
+        while (current != null) {
+            current.rotZ() +=> totalRot;
+            current.parent() @=> current;
+        }
+        return totalRot;
+    }
+
     // ==== Collision Detection ====
 
     fun static int hovered(GGen ggen, GRect gRect) {
-        GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 1) => vec3 mouseWorld;
+        _mouseWorld => vec3 mouseWorld;
 
         ggen.posWorld().x => float cx;
         ggen.posWorld().y => float cy;
         mouseWorld.x - cx => float dx;
         mouseWorld.y - cy => float dy;
 
-        // account for rotation
-        ggen.rotZ() => float angle;
+        // account for rotation (use world rotation to handle nested components)
+        worldRotZ(ggen) => float angle;
         Math.cos(angle) => float c;
         Math.sin(angle) => float s;
         (dx * c + dy * s) => float localX;

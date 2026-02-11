@@ -13,12 +13,12 @@ GG.scene().backgroundColor(Color.WHITE);
 ChuGUI gui --> GG.scene();
 gui.sizeUnits(ChuGUI.WORLD);
 
-5 => int num;
+5 => int val;
 
 while(true) {
     GG.nextFrame() => now; // must be called before rendering any components
 
-    gui.spinner("Basic", @(0, 0), 0, 10, num) => num;
+    gui.spinner("Basic", @(0, 0), 0, 10, val) => val;
 
-    <<< "Num:", num >>>;
+    <<< "Val:", val >>>;
 }

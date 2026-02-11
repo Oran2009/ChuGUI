@@ -15,14 +15,9 @@ public class CursorState {
     }
 
     // Update cursor based on active states only
+    // Note: UI.setMouseCursor() cannot be called from GGen.update() because
+    // GGen callbacks run before the ImGUI frame starts.
     fun static void update() {
-        for (MouseState state : _activeStates) {
-            if (UIUtil.hovered(state.element(), state.rect()) && state.disabled()) {
-                UI.setMouseCursor(UI_MouseCursor.NotAllowed);
-                return;
-            }
-        }
-        UI.setMouseCursor(UI_MouseCursor.Arrow);
     }
 }
 
@@ -56,7 +51,7 @@ public class MouseState {
     fun void disabled(int disabled) { disabled => _disabled; }
     fun int disabled() { return _disabled; }
 
-    fun vec3 mouseWorld() { return GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 1); }
+    fun vec3 mouseWorld() { return UIUtil.mouseWorld(); }
     fun int mouseDown() { return _mouseDown; }
     fun int mouseState() { return _mouseState; }
 
@@ -93,7 +88,5 @@ public class MouseState {
         if (_pressed && !_pressedLast) { !_toggled => _toggled; }
 
         _pressed => _pressedLast;
-
-        CursorState.update();
     }
 }

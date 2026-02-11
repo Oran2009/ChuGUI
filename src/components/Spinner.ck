@@ -11,7 +11,7 @@ public class Spinner extends GComponent {
     MomentaryButton plusButton --> this;
 
     int _min;
-    int _num;
+    int _val;
     int _max;
 
     fun Spinner() {
@@ -27,18 +27,20 @@ public class Spinner extends GComponent {
         if(plusButton != null) plusButton.disabled(disabled);
     }
 
+    fun int min() { return _min; }
     fun void min(int min) {
         min => _min;
     }
+    fun int max() { return _max; }
     fun void max(int max) {
         max => _max;
     }
 
-    fun void num(int num) {
-        num => _num;
+    fun void val(int val) {
+        val => _val;
     }
-    fun int num() {
-        return _num;
+    fun int val() {
+        return _val;
     }
 
     // ==== Update ====
@@ -66,11 +68,11 @@ public class Spinner extends GComponent {
         numLabel.gLabel.font(font);
         numLabel.gLabel.color(textColor);
         numLabel.gLabel.align(1); // center alignment
-        numLabel.gLabel.text(Std.itoa(_num));
+        numLabel.gLabel.text(Std.itoa(_val));
 
         buttonSize.x => float minusWidth;
         buttonSize.x => float plusWidth;
-        textSize * Std.itoa(_num).length() $ float => float labelWidth; // estimate for 3-digit numbers
+        textSize * Std.itoa(_val).length() $ float => float labelWidth; // estimate for 3-digit numbers
 
         minusWidth + spacing + labelWidth + spacing + plusWidth => float totalWidth;
         applyLayout(@(totalWidth, size.y), controlPoints, zIndex, rotate);
@@ -87,13 +89,13 @@ public class Spinner extends GComponent {
         plusButton.update();
 
         if (minusButton.clicked()) {
-            1 -=> _num;
+            1 -=> _val;
         }
         if (plusButton.clicked()) {
-            1 +=> _num;
+            1 +=> _val;
         }
 
-        Math.clampi(_num, _min, _max) => _num;
+        Math.clampi(_val, _min, _max) => _val;
 
         updateUI();
     }

@@ -16,6 +16,7 @@ public class Slider extends GComponent {
     0 => int _dragging;
 
     new MouseState(this, gHandle) @=> _state;
+    new MouseState(this, gTrack) @=> MouseState _trackState;
 
     // ==== Getters and Setters ====
 
@@ -46,7 +47,7 @@ public class Slider extends GComponent {
     // ==== Update ====
 
     fun void updatePosition() {
-        (_val - _min) / (_max - _min) => float norm;
+        (_max != _min) ? (_val - _min) / (_max - _min) : 0.0 => float norm;
         gTrack.size().x * (norm - 0.5) => float xPos;
         gHandle.posX(xPos);
     }
@@ -105,17 +106,18 @@ public class Slider extends GComponent {
 
     fun void update() {
         _state.update();
-        
+        _trackState.update();
+
         if (!_disabled) {
-            if (_state.dragging()) {
+            if (_state.dragging() || _trackState.dragging()) {
                 _state.mouseWorld() => vec3 mouseWorld;
                 this.posWorld().x => float cx;
                 this.posWorld().y => float cy;
                 mouseWorld.x - cx => float dx;
                 mouseWorld.y - cy => float dy;
 
-                // account for rotation
-                this.rotZ() => float angle;
+                // account for rotation (use world rotation to handle nested components)
+                UIUtil.worldRotZ(this) => float angle;
                 Math.cos(angle) => float c;
                 Math.sin(angle) => float s;
 
@@ -183,7 +185,7 @@ public class DiscreteSlider extends Slider {
     }
 
     fun void snapToNearestStep() {
-        (_val - _min) / (_max - _min) => float norm;
+        (_max != _min) ? (_val - _min) / (_max - _min) : 0.0 => float norm;
         norm * (_steps - 1) => float stepFloat;
         Math.round(stepFloat) $ int => int nearestStep;
         
@@ -221,7 +223,7 @@ public class DiscreteSlider extends Slider {
         -halfW + cornerR => float startX;
         2 * (halfW - cornerR) => float span;
 
-        (_val - _min) / (_max - _min) => float tNorm;
+        (_max != _min) ? (_val - _min) / (_max - _min) : 0.0 => float tNorm;
         tNorm * (_steps - 1) => float rawIdx;
         Math.round(rawIdx) $ int => int idx;
 
@@ -302,17 +304,18 @@ public class DiscreteSlider extends Slider {
 
     fun void update() {
         _state.update();
+        _trackState.update();
 
         if (!_disabled) {
-            if (_state.dragging()) {
+            if (_state.dragging() || _trackState.dragging()) {
                 _state.mouseWorld() => vec3 mouseWorld;
                 this.posWorld().x => float cx;
                 this.posWorld().y => float cy;
                 mouseWorld.x - cx => float dx;
                 mouseWorld.y - cy => float dy;
 
-                // account for rotation
-                this.rotZ() => float angle;
+                // account for rotation (use world rotation to handle nested components)
+                UIUtil.worldRotZ(this) => float angle;
                 Math.cos(angle) => float c;
                 Math.sin(angle) => float s;
 
