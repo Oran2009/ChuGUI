@@ -8,6 +8,8 @@ public class UIStyle {
     "LEFT" => static string LEFT;
     "RIGHT" => static string RIGHT;
     "CENTER" => static string CENTER;
+    "TOP" => static string TOP;
+    "BOTTOM" => static string BOTTOM;
 
     // ==== Color Keys ====
 
@@ -596,6 +598,8 @@ public class UIStyle {
     "tooltip.gap"                 => static string VAR_TOOLTIP_GAP;
     @doc "Apply with pushVar(), using a string value. Default \"\" (system font)."
     "tooltip.font"                => static string VAR_TOOLTIP_FONT;
+    @doc "Apply with pushVar(), using a string value. Position of tooltip relative to component: UIStyle.TOP, UIStyle.BOTTOM, UIStyle.LEFT, UIStyle.RIGHT. Default UIStyle.BOTTOM."
+    "tooltip.position"            => static string VAR_TOOLTIP_POSITION;
 
     // Separator
     @doc "Apply with pushVar(), using a vec2 value. Default @(1.0, 0.02)."

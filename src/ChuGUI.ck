@@ -313,11 +313,21 @@ public class ChuGUI extends GGen {
         text.length() $ float * textSize * 0.6 + padding * 2 => float bgWidth;
         textSize + padding * 2 => float bgHeight;
 
-        // Position below the component
+        // Position relative to the component
         _tooltipTarget.posWorld() => vec3 compPos;
         _tooltipTarget.computedSize() => vec2 compSize;
+        UIStyle.varString(UIStyle.VAR_TOOLTIP_POSITION, UIStyle.BOTTOM) => string position;
         compPos.x => float tipX;
-        compPos.y - compSize.y / 2.0 - gap - bgHeight / 2.0 => float tipY;
+        compPos.y => float tipY;
+        if (position == UIStyle.TOP) {
+            compPos.y + compSize.y / 2.0 + gap + bgHeight / 2.0 => tipY;
+        } else if (position == UIStyle.BOTTOM) {
+            compPos.y - compSize.y / 2.0 - gap - bgHeight / 2.0 => tipY;
+        } else if (position == UIStyle.LEFT) {
+            compPos.x - compSize.x / 2.0 - gap - bgWidth / 2.0 => tipX;
+        } else if (position == UIStyle.RIGHT) {
+            compPos.x + compSize.x / 2.0 + gap + bgWidth / 2.0 => tipX;
+        }
 
         // Configure rect
         _tooltipRect.size(@(bgWidth, bgHeight));
