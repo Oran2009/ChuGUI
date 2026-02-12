@@ -159,6 +159,7 @@ public class ChuGUI extends GGen {
 
         null => lastComponent;
 
+        _debug.frameReset();
         UIStyle.clearStacks();
         UIUtil.cacheMousePos();
         CursorState.update();
@@ -440,12 +441,6 @@ public class ChuGUI extends GGen {
 
     // ==== Debug Panel ====
 
-    @doc "Enable or disable the debug panel."
-    fun void debugEnabled(int enabled) { _debug.enabled(enabled); }
-
-    @doc "Returns whether the debug panel is enabled."
-    fun int debugEnabled() { return _debug.enabled(); }
-
     @doc "Add the last rendered component to the debug panel with an auto-generated ID."
     fun void debugAdd() { debugAdd(""); }
 
@@ -455,14 +450,13 @@ public class ChuGUI extends GGen {
                     rectCount, iconCount, labelCount, meterCount);
     }
 
-    @doc "Render the debug panel. Call this each frame when debug mode is enabled."
+    @doc "Render the debug panel. Call this each frame to enable debug mode."
     fun void debug() { _debug.renderPanel(); }
 
     // ==== Scenegraph Debug View ====
 
-    @doc "Render the scenegraph debug view. Call this each frame when debug mode is enabled."
+    @doc "Render the scenegraph debug view. Call this each frame to show the scenegraph."
     fun void debugScenegraph() {
-        if (!_debug.enabled()) return;
 
         // Collect all active components into sortable arrays
         string sTypes[0];

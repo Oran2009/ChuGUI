@@ -8,9 +8,6 @@ GG.camera().orthographic();
 ChuGUI gui --> GG.scene();
 gui.sizeUnits(ChuGUI.WORLD);
 
-// Enable debug mode
-gui.debugEnabled(true);
-
 // State variables
 0.5 => float sliderVal;
 false => int checkboxVal;

@@ -7,6 +7,8 @@ public class Debug {
     // ==== State ====
 
     int _enabled;
+    int _debugCalled;
+    int _initialized;
     string _components[0];
     GComponent @ _componentRefs[0];
     string _componentTypes[0];
@@ -32,11 +34,9 @@ public class Debug {
 
     // ==== Public API ====
 
-    fun void enabled(int e) {
-        e => _enabled;
-        if (e) {
-            ComponentStyleMap.init();
-        }
+    fun void frameReset() {
+        _debugCalled => _enabled;
+        false => _debugCalled;
     }
 
     fun int enabled() { return _enabled; }
@@ -119,7 +119,11 @@ public class Debug {
     // ==== Debug Panel Rendering ====
 
     fun void renderPanel() {
-        if (!_enabled) return;
+        true => _debugCalled;
+        if (!_initialized) {
+            ComponentStyleMap.init();
+            true => _initialized;
+        }
 
         // Reset debugAdd call counter for next frame
         0 => _addCallCount;
