@@ -71,6 +71,10 @@ public class Knob extends GComponent {
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.1))) => float knobBorderWidth;
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_KNOB_INDICATOR_SIZE, @(0.04, 0.15))) => vec2 indicatorSize;
 
+        UIStyle.varFloat(UIStyle.VAR_KNOB_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> knobSize;
+        scale *=> indicatorSize;
+
         UIStyle.varVec2(UIStyle.VAR_KNOB_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_KNOB_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_KNOB_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
@@ -220,11 +224,16 @@ public class DiscreteKnob extends Knob {
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_KNOB_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.1))) => float knobBorderWidth;
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_KNOB_INDICATOR_SIZE, @(0.04, 0.15))) => vec2 indicatorSize;
 
+        UIStyle.varFloat(UIStyle.VAR_KNOB_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> knobSize;
+        scale *=> indicatorSize;
+
         UIStyle.varVec2(UIStyle.VAR_KNOB_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_KNOB_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_KNOB_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_KNOB_TICK_SIZE, @(0.04, 0.12))) => vec2 tickSize;
+        scale *=> tickSize;
         UIStyle.color(UIStyle.COL_KNOB_TICK, @(0.2, 0.2, 0.2, 1)) => vec4 tickColor;
 
         if (_disabled) {

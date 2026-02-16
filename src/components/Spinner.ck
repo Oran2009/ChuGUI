@@ -52,6 +52,11 @@ public class Spinner extends GComponent {
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SPINNER_BUTTON_SIZE, @(0.25, 0.25))) => vec2 buttonSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SPINNER_TEXT_SIZE, 0.2)) => float textSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SPINNER_SPACING, 0.1)) => float spacing;
+        UIStyle.varFloat(UIStyle.VAR_SPINNER_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
+        scale *=> buttonSize;
+        scale *=> textSize;
+        scale *=> spacing;
         UIStyle.varString(UIStyle.VAR_SPINNER_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
         UIStyle.varVec2(UIStyle.VAR_SPINNER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;

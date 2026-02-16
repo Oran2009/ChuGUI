@@ -44,6 +44,10 @@ public class Button extends GComponent {
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_BUTTON_SIZE, @(3, 0.5))) => vec2 size;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_TEXT_SIZE, 0.2)) => float textSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_ICON_SIZE, textSize)) => float iconSize;
+        UIStyle.varFloat(UIStyle.VAR_BUTTON_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
+        scale *=> textSize;
+        scale *=> iconSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float borderWidth;
         UIStyle.varString(UIStyle.VAR_BUTTON_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;

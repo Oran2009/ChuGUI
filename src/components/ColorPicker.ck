@@ -78,6 +78,8 @@ public class ColorPicker extends GComponent {
 
     fun void updateUI() {
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_COLOR_PICKER_SIZE, @(2.0, 1.0))) => vec2 pickerSize;
+        UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> pickerSize;
         UIStyle.varVec2(UIStyle.VAR_COLOR_PICKER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
 
         UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_PREVIEW_RATIO, 0.3) => float previewRatio;

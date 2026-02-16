@@ -26,6 +26,8 @@ public class Checkbox extends GComponent {
         UIStyle.color(UIStyle.COL_CHECKBOX_ICON, @(1, 1, 1, 1)) => vec4 iconColor;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_CHECKBOX_SIZE, @(0.3, 0.3))) => vec2 boxSize;
+        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> boxSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_CHECKBOX_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float borderWidth;
         UIStyle.varString(UIStyle.VAR_CHECKBOX_ICON, me.dir() + "../assets/icons/check.png") => string icon;

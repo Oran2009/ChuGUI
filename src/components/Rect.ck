@@ -16,6 +16,8 @@ public class Rect extends GComponent {
 
         // Convert size from current unit system to world coordinates
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_RECT_SIZE, @(0.3, 0.3))) => vec2 size;
+        UIStyle.varFloat(UIStyle.VAR_RECT_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
         UIStyle.varFloat(UIStyle.VAR_RECT_TRANSPARENT, 0) $ int => int transparent;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RECT_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float borderWidth;

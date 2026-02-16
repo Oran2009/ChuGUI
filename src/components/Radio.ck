@@ -36,6 +36,10 @@ public class RadioOption extends GComponent {
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.1))) => float borderWidth;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SPACING, 0.1)) => float labelSpacing;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SIZE, 0.20)) => float labelSize;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> buttonSize;
+        scale *=> labelSpacing;
+        scale *=> labelSize;
         UIStyle.varString(UIStyle.VAR_RADIO_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
         UIStyle.varFloat(UIStyle.VAR_RADIO_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
@@ -145,6 +149,8 @@ public class Radio extends GComponent {
 
         UIStyle.varVec2(UIStyle.VAR_RADIO_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_SPACING, 0.4)) => float spacing;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> spacing;
         UIStyle.varString(UIStyle.VAR_RADIO_LAYOUT, "column") => string layout;
 
         for (0 => int i; i < _options.size(); i++) {

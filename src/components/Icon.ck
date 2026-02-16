@@ -22,8 +22,19 @@ public class Icon extends GComponent {
     fun void updateUI() {
         UIStyle.color(UIStyle.COL_ICON, Color.WHITE) => vec4 color;
 
-        // Convert size from current unit system to world coordinates
-        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(1, 1))) => vec2 size;
+        // Get size: @(0,0) sentinel means use original texture dimensions
+        UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(0, 0)) => vec2 size;
+        if (size.x == 0 && size.y == 0) {
+            UIUtil.screenToWorldSize(@(gIcon.texWidth(), gIcon.texHeight())) => size;
+        } else {
+            UIUtil.sizeToWorld(size) => size;
+        }
+        UIStyle.varFloat(UIStyle.VAR_ICON_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
+
+        UIStyle.varVec2(UIStyle.VAR_ICON_UV_OFFSET, @(0, 0)) => vec2 uvOffset;
+        UIStyle.varVec2(UIStyle.VAR_ICON_UV_SCALE, @(1, 1)) => vec2 uvScale;
+
         UIStyle.varFloat(UIStyle.VAR_ICON_TRANSPARENT, 1) $ int => int transparent;
         UIStyle.varString(UIStyle.VAR_ICON_SAMPLER, UIStyle.LINEAR) => string samplerOption;
 
@@ -42,6 +53,8 @@ public class Icon extends GComponent {
         gIcon.color(color);
         gIcon.transparent(transparent);
         gIcon.blend(blendMode);
+        gIcon.uvOffset(uvOffset);
+        gIcon.uvScale(uvScale);
 
         samplerOption == UIStyle.NEAREST ? TextureSampler.nearest() : TextureSampler.linear() @=> TextureSampler sampler;
         wrapU => sampler.wrapU;

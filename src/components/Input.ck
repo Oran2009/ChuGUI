@@ -165,6 +165,9 @@ public class Input extends GComponent {
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_INPUT_SIZE, @(3, 0.4))) => vec2 fieldSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_TEXT_SIZE, 0.15)) => float textSize;
+        UIStyle.varFloat(UIStyle.VAR_INPUT_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> fieldSize;
+        scale *=> textSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0.1))) => float borderRadius;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.05))) => float borderWidth;
         UIStyle.varString(UIStyle.VAR_INPUT_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;

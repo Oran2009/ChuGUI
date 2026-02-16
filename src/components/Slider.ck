@@ -67,6 +67,10 @@ public class Slider extends GComponent {
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float handleBorderRadius;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float handleBorderWidth;
 
+        UIStyle.varFloat(UIStyle.VAR_SLIDER_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> trackSize;
+        scale *=> handleSize;
+
         UIStyle.varVec2(UIStyle.VAR_SLIDER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_SLIDER_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_SLIDER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
@@ -248,11 +252,16 @@ public class DiscreteSlider extends Slider {
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float handleBorderRadius;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SLIDER_HANDLE_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float handleBorderWidth;
 
+        UIStyle.varFloat(UIStyle.VAR_SLIDER_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> trackSize;
+        scale *=> handleSize;
+
         UIStyle.varVec2(UIStyle.VAR_SLIDER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_SLIDER_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
         UIStyle.varFloat(UIStyle.VAR_SLIDER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SLIDER_TICK_SIZE, @(0.05, 0.2))) => vec2 tickSize;
+        scale *=> tickSize;
         UIStyle.color(UIStyle.COL_SLIDER_TICK, @(0.2, 0.2, 0.2, 1)) => vec4 tickColor;
 
         if (_disabled) {

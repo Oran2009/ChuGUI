@@ -75,6 +75,9 @@ public class Dropdown extends GComponent {
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_DROPDOWN_SIZE, @(3, 0.4))) => vec2 size;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_TEXT_SIZE, 0.2)) => float textSize;
+        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
+        scale *=> textSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.1))) => float borderWidth;
         UIStyle.varString(UIStyle.VAR_DROPDOWN_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;

@@ -22,12 +22,15 @@ public class Label extends GComponent {
 
         // Convert sizes from current unit system to world coordinates
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_LABEL_SIZE, 0.2)) => float size;
+        UIStyle.varFloat(UIStyle.VAR_LABEL_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
         UIStyle.varString(UIStyle.VAR_LABEL_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
         UIStyle.varFloat(UIStyle.VAR_LABEL_ANTIALIAS, 1) => float antialias;
         UIStyle.varFloat(UIStyle.VAR_LABEL_SPACING, 1.0) => float spacing;
         UIStyle.varString(UIStyle.VAR_LABEL_ALIGN, UIStyle.LEFT) => string align;
         UIStyle.varFloat(UIStyle.VAR_LABEL_CHARACTERS, Math.exp2(31)-1) $ int => int characters;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_LABEL_MAX_WIDTH, 0.0)) => float maxWidth;
+        scale *=> maxWidth;
 
         UIStyle.varVec2(UIStyle.VAR_LABEL_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
         UIStyle.varFloat(UIStyle.VAR_LABEL_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0.0)) => float zIndex;

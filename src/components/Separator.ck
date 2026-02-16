@@ -15,6 +15,8 @@ public class Separator extends GComponent {
         UIStyle.color(UIStyle.COL_SEPARATOR_BORDER, @(0, 0, 0, 0)) => vec4 borderColor;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SEPARATOR_SIZE, @(1.0, 0.02))) => vec2 size;
+        UIStyle.varFloat(UIStyle.VAR_SEPARATOR_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SEPARATOR_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SEPARATOR_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float borderWidth;
 

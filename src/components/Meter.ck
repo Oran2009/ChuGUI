@@ -33,6 +33,8 @@ public class Meter extends GComponent {
 
         // Convert sizes from current unit system to world coordinates
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_METER_SIZE, @(3.0, 0.3))) => vec2 size;
+        UIStyle.varFloat(UIStyle.VAR_METER_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.05))) => float borderWidth;
 

@@ -310,6 +310,8 @@ public class UIStyle {
     "border_width"                => static string VAR_BORDER_WIDTH;
     @doc "Apply with pushVar(). Global font; overridden by component-specific font. Default \"\" (system font)."
     "font"                        => static string VAR_FONT;
+    @doc "Apply with pushVar(). Global scale multiplier for all components; overridden by component-specific scale. Default 1.0."
+    "scale"                       => static string VAR_SCALE;
 
     // Rect
     @doc "Apply with pushVar(), using an int value. Default 0 (opaque)."
@@ -326,6 +328,8 @@ public class UIStyle {
     "rect.z_index"                => static string VAR_RECT_Z_INDEX;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "rect.rotate"                 => static string VAR_RECT_ROTATE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for rect size. Falls back to VAR_SCALE. Default 1.0."
+    "rect.scale"                  => static string VAR_RECT_SCALE;
 
     // Icon
     @doc "Apply with pushVar(), using an int value. Default 1 (transparent)."
@@ -350,6 +354,12 @@ public class UIStyle {
     "icon.rotate"                 => static string VAR_ICON_ROTATE;
     @doc "Apply with pushVar(), using Material.BLEND_MODE_ALPHA (0), BLEND_MODE_REPLACE (1), BLEND_MODE_ADD (2), BLEND_MODE_SUBTRACT (3), BLEND_MODE_MULTIPLY (4), or BLEND_MODE_SCREEN (5). Default BLEND_MODE_ALPHA."
     "icon.blend_mode"             => static string VAR_ICON_BLEND_MODE;
+    @doc "Apply with pushVar(), using a vec2 value. UV offset into the texture. Default @(0, 0)."
+    "icon.uv_offset"              => static string VAR_ICON_UV_OFFSET;
+    @doc "Apply with pushVar(), using a vec2 value. UV scale (region size) of the texture. Default @(1, 1) (full texture)."
+    "icon.uv_scale"               => static string VAR_ICON_UV_SCALE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for icon size. Falls back to VAR_SCALE. Default 1.0."
+    "icon.scale"                  => static string VAR_ICON_SCALE;
 
     // Label
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -372,6 +382,8 @@ public class UIStyle {
     "label.z_index"               => static string VAR_LABEL_Z_INDEX;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "label.rotate"                => static string VAR_LABEL_ROTATE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for label size. Falls back to VAR_SCALE. Default 1.0."
+    "label.scale"                 => static string VAR_LABEL_SCALE;
 
     // Button
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -396,6 +408,8 @@ public class UIStyle {
     "button.icon_position"        => static string VAR_BUTTON_ICON_POSITION;
     @doc "Apply with pushVar(), using a float value. Factor of button height for icon-text spacing. Default 0.2."
     "button.icon_spacing"         => static string VAR_BUTTON_ICON_SPACING;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for all button sizes. Falls back to VAR_SCALE. Default 1.0."
+    "button.scale"                => static string VAR_BUTTON_SCALE;
 
     // Slider
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -418,6 +432,8 @@ public class UIStyle {
     "slider.rotate"               => static string VAR_SLIDER_ROTATE;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "slider.z_index"              => static string VAR_SLIDER_Z_INDEX;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for all slider sizes. Falls back to VAR_SCALE. Default 1.0."
+    "slider.scale"                => static string VAR_SLIDER_SCALE;
 
     // Checkbox
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -438,6 +454,8 @@ public class UIStyle {
     "checkbox.z_index"            => static string VAR_CHECKBOX_Z_INDEX;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "checkbox.rotate"             => static string VAR_CHECKBOX_ROTATE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for checkbox size. Falls back to VAR_SCALE. Default 1.0."
+    "checkbox.scale"              => static string VAR_CHECKBOX_SCALE;
 
     // Input
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -464,6 +482,8 @@ public class UIStyle {
     "input.key_repeat_delay"      => static string VAR_INPUT_KEY_REPEAT_DELAY;
     @doc "Apply with pushVar(), using a float value. Frames between key repeats. Default 5."
     "input.key_repeat_rate"       => static string VAR_INPUT_KEY_REPEAT_RATE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for all input sizes. Falls back to VAR_SCALE. Default 1.0."
+    "input.scale"                 => static string VAR_INPUT_SCALE;
 
     // Dropdown
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -482,6 +502,8 @@ public class UIStyle {
     "dropdown.z_index"            => static string VAR_DROPDOWN_Z_INDEX;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "dropdown.rotate"             => static string VAR_DROPDOWN_ROTATE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for all dropdown sizes. Falls back to VAR_SCALE. Default 1.0."
+    "dropdown.scale"              => static string VAR_DROPDOWN_SCALE;
 
     // Color Picker
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -494,6 +516,8 @@ public class UIStyle {
     "color_picker.rotate"         => static string VAR_COLOR_PICKER_ROTATE;
     @doc "Apply with pushVar(), using a float value. Preview rect width as a fraction of total width. Default 0.3."
     "color_picker.preview_ratio"  => static string VAR_COLOR_PICKER_PREVIEW_RATIO;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for color picker size. Falls back to VAR_SCALE. Default 1.0."
+    "color_picker.scale"          => static string VAR_COLOR_PICKER_SCALE;
 
     // Knob
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -516,6 +540,8 @@ public class UIStyle {
     "knob.tick_size"              => static string VAR_KNOB_TICK_SIZE;
     @doc "Apply with pushVar(), using a float value. Tick position as fraction of knob radius. Default 0.45."
     "knob.tick_radius"            => static string VAR_KNOB_TICK_RADIUS;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for all knob sizes. Falls back to VAR_SCALE. Default 1.0."
+    "knob.scale"                  => static string VAR_KNOB_SCALE;
 
     // Meter
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -530,6 +556,8 @@ public class UIStyle {
     "meter.z_index"               => static string VAR_METER_Z_INDEX;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "meter.rotate"                => static string VAR_METER_ROTATE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for meter size. Falls back to VAR_SCALE. Default 1.0."
+    "meter.scale"                 => static string VAR_METER_SCALE;
 
     // Radio
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -554,6 +582,8 @@ public class UIStyle {
     "radio.z_index"               => static string VAR_RADIO_Z_INDEX;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "radio.rotate"                => static string VAR_RADIO_ROTATE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for all radio sizes. Falls back to VAR_SCALE. Default 1.0."
+    "radio.scale"                 => static string VAR_RADIO_SCALE;
 
     // Spinner
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
@@ -572,6 +602,8 @@ public class UIStyle {
     "spinner.z_index"             => static string VAR_SPINNER_Z_INDEX;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "spinner.rotate"              => static string VAR_SPINNER_ROTATE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for all spinner sizes. Falls back to VAR_SCALE. Default 1.0."
+    "spinner.scale"               => static string VAR_SPINNER_SCALE;
 
     // Container
     @doc "Apply with pushVar(), using a float value. Spacing between children in a container. Default 0.1."
@@ -614,6 +646,8 @@ public class UIStyle {
     "separator.z_index"           => static string VAR_SEPARATOR_Z_INDEX;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "separator.rotate"            => static string VAR_SEPARATOR_ROTATE;
+    @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for separator size. Falls back to VAR_SCALE. Default 1.0."
+    "separator.scale"             => static string VAR_SEPARATOR_SCALE;
 
     // ==== Internal Stacks and Value Arrays ====
 
