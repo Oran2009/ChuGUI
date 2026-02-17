@@ -1,5 +1,6 @@
 @import "../lib/GComponent.ck"
 @import "../lib/UIUtil.ck"
+@import "../lib/UIGlobals.ck"
 @import "../gmeshes/GIcon.ck"
 @import "../UIStyle.ck"
 
@@ -25,7 +26,15 @@ public class Icon extends GComponent {
         // Get size: @(0,0) sentinel means use original texture dimensions
         UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(0, 0)) => vec2 size;
         if (size.x == 0 && size.y == 0) {
-            UIUtil.screenToWorldSize(@(gIcon.texWidth(), gIcon.texHeight())) => size;
+            gIcon.texWidth() $ float => float tw;
+            gIcon.texHeight() $ float => float th;
+            if (UIGlobals.sizeUnits == "SCREEN") {
+                UIUtil.screenToWorldSize(@(tw, th)) => size;
+            } else {
+                Math.max(tw, th) => float maxDim;
+                if (maxDim > 0)
+                    UIUtil.sizeToWorld(@(tw / maxDim, th / maxDim)) => size;
+            }
         } else {
             UIUtil.sizeToWorld(size) => size;
         }
