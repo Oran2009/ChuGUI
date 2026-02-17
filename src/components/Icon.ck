@@ -1,6 +1,5 @@
 @import "../lib/GComponent.ck"
 @import "../lib/UIUtil.ck"
-@import "../lib/UIGlobals.ck"
 @import "../gmeshes/GIcon.ck"
 @import "../UIStyle.ck"
 
@@ -23,14 +22,21 @@ public class Icon extends GComponent {
     fun void updateUI() {
         UIStyle.color(UIStyle.COL_ICON, Color.WHITE) => vec4 color;
 
+        UIStyle.varVec2(UIStyle.VAR_ICON_UV_OFFSET, @(0, 0)) => vec2 uvOffset;
+        UIStyle.varVec2(UIStyle.VAR_ICON_UV_SCALE, @(1, 1)) => vec2 uvScale;
+
         // Get size: @(0,0) sentinel means use original texture dimensions
         UIStyle.varVec2(UIStyle.VAR_ICON_SIZE, @(0, 0)) => vec2 size;
         if (size.x == 0 && size.y == 0) {
-            gIcon.texWidth() $ float => float tw;
-            gIcon.texHeight() $ float => float th;
+            // Use effective (UV-cropped) dimensions for aspect ratio
+            gIcon.texWidth() $ float * Math.fabs(uvScale.x) => float tw;
+            gIcon.texHeight() $ float * Math.fabs(uvScale.y) => float th;
             if (UIGlobals.sizeUnits == "SCREEN") {
+                // Screen mode: preserve pixel-perfect sizing
                 UIUtil.screenToWorldSize(@(tw, th)) => size;
             } else {
+                // WORLD/NDC: normalize so largest dimension = 1 unit,
+                // preserving aspect ratio. Use scale to control final size.
                 Math.max(tw, th) => float maxDim;
                 if (maxDim > 0)
                     UIUtil.sizeToWorld(@(tw / maxDim, th / maxDim)) => size;
@@ -40,9 +46,6 @@ public class Icon extends GComponent {
         }
         UIStyle.varFloat(UIStyle.VAR_ICON_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
         scale *=> size;
-
-        UIStyle.varVec2(UIStyle.VAR_ICON_UV_OFFSET, @(0, 0)) => vec2 uvOffset;
-        UIStyle.varVec2(UIStyle.VAR_ICON_UV_SCALE, @(1, 1)) => vec2 uvScale;
 
         UIStyle.varFloat(UIStyle.VAR_ICON_TRANSPARENT, 1) $ int => int transparent;
         UIStyle.varString(UIStyle.VAR_ICON_SAMPLER, UIStyle.LINEAR) => string samplerOption;
