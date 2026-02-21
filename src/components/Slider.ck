@@ -76,10 +76,10 @@ public class Slider extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_SLIDER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         if (_disabled) {
-            UIStyle.color(UIStyle.COL_SLIDER_TRACK_DISABLED, @(0.7, 0.7, 0.7, 1)) => trackColor;
-            UIStyle.color(UIStyle.COL_SLIDER_TRACK_BORDER_DISABLED, @(0.7, 0.7, 0.7, 1)) => trackBorderColor;
-            UIStyle.color(UIStyle.COL_SLIDER_HANDLE_DISABLED, @(0.7, 0.7, 0.7, 1)) => handleColor;
-            UIStyle.color(UIStyle.COL_SLIDER_HANDLE_BORDER_DISABLED, @(0.7, 0.7, 0.7, 1)) => handleBorderColor;
+            UIStyle.color(UIStyle.COL_SLIDER_TRACK_DISABLED, trackColor) => trackColor;
+            UIStyle.color(UIStyle.COL_SLIDER_TRACK_BORDER_DISABLED, trackBorderColor) => trackBorderColor;
+            UIStyle.color(UIStyle.COL_SLIDER_HANDLE_DISABLED, handleColor) => handleColor;
+            UIStyle.color(UIStyle.COL_SLIDER_HANDLE_BORDER_DISABLED, handleBorderColor) => handleBorderColor;
         } else if (_state.pressed()) {
             UIStyle.color(UIStyle.COL_SLIDER_TRACK_PRESSED, trackColor) => trackColor;
             UIStyle.color(UIStyle.COL_SLIDER_TRACK_BORDER_PRESSED, trackBorderColor) => trackBorderColor;
@@ -90,7 +90,7 @@ public class Slider extends GComponent {
             UIStyle.color(UIStyle.COL_SLIDER_TRACK_BORDER_HOVERED, trackBorderColor) => trackBorderColor;
             UIStyle.color(UIStyle.COL_SLIDER_HANDLE_HOVERED, handleColor) => handleColor;
             UIStyle.color(UIStyle.COL_SLIDER_HANDLE_BORDER_HOVERED, handleBorderColor) => handleBorderColor;
-        } 
+        }
 
         gTrack.size(trackSize);
         gTrack.color(trackColor);
@@ -136,6 +136,7 @@ public class Slider extends GComponent {
         }
 
         updateUI();
+        updatePosition();
     }
 }
 
@@ -339,5 +340,6 @@ public class DiscreteSlider extends Slider {
         }
 
         updateUI();
+        updatePosition();
     }
 }

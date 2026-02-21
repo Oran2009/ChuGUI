@@ -15,7 +15,7 @@ ChuGUI gui --> GG.scene();
 gui.sizeUnits(ChuGUI.WORLD);
 
 0.2 => float value1;
-0.5 => float value2;
+1.0 => float value2;
 
 while(true) {
     GG.nextFrame() => now; // must be called before rendering any components

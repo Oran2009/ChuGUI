@@ -38,7 +38,7 @@ public class Knob extends GComponent {
     // ==== Interaction ====
 
     fun void drag(vec3 deltaPos) {
-        1.0 => float sensitivity;
+        UIStyle.varFloat(UIStyle.VAR_KNOB_SENSITIVITY, 1.0) => float sensitivity;
         (deltaPos.y + deltaPos.x) * sensitivity * (_max - _min) => float deltaValue;
         _startValue + deltaValue => float newVal;
         val(newVal);
@@ -198,7 +198,7 @@ public class DiscreteKnob extends Knob {
     // ==== Interaction ====
 
     fun void drag(vec3 deltaPos) {
-        1.0 => float sensitivity;
+        UIStyle.varFloat(UIStyle.VAR_KNOB_SENSITIVITY, 1.0) => float sensitivity;
         (deltaPos.y + deltaPos.x) * sensitivity * (_max - _min) => float deltaValue;
         _startValue + deltaValue => float newVal;
         Math.clampf(newVal, _min, _max) => newVal;

@@ -15,6 +15,7 @@ public class GIcon extends GMesh {
 
     @doc "Set the icon to be rendered."
     fun void icon(string path) {
+        if (path == "") return;
         IconCache.get(path) @=> Texture tex;
         if (tex == null) {
             TextureLoadDesc desc;

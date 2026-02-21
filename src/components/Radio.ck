@@ -85,8 +85,8 @@ public class RadioOption extends GComponent {
         gLabel.controlPoints(@(0, 0.5));
         gLabel.posX(buttonSize.x / 2 + labelSpacing);
 
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        labelSize * _label.length() * 0.6 => float labelW;
+        applyLayout(@(buttonSize.x + labelSpacing + labelW, buttonSize.y), @(0, 0.5), zIndex, rotate);
     }
 
     fun void update() {
@@ -112,7 +112,8 @@ public class Radio extends GComponent {
     fun string[] options() { return _optionLabels; }
 
     fun int selectedIndex() { return _selectedIndex; }
-    fun void selectedIndex(int index) { 
+    fun void selectedIndex(int index) {
+        if (_optionLabels == null || _optionLabels.size() == 0) return;
         Math.clampi(index, 0, _optionLabels.size() - 1) => _selectedIndex;
         updateSelection();
     }

@@ -6,8 +6,6 @@
 public class Separator extends GComponent {
     GRect gSeparator --> this;
 
-    new MouseState(this, gSeparator) @=> _state;
-
     // ==== Update ====
 
     fun void updateUI() {
@@ -34,7 +32,6 @@ public class Separator extends GComponent {
     }
 
     fun void update() {
-        _state.update();
         updateUI();
     }
 }

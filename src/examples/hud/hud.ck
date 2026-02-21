@@ -20,9 +20,9 @@ gui.sizeUnits(ChuGUI.WORLD);
 41 => int playerLevel;
 2504 => float health;
 1802 => float mana;
-3000 => int maxHealth;
-3000 => int maxMana;
-300 => int manaCost;
+3000.0 => float maxHealth;
+3000.0 => float maxMana;
+300.0 => float manaCost;
 ["hand-fist", "sword", "fire", "cloud-lightning", "tornado", "paw-print",
  "heartbeat", "syringe", "bed"] @=> string actionIcons[];
 

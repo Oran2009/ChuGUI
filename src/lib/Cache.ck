@@ -12,7 +12,9 @@ public class IconCache {
         }
         // Evict oldest if at capacity
         while (cache.size() >= MAX_SIZE && _evictIdx < _insertionOrder.size()) {
-            cache.erase(_insertionOrder[_evictIdx]);
+            if (cache.isInMap(_insertionOrder[_evictIdx])) {
+                cache.erase(_insertionOrder[_evictIdx]);
+            }
             _evictIdx++;
         }
         // Compact insertion order array if front half is stale
@@ -22,6 +24,16 @@ public class IconCache {
                 temp << _insertionOrder[i];
             }
             temp @=> _insertionOrder;
+            0 => _evictIdx;
+        }
+        // Fallback: if still at capacity (e.g. after external remove() calls), force evict
+        if (cache.size() >= MAX_SIZE && _insertionOrder.size() > 0) {
+            cache.erase(_insertionOrder[0]);
+            string temp2[0];
+            for (1 => int i; i < _insertionOrder.size(); i++) {
+                temp2 << _insertionOrder[i];
+            }
+            temp2 @=> _insertionOrder;
             0 => _evictIdx;
         }
         tex @=> cache[key];
@@ -37,8 +49,9 @@ public class IconCache {
     }
 
     fun static void clear() {
-        cache.clear();
-        _insertionOrder.clear();
+        // Reassign fresh arrays — .clear() does not remove associative entries in ChucK
+        Texture freshCache[0]; freshCache @=> cache;
+        string freshOrder[0]; freshOrder @=> _insertionOrder;
         0 => _evictIdx;
     }
 

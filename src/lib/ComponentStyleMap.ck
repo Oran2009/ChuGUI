@@ -238,11 +238,9 @@ public class ComponentStyleMap {
         [
             UIStyle.COL_CHECKBOX,
             UIStyle.COL_CHECKBOX_HOVERED,
-            UIStyle.COL_CHECKBOX_PRESSED,
             UIStyle.COL_CHECKBOX_DISABLED,
             UIStyle.COL_CHECKBOX_BORDER,
             UIStyle.COL_CHECKBOX_BORDER_HOVERED,
-            UIStyle.COL_CHECKBOX_BORDER_PRESSED,
             UIStyle.COL_CHECKBOX_BORDER_DISABLED,
             UIStyle.COL_CHECKBOX_ICON
         ] @=> checkboxColors;

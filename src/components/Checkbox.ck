@@ -40,8 +40,8 @@ public class Checkbox extends GComponent {
             UIStyle.color(UIStyle.COL_CHECKBOX_DISABLED, boxColor) => boxColor;
             UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_DISABLED, borderColor) => borderColor;
         } else if (_state.toggled()) {
-            UIStyle.color(UIStyle.COL_CHECKBOX_PRESSED, @(boxColor.x, boxColor.y, boxColor.z, boxColor.a/4)) => boxColor;
-            UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_PRESSED, borderColor) => borderColor;
+            UIStyle.color(UIStyle.COL_CHECKBOX_CHECKED, boxColor) => boxColor;
+            UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_CHECKED, borderColor) => borderColor;
         } else if (_state.hovered()) {
             UIStyle.color(UIStyle.COL_CHECKBOX_HOVERED, @(boxColor.x, boxColor.y, boxColor.z, boxColor.a/2)) => boxColor;
             UIStyle.color(UIStyle.COL_CHECKBOX_BORDER_HOVERED, borderColor) => borderColor;

@@ -73,19 +73,24 @@ public class RectMaterial extends Material {
                 return mix(innerRadDist, roundedDist, s);
             }
 
-            @fragment 
+            @fragment
             fn fs_main(in : FragmentInput) -> @location(0) vec4<f32> {
                 let edgeDist = getEdgeDist(in.v_uv);
-                
-                if (edgeDist > 0.0) {
+
+                // Anti-aliased edge using screen-space derivatives
+                let aa = fwidth(edgeDist);
+                let alpha = 1.0 - smoothstep(-aa, aa, edgeDist);
+                if (alpha <= 0.0) {
                     discard;
                 }
-                
+
                 var finalColor = u_color;
-                if (edgeDist * -1.0 < u_borderWidth) {
-                    finalColor = u_borderColor;
+                if (u_borderWidth > 0.0) {
+                    let borderFactor = smoothstep(-u_borderWidth - aa * 0.5, -u_borderWidth + aa * 0.5, edgeDist);
+                    finalColor = mix(u_color, u_borderColor, borderFactor);
                 }
-                
+                finalColor = vec4<f32>(finalColor.rgb, finalColor.a * alpha);
+
                 return finalColor;
             }
         " => string frag;

@@ -1,19 +1,45 @@
 @import "ComponentStyleMap.ck"
 @import "DebugStyles.ck"
 @import "GComponent.ck"
+@import "UIGlobals.ck"
 @import "../UIStyle.ck"
+@import "../components/Rect.ck"
+@import "../components/Icon.ck"
+@import "../components/Label.ck"
+@import "../components/Meter.ck"
+@import "../components/Separator.ck"
+@import "../components/Button.ck"
+@import "../components/Slider.ck"
+@import "../components/Checkbox.ck"
+@import "../components/Input.ck"
+@import "../components/Dropdown.ck"
+@import "../components/ColorPicker.ck"
+@import "../components/Knob.ck"
+@import "../components/Radio.ck"
+@import "../components/Spinner.ck"
 
 public class Debug {
     // ==== State ====
 
+    // Static string options for combo editors (avoid per-frame allocation)
+    static string _alignOptions[0];
+    static string _layoutOptions[0];
+    static string _samplerOptions[0];
+
     int _enabled;
     int _debugCalled;
-    int _initialized;
     string _components[0];
     GComponent @ _componentRefs[0];
     string _componentTypes[0];
     int _debugMap[0];  // compId => 1 for O(1) lookup
     int _addCallCount;
+
+    // Scenegraph state
+    int _scenegraphSortAsc;
+    string _sgTypes[0];
+    string _sgKeys[0];
+    float _sgZ[0];
+    string _sgMapKeys[0];
 
     // ImGUI wrappers (reused across frames to avoid allocation)
     // Uses flat maps with compound keys: "compId/styleKey"
@@ -42,7 +68,7 @@ public class Debug {
     fun int enabled() { return _enabled; }
 
     fun void add(string customId, GComponent @ comp, string compType, string compId,
-                 int rectCount, int iconCount, int labelCount, int meterCount) {
+                 int rectCount, int iconCount, int labelCount, int meterCount, int separatorCount) {
         if (comp == null) return;
 
         // For mapped components (with internal ID), use that ID
@@ -61,6 +87,8 @@ public class Debug {
                 compType + "_" + (labelCount - 1) => overrideId;
             } else if (compType == "Meter") {
                 compType + "_" + (meterCount - 1) => overrideId;
+            } else if (compType == "Separator") {
+                compType + "_" + (separatorCount - 1) => overrideId;
             } else {
                 // Fallback for any other pooled types
                 compType + "_" + _addCallCount => overrideId;
@@ -101,6 +129,29 @@ public class Debug {
         return _debugMap.isInMap(compId);
     }
 
+    // Remove a component from the debug panel by its ID
+    fun void remove(string compId) {
+        if (!_debugMap.isInMap(compId)) return;
+        // Rebuild parallel arrays without the removed entry
+        string newComponents[0];
+        GComponent @ newRefs[0];
+        string newTypes[0];
+        for (0 => int i; i < _components.size(); i++) {
+            if (_components[i] != compId) {
+                newComponents << _components[i];
+                newRefs << _componentRefs[i];
+                newTypes << _componentTypes[i];
+            }
+        }
+        newComponents @=> _components;
+        newRefs @=> _componentRefs;
+        newTypes @=> _componentTypes;
+        // Rebuild _debugMap (reassign fresh to avoid .clear() bug)
+        int freshMap[0]; freshMap @=> _debugMap;
+        for (string c : _components) { 1 => _debugMap[c]; }
+        DebugStyles.clearComponent(compId);
+    }
+
     // ==== Style Override Helpers (called by ChuGUI component methods) ====
 
     fun void applyOverrides(string compId, GComponent @ comp) {
@@ -120,10 +171,6 @@ public class Debug {
 
     fun void renderPanel() {
         true => _debugCalled;
-        if (!_initialized) {
-            ComponentStyleMap.init();
-            true => _initialized;
-        }
 
         // Reset debugAdd call counter for next frame
         0 => _addCallCount;
@@ -377,39 +424,39 @@ public class Debug {
             UI.sameLine();
 
             if (key.find("align") >= 0 || key.find("position") >= 0) {
-                ["LEFT", "CENTER", "RIGHT"] @=> string options[];
+                if (_alignOptions.size() == 0) { ["LEFT", "CENTER", "RIGHT"] @=> _alignOptions; }
                 0 => int currentIdx;
                 if (val == "CENTER") 1 => currentIdx;
                 else if (val == "RIGHT") 2 => currentIdx;
 
                 UI_Int selectedIdx;
                 currentIdx => selectedIdx.val;
-                if (UI.combo(key, selectedIdx, options)) {
-                    DebugStyles.setString(compId, key, options[selectedIdx.val()]);
+                if (UI.combo(key, selectedIdx, _alignOptions)) {
+                    DebugStyles.setString(compId, key, _alignOptions[selectedIdx.val()]);
                     DebugStyles.setStringEnabled(compId, key, true);
                     true => enabled.val;
                 }
             } else if (key.find("layout") >= 0) {
-                ["column", "row"] @=> string options[];
+                if (_layoutOptions.size() == 0) { ["column", "row"] @=> _layoutOptions; }
                 0 => int currentIdx;
                 if (val == "row") 1 => currentIdx;
 
                 UI_Int selectedIdx;
                 currentIdx => selectedIdx.val;
-                if (UI.combo(key, selectedIdx, options)) {
-                    DebugStyles.setString(compId, key, options[selectedIdx.val()]);
+                if (UI.combo(key, selectedIdx, _layoutOptions)) {
+                    DebugStyles.setString(compId, key, _layoutOptions[selectedIdx.val()]);
                     DebugStyles.setStringEnabled(compId, key, true);
                     true => enabled.val;
                 }
             } else if (key.find("sampler") >= 0) {
-                ["NEAREST", "LINEAR"] @=> string options[];
+                if (_samplerOptions.size() == 0) { ["NEAREST", "LINEAR"] @=> _samplerOptions; }
                 0 => int currentIdx;
                 if (val == "LINEAR") 1 => currentIdx;
 
                 UI_Int selectedIdx;
                 currentIdx => selectedIdx.val;
-                if (UI.combo(key, selectedIdx, options)) {
-                    DebugStyles.setString(compId, key, options[selectedIdx.val()]);
+                if (UI.combo(key, selectedIdx, _samplerOptions)) {
+                    DebugStyles.setString(compId, key, _samplerOptions[selectedIdx.val()]);
                     DebugStyles.setStringEnabled(compId, key, true);
                     true => enabled.val;
                 }
@@ -460,12 +507,373 @@ public class Debug {
         }
 
         UI.pushItemWidth(80.0);
-        UI.drag("min##pos", sliderMin, 0.1, 0.0, 0.0, "%.2f", 0);
+        UI.drag("min##pos_" + compId, sliderMin, 0.1, 0.0, 0.0, "%.2f", 0);
         UI.sameLine();
-        UI.drag("max##pos", sliderMax, 0.1, 0.0, 0.0, "%.2f", 0);
+        UI.drag("max##pos_" + compId, sliderMax, 0.1, 0.0, 0.0, "%.2f", 0);
         UI.popItemWidth();
 
         enabled.val() => int enabledInt;
         enabledInt => _posOverrideEnabled[compId];
+    }
+
+    // ==== Scenegraph Rendering ====
+
+    fun void renderScenegraph(
+        Rect rectPool[], int rectCount,
+        Icon iconPool[], int iconCount,
+        Label labelPool[], int labelCount,
+        Meter meterPool[], int meterCount,
+        Separator separatorPool[], int separatorCount,
+        MomentaryButton buttons[],
+        ToggleButton toggleBtns[],
+        Slider sliders[],
+        DiscreteSlider discreteSliders[],
+        Checkbox checkboxes[],
+        Input inputs[],
+        Dropdown dropdowns[],
+        ColorPicker colorPickers[],
+        Knob knobs[],
+        DiscreteKnob discreteKnobs[],
+        Radio radios[],
+        Spinner spinners[],
+        int currentFrame
+    ) {
+        // Reuse member arrays to avoid per-frame allocation
+        _sgTypes.clear(); _sgKeys.clear(); _sgZ.clear();
+        _sgTypes @=> string sTypes[];
+        _sgKeys @=> string sKeys[];
+        _sgZ @=> float sZ[];
+
+        for (0 => int i; i < rectCount; i++) {
+            sTypes << "Rect"; sKeys << "" + i; sZ << rectPool[i].posZ();
+        }
+        for (0 => int i; i < iconCount; i++) {
+            sTypes << "Icon"; sKeys << "" + i; sZ << iconPool[i].posZ();
+        }
+        for (0 => int i; i < labelCount; i++) {
+            sTypes << "Label"; sKeys << "" + i; sZ << labelPool[i].posZ();
+        }
+        for (0 => int i; i < meterCount; i++) {
+            sTypes << "Meter"; sKeys << "" + i; sZ << meterPool[i].posZ();
+        }
+        for (0 => int i; i < separatorCount; i++) {
+            sTypes << "Separator"; sKeys << "" + i; sZ << separatorPool[i].posZ();
+        }
+
+        // Reuse _sgMapKeys scratch array for all getKeys calls
+        buttons.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (buttons[k].parent() == null) continue;
+            sTypes << "Button"; sKeys << k; sZ << buttons[k].posZ();
+        }
+
+        toggleBtns.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (toggleBtns[k].parent() == null) continue;
+            sTypes << "ToggleButton"; sKeys << k; sZ << toggleBtns[k].posZ();
+        }
+
+        sliders.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (sliders[k].parent() == null) continue;
+            sTypes << "Slider"; sKeys << k; sZ << sliders[k].posZ();
+        }
+
+        discreteSliders.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (discreteSliders[k].parent() == null) continue;
+            sTypes << "DiscreteSlider"; sKeys << k; sZ << discreteSliders[k].posZ();
+        }
+
+        checkboxes.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (checkboxes[k].parent() == null) continue;
+            sTypes << "Checkbox"; sKeys << k; sZ << checkboxes[k].posZ();
+        }
+
+        inputs.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (inputs[k].parent() == null) continue;
+            sTypes << "Input"; sKeys << k; sZ << inputs[k].posZ();
+        }
+
+        dropdowns.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (dropdowns[k].parent() == null) continue;
+            sTypes << "Dropdown"; sKeys << k; sZ << dropdowns[k].posZ();
+        }
+
+        colorPickers.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (colorPickers[k].parent() == null) continue;
+            sTypes << "ColorPicker"; sKeys << k; sZ << colorPickers[k].posZ();
+        }
+
+        knobs.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (knobs[k].parent() == null) continue;
+            sTypes << "Knob"; sKeys << k; sZ << knobs[k].posZ();
+        }
+
+        discreteKnobs.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (discreteKnobs[k].parent() == null) continue;
+            sTypes << "DiscreteKnob"; sKeys << k; sZ << discreteKnobs[k].posZ();
+        }
+
+        radios.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (radios[k].parent() == null) continue;
+            sTypes << "Radio"; sKeys << k; sZ << radios[k].posZ();
+        }
+
+        spinners.getKeys(_sgMapKeys);
+        for (string k : _sgMapKeys) {
+            if (spinners[k].parent() == null) continue;
+            sTypes << "Spinner"; sKeys << k; sZ << spinners[k].posZ();
+        }
+
+        sZ.size() => int n;
+
+        // Insertion sort by z-index
+        for (1 => int i; i < n; i++) {
+            sZ[i] => float zVal;
+            sTypes[i] => string tVal;
+            sKeys[i] => string kVal;
+            i - 1 => int j;
+            while (j >= 0 && ((_scenegraphSortAsc && sZ[j] > zVal) ||
+                              (!_scenegraphSortAsc && sZ[j] < zVal))) {
+                sZ[j] => sZ[j+1];
+                sTypes[j] => sTypes[j+1];
+                sKeys[j] => sKeys[j+1];
+                j--;
+            }
+            zVal => sZ[j+1];
+            tVal => sTypes[j+1];
+            kVal => sKeys[j+1];
+        }
+
+        UI.begin("ChuGUI Scenegraph");
+
+        UI.text("Active Components: " + n);
+        UI.text("Frame: " + currentFrame);
+        UI.text("Position Units: " + UIGlobals.posUnits + "  |  Size Units: " + UIGlobals.sizeUnits);
+
+        UI_Bool sortAscBool;
+        _scenegraphSortAsc => sortAscBool.val;
+        if (UI.checkbox("Sort by Z-index ascending", sortAscBool)) {
+            sortAscBool.val() => _scenegraphSortAsc;
+        }
+
+        UI.separator();
+
+        // Render sorted components
+        for (0 => int i; i < n; i++) {
+            sTypes[i] => string type;
+            sKeys[i] => string key;
+
+            if (type == "Rect") {
+                Std.atoi(key) => int idx;
+                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
+                    UI.text("Pos (World): (" + rectPool[idx].posX() + ", " + rectPool[idx].posY() + ")");
+                    UI.text("Z-Index: " + rectPool[idx].posZ());
+                    UI.text("Rotation: " + rectPool[idx].rotZ());
+                    UI.text("Hovered: " + (rectPool[idx]._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "Icon") {
+                Std.atoi(key) => int idx;
+                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
+                    UI.text("Pos (World): (" + iconPool[idx].posX() + ", " + iconPool[idx].posY() + ")");
+                    UI.text("Z-Index: " + iconPool[idx].posZ());
+                    UI.text("Rotation: " + iconPool[idx].rotZ());
+                    UI.text("Path: " + iconPool[idx]._icon);
+                    UI.treePop();
+                }
+            } else if (type == "Label") {
+                Std.atoi(key) => int idx;
+                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
+                    UI.text("Pos (World): (" + labelPool[idx].posX() + ", " + labelPool[idx].posY() + ")");
+                    UI.text("Z-Index: " + labelPool[idx].posZ());
+                    UI.text("Rotation: " + labelPool[idx].rotZ());
+                    UI.text("Text: " + labelPool[idx]._label);
+                    UI.treePop();
+                }
+            } else if (type == "Meter") {
+                Std.atoi(key) => int idx;
+                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
+                    UI.text("Pos (World): (" + meterPool[idx].posX() + ", " + meterPool[idx].posY() + ")");
+                    UI.text("Z-Index: " + meterPool[idx].posZ());
+                    UI.text("Rotation: " + meterPool[idx].rotZ());
+                    UI.text("Value: " + meterPool[idx].val() + " [" + meterPool[idx].min() + ", " + meterPool[idx].max() + "]");
+                    UI.treePop();
+                }
+            } else if (type == "Button") {
+                buttons[key] @=> MomentaryButton b;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + b.posX() + ", " + b.posY() + ")");
+                    UI.text("Z-Index: " + b.posZ());
+                    UI.text("Rotation: " + b.rotZ());
+                    UI.text("Label: " + b.label());
+                    UI.text("Icon: " + b.icon());
+                    UI.text("Disabled: " + (b.disabled() ? "Yes" : "No"));
+                    UI.text("Hovered: " + (b._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "ToggleButton") {
+                toggleBtns[key] @=> ToggleButton tb;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + tb.posX() + ", " + tb.posY() + ")");
+                    UI.text("Z-Index: " + tb.posZ());
+                    UI.text("Rotation: " + tb.rotZ());
+                    UI.text("Label: " + tb.label());
+                    UI.text("Icon: " + tb.icon());
+                    UI.text("Toggled: " + (tb.toggled() ? "Yes" : "No"));
+                    UI.text("Disabled: " + (tb.disabled() ? "Yes" : "No"));
+                    UI.text("Hovered: " + (tb._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "Slider") {
+                sliders[key] @=> Slider s;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + s.posX() + ", " + s.posY() + ")");
+                    UI.text("Z-Index: " + s.posZ());
+                    UI.text("Rotation: " + s.rotZ());
+                    UI.text("Value: " + s.val());
+                    UI.text("Range: [" + s.min() + ", " + s.max() + "]");
+                    UI.text("Disabled: " + (s.disabled() ? "Yes" : "No"));
+                    UI.text("Hovered: " + (s._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "DiscreteSlider") {
+                discreteSliders[key] @=> DiscreteSlider ds;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + ds.posX() + ", " + ds.posY() + ")");
+                    UI.text("Z-Index: " + ds.posZ());
+                    UI.text("Rotation: " + ds.rotZ());
+                    UI.text("Value: " + ds.val());
+                    UI.text("Range: [" + ds.min() + ", " + ds.max() + "]");
+                    UI.text("Steps: " + ds.steps());
+                    UI.text("Disabled: " + (ds.disabled() ? "Yes" : "No"));
+                    UI.text("Hovered: " + (ds._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "Checkbox") {
+                checkboxes[key] @=> Checkbox c;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + c.posX() + ", " + c.posY() + ")");
+                    UI.text("Z-Index: " + c.posZ());
+                    UI.text("Rotation: " + c.rotZ());
+                    UI.text("Checked: " + (c.checked() ? "Yes" : "No"));
+                    UI.text("Disabled: " + (c.disabled() ? "Yes" : "No"));
+                    UI.text("Hovered: " + (c._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "Input") {
+                inputs[key] @=> Input inp;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + inp.posX() + ", " + inp.posY() + ")");
+                    UI.text("Z-Index: " + inp.posZ());
+                    UI.text("Rotation: " + inp.rotZ());
+                    UI.text("Value: " + inp.value());
+                    UI.text("Placeholder: " + inp.placeholder());
+                    UI.text("Focused: " + (inp.focused() ? "Yes" : "No"));
+                    UI.text("Disabled: " + (inp.disabled() ? "Yes" : "No"));
+                    UI.text("Hovered: " + (inp._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "Dropdown") {
+                dropdowns[key] @=> Dropdown d;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + d.posX() + ", " + d.posY() + ")");
+                    UI.text("Z-Index: " + d.posZ());
+                    UI.text("Rotation: " + d.rotZ());
+                    UI.text("Selected Index: " + d.selectedIndex());
+                    UI.text("Open: " + (d._open ? "Yes" : "No"));
+                    UI.text("Disabled: " + (d.disabled() ? "Yes" : "No"));
+                    UI.text("Hovered: " + (d._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "ColorPicker") {
+                colorPickers[key] @=> ColorPicker cp;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + cp.posX() + ", " + cp.posY() + ")");
+                    UI.text("Z-Index: " + cp.posZ());
+                    UI.text("Rotation: " + cp.rotZ());
+                    cp.color() => vec3 col;
+                    UI.text("Color RGB: (" + col.x + ", " + col.y + ", " + col.z + ")");
+                    UI.text("Disabled: " + (cp.disabled() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "Knob") {
+                knobs[key] @=> Knob kb;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + kb.posX() + ", " + kb.posY() + ")");
+                    UI.text("Z-Index: " + kb.posZ());
+                    UI.text("Rotation: " + kb.rotZ());
+                    UI.text("Value: " + kb.val());
+                    UI.text("Range: [" + kb.min() + ", " + kb.max() + "]");
+                    UI.text("Disabled: " + (kb.disabled() ? "Yes" : "No"));
+                    UI.text("Hovered: " + (kb._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "DiscreteKnob") {
+                discreteKnobs[key] @=> DiscreteKnob dk;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + dk.posX() + ", " + dk.posY() + ")");
+                    UI.text("Z-Index: " + dk.posZ());
+                    UI.text("Rotation: " + dk.rotZ());
+                    UI.text("Value: " + dk.val());
+                    UI.text("Range: [" + dk.min() + ", " + dk.max() + "]");
+                    UI.text("Steps: " + dk.steps());
+                    UI.text("Disabled: " + (dk.disabled() ? "Yes" : "No"));
+                    UI.text("Hovered: " + (dk._state.hovered() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "Separator") {
+                Std.atoi(key) => int idx;
+                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
+                    UI.text("Pos (World): (" + separatorPool[idx].posX() + ", " + separatorPool[idx].posY() + ")");
+                    UI.text("Z-Index: " + separatorPool[idx].posZ());
+                    UI.text("Rotation: " + separatorPool[idx].rotZ());
+                    UI.treePop();
+                }
+            } else if (type == "Radio") {
+                radios[key] @=> Radio r;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + r.posX() + ", " + r.posY() + ")");
+                    UI.text("Z-Index: " + r.posZ());
+                    UI.text("Rotation: " + r.rotZ());
+                    UI.text("Selected Index: " + r.selectedIndex());
+                    UI.text("Disabled: " + (r.disabled() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            } else if (type == "Spinner") {
+                spinners[key] @=> Spinner sp;
+                if (UI.treeNode(type + ": " + key + "##" + i)) {
+                    UI.text("ID: " + key);
+                    UI.text("Pos (World): (" + sp.posX() + ", " + sp.posY() + ")");
+                    UI.text("Z-Index: " + sp.posZ());
+                    UI.text("Rotation: " + sp.rotZ());
+                    UI.text("Value: " + sp.val());
+                    UI.text("Range: [" + sp.min() + ", " + sp.max() + "]");
+                    UI.text("Disabled: " + (sp.disabled() ? "Yes" : "No"));
+                    UI.treePop();
+                }
+            }
+        }
+
+        UI.end();
     }
 }

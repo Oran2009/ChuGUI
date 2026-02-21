@@ -116,8 +116,6 @@ public class UIStyle {
     "checkbox"                    => static string COL_CHECKBOX;
     @doc "Apply with pushColor(), using a vec3 or vec4 value. Inherits base color with half alpha."
     "checkbox.hovered"            => static string COL_CHECKBOX_HOVERED;
-    @doc "Apply with pushColor(), using a vec3 or vec4 value. Inherits base color with quarter alpha."
-    "checkbox.pressed"            => static string COL_CHECKBOX_PRESSED;
     @doc "Apply with pushColor(), using a vec3 or vec4 value. Inherits base color."
     "checkbox.disabled"           => static string COL_CHECKBOX_DISABLED;
     @doc "Apply with pushColor(), using a vec3 or vec4 value. Default @(0.3, 0.3, 0.3, 1)."
@@ -125,9 +123,11 @@ public class UIStyle {
     @doc "Apply with pushColor(), using a vec3 or vec4 value. Inherits base border color."
     "checkbox.border.hovered"     => static string COL_CHECKBOX_BORDER_HOVERED;
     @doc "Apply with pushColor(), using a vec3 or vec4 value. Inherits base border color."
-    "checkbox.border.pressed"     => static string COL_CHECKBOX_BORDER_PRESSED;
-    @doc "Apply with pushColor(), using a vec3 or vec4 value. Inherits base border color."
     "checkbox.border.disabled"    => static string COL_CHECKBOX_BORDER_DISABLED;
+    @doc "Apply with pushColor(), using a vec3 or vec4 value. Inherits base color. Applied when checkbox is checked."
+    "checkbox.checked"            => static string COL_CHECKBOX_CHECKED;
+    @doc "Apply with pushColor(), using a vec3 or vec4 value. Inherits base border color. Applied when checkbox is checked."
+    "checkbox.border.checked"     => static string COL_CHECKBOX_BORDER_CHECKED;
     @doc "Apply with pushColor(), using a vec3 or vec4 value. Default @(1, 1, 1, 1)."
     "checkbox.icon"               => static string COL_CHECKBOX_ICON;
 
@@ -346,7 +346,7 @@ public class UIStyle {
     "icon.wrap_w"                 => static string VAR_ICON_WRAP_W;
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
     "icon.control_points"         => static string VAR_ICON_CONTROL_POINTS;
-    @doc "Apply with pushVar(), using a vec2 value. Default @(1, 1)."
+    @doc "Apply with pushVar(), using a vec2 value. @(0, 0) means auto-size from texture dimensions."
     "icon.size"                   => static string VAR_ICON_SIZE;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "icon.z_index"                => static string VAR_ICON_Z_INDEX;
@@ -464,9 +464,9 @@ public class UIStyle {
     "input.size"                  => static string VAR_INPUT_SIZE;
     @doc "Apply with pushVar(), using a float value. Default 0.15."
     "input.text_size"             => static string VAR_INPUT_TEXT_SIZE;
-    @doc "Apply with pushVar(), using a float value. Default 0.1."
+    @doc "Apply with pushVar(), using a float value. Falls back to VAR_BORDER_RADIUS, then 0.1."
     "input.border_radius"         => static string VAR_INPUT_BORDER_RADIUS;
-    @doc "Apply with pushVar(), using a float value. Default 0.05."
+    @doc "Apply with pushVar(), using a float value. Falls back to VAR_BORDER_WIDTH, then 0.05."
     "input.border_width"          => static string VAR_INPUT_BORDER_WIDTH;
     @doc "Apply with pushVar(), using a string value. Default \"\" (system font)."
     "input.font"                  => static string VAR_INPUT_FONT;
@@ -494,7 +494,7 @@ public class UIStyle {
     "dropdown.text_size"          => static string VAR_DROPDOWN_TEXT_SIZE;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "dropdown.border_radius"      => static string VAR_DROPDOWN_BORDER_RADIUS;
-    @doc "Apply with pushVar(), using a float value. Default 0.1."
+    @doc "Apply with pushVar(), using a float value. Falls back to VAR_BORDER_WIDTH, then 0.1."
     "dropdown.border_width"       => static string VAR_DROPDOWN_BORDER_WIDTH;
     @doc "Apply with pushVar(), using a string value. Default \"\" (system font)."
     "dropdown.font"               => static string VAR_DROPDOWN_FONT;
@@ -524,9 +524,9 @@ public class UIStyle {
     "knob.control_points"         => static string VAR_KNOB_CONTROL_POINTS;
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.5, 0.5)."
     "knob.size"                   => static string VAR_KNOB_SIZE;
-    @doc "Apply with pushVar(), using a float value. Default 1.0."
+    @doc "Apply with pushVar(), using a float value. Falls back to VAR_BORDER_RADIUS, then 1.0."
     "knob.border_radius"          => static string VAR_KNOB_BORDER_RADIUS;
-    @doc "Apply with pushVar(), using a float value. Default 0.1."
+    @doc "Apply with pushVar(), using a float value. Falls back to VAR_BORDER_WIDTH, then 0.1."
     "knob.border_width"           => static string VAR_KNOB_BORDER_WIDTH;
     @doc "Apply with pushVar(), using a vec2 value. Default @(0.04, 0.15)."
     "knob.indicator_size"         => static string VAR_KNOB_INDICATOR_SIZE;
@@ -538,8 +538,10 @@ public class UIStyle {
     "knob.indicator_radius"       => static string VAR_KNOB_INDICATOR_RADIUS;
     @doc "Apply with pushVar(), using a vec2 value. Size of tick marks on DiscreteKnob. Default @(0.04, 0.12)."
     "knob.tick_size"              => static string VAR_KNOB_TICK_SIZE;
-    @doc "Apply with pushVar(), using a float value. Tick position as fraction of knob radius. Default 0.45."
+    @doc "Apply with pushVar(), using a float value. Tick gap from knob edge as fraction of knob radius. Default 0."
     "knob.tick_radius"            => static string VAR_KNOB_TICK_RADIUS;
+    @doc "Apply with pushVar(), using a float value. Drag sensitivity multiplier. Default 1.0."
+    "knob.sensitivity"            => static string VAR_KNOB_SENSITIVITY;
     @doc "Apply with pushVar(), using a float value. Uniform scale multiplier for all knob sizes. Falls back to VAR_SCALE. Default 1.0."
     "knob.scale"                  => static string VAR_KNOB_SCALE;
 
@@ -550,7 +552,7 @@ public class UIStyle {
     "meter.size"                  => static string VAR_METER_SIZE;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "meter.border_radius"         => static string VAR_METER_BORDER_RADIUS;
-    @doc "Apply with pushVar(), using a float value. Default 0.05."
+    @doc "Apply with pushVar(), using a float value. Falls back to VAR_BORDER_WIDTH, then 0.05."
     "meter.border_width"          => static string VAR_METER_BORDER_WIDTH;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "meter.z_index"               => static string VAR_METER_Z_INDEX;
@@ -570,7 +572,7 @@ public class UIStyle {
     "radio.layout"                => static string VAR_RADIO_LAYOUT;
     @doc "Apply with pushVar(), using a float value. Default 0."
     "radio.border_radius"         => static string VAR_RADIO_BORDER_RADIUS;
-    @doc "Apply with pushVar(), using a float value. Default 0.1."
+    @doc "Apply with pushVar(), using a float value. Falls back to VAR_BORDER_WIDTH, then 0.1."
     "radio.border_width"          => static string VAR_RADIO_BORDER_WIDTH;
     @doc "Apply with pushVar(), using a float value. Default 0.1."
     "radio.label_spacing"         => static string VAR_RADIO_LABEL_SPACING;
@@ -632,6 +634,8 @@ public class UIStyle {
     "tooltip.font"                => static string VAR_TOOLTIP_FONT;
     @doc "Apply with pushVar(), using a string value. Position of tooltip relative to component: UIStyle.TOP, UIStyle.BOTTOM, UIStyle.LEFT, UIStyle.RIGHT. Default UIStyle.BOTTOM."
     "tooltip.position"            => static string VAR_TOOLTIP_POSITION;
+    @doc "Apply with pushVar(), using a float value. Character width as fraction of text size for tooltip width estimation. Default 0.6."
+    "tooltip.char_width_ratio"    => static string VAR_TOOLTIP_CHAR_WIDTH_RATIO;
 
     // Separator
     @doc "Apply with pushVar(), using a vec2 value. Default @(1.0, 0.02)."
@@ -668,11 +672,12 @@ public class UIStyle {
     @doc "(hidden)"
     fun static void clearStacks() {
         colorOrder.clear();
-        colorStacks.clear();
+        // Reassign fresh arrays — .clear() does not remove associative entries in ChucK
+        vec4 freshColor[0][0]; freshColor @=> colorStacks;
         varOrder.clear();
-        floatStacks.clear();
-        vec2Stacks.clear();
-        stringStacks.clear();
+        float freshFloat[0][0]; freshFloat @=> floatStacks;
+        vec2 freshVec2[0][0]; freshVec2 @=> vec2Stacks;
+        string freshString[0][0]; freshString @=> stringStacks;
     }
 
     // ==== Color API ====
@@ -694,7 +699,7 @@ public class UIStyle {
         colorOrder.popBack();
         if (colorStacks.isInMap(key) && colorStacks[key].size() > 0) colorStacks[key].popBack();
     }
-    @doc "Pop the last 'count' color style overrides. Must be preceded by 'count' pushStyleColor() calls."
+    @doc "Pop the last 'count' color style overrides. Must be preceded by 'count' pushColor() calls."
     fun static void popColor(int count) {
         for (0 => int i; i < count; i++) {
             popColor();
@@ -716,29 +721,31 @@ public class UIStyle {
     fun static void pushVar(string key, float v) {
         if (!floatStacks.isInMap(key)) { float s[0] @=> floatStacks[key]; }
         floatStacks[key] << v;
-        varOrder << key;
+        varOrder << "f:" + key;
     }
     @doc "Push a temporary override for a variable style key onto the stack. Must be popped by calling popVar()."
     fun static void pushVar(string key, vec2 v) {
         if (!vec2Stacks.isInMap(key)) { vec2 s[0] @=> vec2Stacks[key]; }
         vec2Stacks[key] << v;
-        varOrder << key;
+        varOrder << "v:" + key;
     }
     @doc "Push a temporary override for a variable style key onto the stack. Must be popped by calling popVar()."
     fun static void pushVar(string key, string v) {
         if (!stringStacks.isInMap(key)) { string s[0] @=> stringStacks[key]; }
         stringStacks[key] << v;
-        varOrder << key;
+        varOrder << "s:" + key;
     }
 
     @doc "Pop the last variable style override. Must be preceded by a pushVar() call."
     fun static void popVar() {
         if (varOrder.size() == 0) return;
-        varOrder[varOrder.size() - 1] => string key;
+        varOrder[varOrder.size() - 1] => string entry;
         varOrder.popBack();
-        if (floatStacks.isInMap(key) && floatStacks[key].size() > 0) floatStacks[key].popBack();
-        else if (vec2Stacks.isInMap(key) && vec2Stacks[key].size() > 0) vec2Stacks[key].popBack();
-        else if (stringStacks.isInMap(key) && stringStacks[key].size() > 0) stringStacks[key].popBack();
+        entry.substring(0, 2) => string type;
+        entry.substring(2) => string key;
+        if (type == "f:" && floatStacks.isInMap(key) && floatStacks[key].size() > 0) floatStacks[key].popBack();
+        else if (type == "v:" && vec2Stacks.isInMap(key) && vec2Stacks[key].size() > 0) vec2Stacks[key].popBack();
+        else if (type == "s:" && stringStacks.isInMap(key) && stringStacks[key].size() > 0) stringStacks[key].popBack();
     }
     @doc "Pop the last 'count' variable style overrides. Must be preceded by 'count' pushVar() calls."
     fun static void popVar(int count) {

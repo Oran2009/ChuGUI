@@ -53,7 +53,7 @@ public class Meter extends GComponent {
             (_val - _min) / (_max - _min) => float norm;
             Math.clampf(norm, 0, 1) => norm;
 
-            borderWidth * Math.min(size.x, size.y) => float borderW;
+            borderWidth * Math.min(size.x, size.y) * 0.5 => float borderW;
             size.x - borderW => float innerW;
             size.y - borderW => float innerH;
             innerW * norm => float fillW;

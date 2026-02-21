@@ -59,10 +59,6 @@ public class ColorPicker extends GComponent {
             saturation => hsv.y;
         }
 
-        if (hsv.y == 0) {
-            value => hsv.z;
-        }
-
         hsv.x => hue;
         hsv.y => saturation;
         hsv.z => value;

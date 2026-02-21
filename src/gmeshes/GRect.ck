@@ -8,6 +8,8 @@ public class GRect extends GMesh {
     vec4 _borderColor;
     float _borderRadius;
     float _borderWidth;
+    float _inputBorderRadius;
+    float _inputBorderWidth;
     RectMaterial _mat;
     PlaneGeometry _geo;
 
@@ -21,26 +23,28 @@ public class GRect extends GMesh {
 
     // ---- Getters and Setters ----
 
-    @doc "Get the border radius."
-    fun float borderRadius() { return _mat.borderRadius(); }
-    @doc "Set the border radius."
+    @doc "Get the border radius (world-space value)."
+    fun float borderRadius() { return _borderRadius; }
+    @doc "Set the border radius (0..1 fraction of half the min dimension)."
     fun void borderRadius(float radius) {
+        if (radius != radius) return; // NaN guard
         Math.clampf(radius, 0, 1) => radius;
-        radius * Math.min(_size.x, _size.y) * 0.5 => radius;
-        if (radius == _borderRadius) return;
-        radius => _borderRadius;
-        _mat.borderRadius(radius);
+        if (radius == _inputBorderRadius) return;
+        radius => _inputBorderRadius;
+        radius * Math.min(_size.x, _size.y) * 0.5 => _borderRadius;
+        _mat.borderRadius(_borderRadius);
     }
 
-    @doc "Get the border width."
-    fun float borderWidth() { return _mat.borderWidth(); }
-    @doc "Set the border width."
+    @doc "Get the border width (world-space value)."
+    fun float borderWidth() { return _borderWidth; }
+    @doc "Set the border width (0..1 fraction of half the min dimension)."
     fun void borderWidth(float borderWidth) {
+        if (borderWidth != borderWidth) return; // NaN guard
         Math.clampf(borderWidth, 0, 1) => borderWidth;
-        borderWidth * Math.min(_size.x, _size.y) * 0.5 => borderWidth;
-        if (borderWidth == _borderWidth) return;
-        borderWidth => _borderWidth;
-        _mat.borderWidth(borderWidth);
+        if (borderWidth == _inputBorderWidth) return;
+        borderWidth => _inputBorderWidth;
+        borderWidth * Math.min(_size.x, _size.y) * 0.5 => _borderWidth;
+        _mat.borderWidth(_borderWidth);
     }
 
     @doc "Get the size."
@@ -51,6 +55,11 @@ public class GRect extends GMesh {
         size => _size;
         _mat.size(size);
         _geo.build(_size.x, _size.y, 1, 1);
+        // Rescale borderRadius and borderWidth for new size
+        _inputBorderRadius * Math.min(_size.x, _size.y) * 0.5 => _borderRadius;
+        _mat.borderRadius(_borderRadius);
+        _inputBorderWidth * Math.min(_size.x, _size.y) * 0.5 => _borderWidth;
+        _mat.borderWidth(_borderWidth);
     }
 
     @doc "Get the color."

@@ -83,7 +83,7 @@ public class Button extends GComponent {
         gBtn.borderColor(borderColor);
 
         // layout
-        (_label != "") ? textSize * _label.length() * 0.5 : 0. => float textW;
+        (_label != "") ? textSize * _label.length() * 0.6 : 0. => float textW;
         (_icon != "") ? iconSize : 0. => float iconW;
         UIStyle.varFloat(UIStyle.VAR_BUTTON_ICON_SPACING, 0.2) * size.y => float spacing;
         if (textW == 0 || iconW == 0) { 0. => spacing; }

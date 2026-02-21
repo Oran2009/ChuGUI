@@ -1,24 +1,10 @@
 @import "../gmeshes/GRect.ck"
 @import "UIUtil.ck"
 
+// TODO: CursorState is reserved for future cursor management.
+// UI.setMouseCursor() cannot be called from GGen.update() because
+// GGen callbacks run before the ImGUI frame starts.
 public class CursorState {
-    static MouseState @ _activeStates[0];
-
-    // Called at start of each frame to clear active states
-    fun static void clearStates() {
-        _activeStates.clear();
-    }
-
-    // Called by MouseState.update() to register as active this frame
-    fun static void registerActive(MouseState @ state) {
-        _activeStates << state;
-    }
-
-    // Update cursor based on active states only
-    // Note: UI.setMouseCursor() cannot be called from GGen.update() because
-    // GGen callbacks run before the ImGUI frame starts.
-    fun static void update() {
-    }
 }
 
 public class MouseState {
@@ -71,9 +57,6 @@ public class MouseState {
     // ==== Update ====
 
     fun void update() {
-        // Register as active this frame (for cursor state tracking)
-        CursorState.registerActive(this);
-
         UIUtil.hovered(_element, _rect) => _hovered;
 
         GWindow.mouseLeftDown() => _mouseDown;

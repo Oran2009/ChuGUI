@@ -59,8 +59,8 @@ public class Dropdown extends GComponent {
             gItemRects.size(_options.size());
 
             for (0 => int i; i < _options.size(); i++) {
-                GText t @=> gItems[i];
-                GRect r @=> gItemRects[i];
+                new GText @=> gItems[i];
+                new GRect @=> gItemRects[i];
             }
         }
     }

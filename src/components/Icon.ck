@@ -40,6 +40,8 @@ public class Icon extends GComponent {
                 Math.max(tw, th) => float maxDim;
                 if (maxDim > 0)
                     UIUtil.sizeToWorld(@(tw / maxDim, th / maxDim)) => size;
+                else
+                    UIUtil.sizeToWorld(@(1, 1)) => size;
             }
         } else {
             UIUtil.sizeToWorld(size) => size;

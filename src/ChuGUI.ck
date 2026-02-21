@@ -95,7 +95,6 @@ public class ChuGUI extends GGen {
 
     @doc "(hidden)"
     Debug _debug;
-    int _scenegraphSortAsc;
     @doc "(hidden)"
     string _lastComponentType;
     @doc "(hidden)"
@@ -151,19 +150,32 @@ public class ChuGUI extends GGen {
     }
 
     @doc "(hidden)"
+    int _idUsageCount[0]; // per-frame ID collision counter
+
+    @doc "(hidden)"
+    fun string _deduplicateId(string id) {
+        if (_idUsageCount.isInMap(id)) {
+            _idUsageCount[id] + 1 => _idUsageCount[id];
+            <<< "ChuGUI warning: duplicate ID '" + id + "' — use pushID() to disambiguate" >>>;
+            return id + "##" + _idUsageCount[id];
+        } else {
+            1 => _idUsageCount[id];
+            return id;
+        }
+    }
+
+    @doc "(hidden)"
     fun void update(float dt) {
         currentFrame++;
-
-        GG.fps() $ int => int fps;
-        (fps != 0) ? fps : 60 %=> currentFrame;
 
         null => lastComponent;
 
         _debug.frameReset();
+        // Fresh array each frame — .clear() may not reset associative entries in ChucK
+        int freshIdCount[0];
+        freshIdCount @=> _idUsageCount;
         UIStyle.clearStacks();
         UIUtil.cacheMousePos();
-        CursorState.update();
-        CursorState.clearStates();
 
         cleanupPool(rectPool, rectCount);
         cleanupPool(iconPool, iconCount);
@@ -269,6 +281,7 @@ public class ChuGUI extends GGen {
 
     @doc "Returns whether the last component rendered is hovered or not."
     fun int hovered() {
+        if (lastComponent == null) return 0;
         return lastComponent._state.hovered();
     }
 
@@ -311,7 +324,8 @@ public class ChuGUI extends GGen {
         UIStyle.varString(UIStyle.VAR_TOOLTIP_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
         // Size the background
-        text.length() $ float * textSize * 0.6 + padding * 2 => float bgWidth;
+        UIStyle.varFloat(UIStyle.VAR_TOOLTIP_CHAR_WIDTH_RATIO, 0.6) => float charRatio;
+        text.length() $ float * textSize * charRatio + padding * 2 => float bgWidth;
         textSize + padding * 2 => float bgHeight;
 
         // Position relative to the component
@@ -358,12 +372,12 @@ public class ChuGUI extends GGen {
 
     // ==== Container Layout ====
 
-    @doc "Begin a row container at the given position. Children are laid out left-to-right."
+    @doc "Begin a row container at the given position. Children are laid out left-to-right. When nested inside another container, position is ignored and the parent's cursor is used instead."
     fun void beginRow(vec2 pos) { _beginContainer(pos, "row"); }
     @doc "Begin a row container using the parent container's cursor position."
     fun void beginRow() { _beginContainer("row"); }
 
-    @doc "Begin a column container at the given position. Children are laid out top-to-bottom."
+    @doc "Begin a column container at the given position. Children are laid out top-to-bottom. When nested inside another container, position is ignored and the parent's cursor is used instead."
     fun void beginColumn(vec2 pos) { _beginContainer(pos, "column"); }
     @doc "Begin a column container using the parent container's cursor position."
     fun void beginColumn() { _beginContainer("column"); }
@@ -392,11 +406,22 @@ public class ChuGUI extends GGen {
         _containerStack << ctx;
 
         if (layout == "row") {
+            @(0, 0.5) => vec2 defaultCP;  // left, vertically centered
+            // When nested, inherit parent's cross-axis control point
+            if (_containerStack.size() > 1) {
+                UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, defaultCP) => vec2 parentCP;
+                parentCP.y => defaultCP.y;
+            }
             UIStyle.pushVar(UIStyle.VAR_CONTROL_POINTS,
-                UIStyle.varVec2(UIStyle.VAR_CONTAINER_CONTROL_POINTS, @(0, 0.5)));  // left, vertically centered
+                UIStyle.varVec2(UIStyle.VAR_CONTAINER_CONTROL_POINTS, defaultCP));
         } else {
+            @(0, 1) => vec2 defaultCP;  // left, top-aligned
+            if (_containerStack.size() > 1) {
+                UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, defaultCP) => vec2 parentCP;
+                parentCP.x => defaultCP.x;
+            }
             UIStyle.pushVar(UIStyle.VAR_CONTROL_POINTS,
-                UIStyle.varVec2(UIStyle.VAR_CONTAINER_CONTROL_POINTS, @(0, 1)));    // left, top-aligned
+                UIStyle.varVec2(UIStyle.VAR_CONTAINER_CONTROL_POINTS, defaultCP));
         }
     }
 
@@ -439,6 +464,25 @@ public class ChuGUI extends GGen {
         _containerStack[_containerStack.size()-1].advance(comp.computedSize());
     }
 
+    // ==== Component Management ====
+
+    @doc "Remove a mapped component by its ID, freeing its map entry. Use this when dynamically creating/destroying components to prevent unbounded map growth."
+    fun void removeComponent(string id) {
+        if (buttons.isInMap(id)) { buttons[id] --< this; buttons.erase(id); }
+        if (toggleBtns.isInMap(id)) { toggleBtns[id] --< this; toggleBtns.erase(id); }
+        if (sliders.isInMap(id)) { sliders[id] --< this; sliders.erase(id); }
+        if (discreteSliders.isInMap(id)) { discreteSliders[id] --< this; discreteSliders.erase(id); }
+        if (checkboxes.isInMap(id)) { checkboxes[id] --< this; checkboxes.erase(id); }
+        if (inputs.isInMap(id)) { inputs[id] --< this; inputs.erase(id); }
+        if (dropdowns.isInMap(id)) { dropdowns[id] --< this; dropdowns.erase(id); }
+        if (colorPickers.isInMap(id)) { colorPickers[id] --< this; colorPickers.erase(id); }
+        if (knobs.isInMap(id)) { knobs[id] --< this; knobs.erase(id); }
+        if (discreteKnobs.isInMap(id)) { discreteKnobs[id] --< this; discreteKnobs.erase(id); }
+        if (radios.isInMap(id)) { radios[id] --< this; radios.erase(id); }
+        if (spinners.isInMap(id)) { spinners[id] --< this; spinners.erase(id); }
+        _debug.remove(id);
+    }
+
     // ==== Debug Panel ====
 
     @doc "Add the last rendered component to the debug panel with an auto-generated ID."
@@ -447,7 +491,7 @@ public class ChuGUI extends GGen {
     @doc "Add the last rendered component to the debug panel with a custom ID."
     fun void debugAdd(string customId) {
         _debug.add(customId, lastComponent, _lastComponentType, _lastComponentId,
-                    rectCount, iconCount, labelCount, meterCount);
+                    rectCount, iconCount, labelCount, meterCount, separatorCount);
     }
 
     @doc "Render the debug panel. Call this each frame to enable debug mode."
@@ -457,354 +501,20 @@ public class ChuGUI extends GGen {
 
     @doc "Render the scenegraph debug view. Call this each frame to show the scenegraph."
     fun void debugScenegraph() {
-
-        // Collect all active components into sortable arrays
-        string sTypes[0];
-        string sKeys[0];
-        float sZ[0];
-
-        for (0 => int i; i < rectCount; i++) {
-            sTypes << "Rect"; sKeys << "" + i; sZ << rectPool[i].posZ();
-        }
-        for (0 => int i; i < iconCount; i++) {
-            sTypes << "Icon"; sKeys << "" + i; sZ << iconPool[i].posZ();
-        }
-        for (0 => int i; i < labelCount; i++) {
-            sTypes << "Label"; sKeys << "" + i; sZ << labelPool[i].posZ();
-        }
-        for (0 => int i; i < meterCount; i++) {
-            sTypes << "Meter"; sKeys << "" + i; sZ << meterPool[i].posZ();
-        }
-        for (0 => int i; i < separatorCount; i++) {
-            sTypes << "Separator"; sKeys << "" + i; sZ << separatorPool[i].posZ();
-        }
-
-        string btnKeys[0];
-        buttons.getKeys(btnKeys);
-        for (string k : btnKeys) {
-            if (buttons[k].parent() == null) continue;
-            sTypes << "Button"; sKeys << k; sZ << buttons[k].posZ();
-        }
-
-        string toggleKeys[0];
-        toggleBtns.getKeys(toggleKeys);
-        for (string k : toggleKeys) {
-            if (toggleBtns[k].parent() == null) continue;
-            sTypes << "ToggleButton"; sKeys << k; sZ << toggleBtns[k].posZ();
-        }
-
-        string sliderKeys[0];
-        sliders.getKeys(sliderKeys);
-        for (string k : sliderKeys) {
-            if (sliders[k].parent() == null) continue;
-            sTypes << "Slider"; sKeys << k; sZ << sliders[k].posZ();
-        }
-
-        string discreteSliderKeys[0];
-        discreteSliders.getKeys(discreteSliderKeys);
-        for (string k : discreteSliderKeys) {
-            if (discreteSliders[k].parent() == null) continue;
-            sTypes << "DiscreteSlider"; sKeys << k; sZ << discreteSliders[k].posZ();
-        }
-
-        string checkboxKeys[0];
-        checkboxes.getKeys(checkboxKeys);
-        for (string k : checkboxKeys) {
-            if (checkboxes[k].parent() == null) continue;
-            sTypes << "Checkbox"; sKeys << k; sZ << checkboxes[k].posZ();
-        }
-
-        string inputKeys[0];
-        inputs.getKeys(inputKeys);
-        for (string k : inputKeys) {
-            if (inputs[k].parent() == null) continue;
-            sTypes << "Input"; sKeys << k; sZ << inputs[k].posZ();
-        }
-
-        string dropdownKeys[0];
-        dropdowns.getKeys(dropdownKeys);
-        for (string k : dropdownKeys) {
-            if (dropdowns[k].parent() == null) continue;
-            sTypes << "Dropdown"; sKeys << k; sZ << dropdowns[k].posZ();
-        }
-
-        string colorPickerKeys[0];
-        colorPickers.getKeys(colorPickerKeys);
-        for (string k : colorPickerKeys) {
-            if (colorPickers[k].parent() == null) continue;
-            sTypes << "ColorPicker"; sKeys << k; sZ << colorPickers[k].posZ();
-        }
-
-        string knobKeys[0];
-        knobs.getKeys(knobKeys);
-        for (string k : knobKeys) {
-            if (knobs[k].parent() == null) continue;
-            sTypes << "Knob"; sKeys << k; sZ << knobs[k].posZ();
-        }
-
-        string discreteKnobKeys[0];
-        discreteKnobs.getKeys(discreteKnobKeys);
-        for (string k : discreteKnobKeys) {
-            if (discreteKnobs[k].parent() == null) continue;
-            sTypes << "DiscreteKnob"; sKeys << k; sZ << discreteKnobs[k].posZ();
-        }
-
-        string radioKeys[0];
-        radios.getKeys(radioKeys);
-        for (string k : radioKeys) {
-            if (radios[k].parent() == null) continue;
-            sTypes << "Radio"; sKeys << k; sZ << radios[k].posZ();
-        }
-
-        string spinnerKeys[0];
-        spinners.getKeys(spinnerKeys);
-        for (string k : spinnerKeys) {
-            if (spinners[k].parent() == null) continue;
-            sTypes << "Spinner"; sKeys << k; sZ << spinners[k].posZ();
-        }
-
-        sZ.size() => int n;
-
-        // Insertion sort by z-index
-        for (1 => int i; i < n; i++) {
-            sZ[i] => float zVal;
-            sTypes[i] => string tVal;
-            sKeys[i] => string kVal;
-            i - 1 => int j;
-            while (j >= 0 && ((_scenegraphSortAsc && sZ[j] > zVal) ||
-                              (!_scenegraphSortAsc && sZ[j] < zVal))) {
-                sZ[j] => sZ[j+1];
-                sTypes[j] => sTypes[j+1];
-                sKeys[j] => sKeys[j+1];
-                j--;
-            }
-            zVal => sZ[j+1];
-            tVal => sTypes[j+1];
-            kVal => sKeys[j+1];
-        }
-
-        UI.begin("ChuGUI Scenegraph");
-
-        UI.text("Active Components: " + n);
-        UI.text("Frame: " + currentFrame);
-        UI.text("Position Units: " + UIGlobals.posUnits + "  |  Size Units: " + UIGlobals.sizeUnits);
-
-        UI_Bool sortAscBool;
-        _scenegraphSortAsc => sortAscBool.val;
-        if (UI.checkbox("Sort by Z-index ascending", sortAscBool)) {
-            sortAscBool.val() => _scenegraphSortAsc;
-        }
-
-        UI.separator();
-
-        // Render sorted components
-        for (0 => int i; i < n; i++) {
-            sTypes[i] => string type;
-            sKeys[i] => string key;
-
-            if (type == "Rect") {
-                Std.atoi(key) => int idx;
-                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
-                    UI.text("Pos (World): (" + rectPool[idx].posX() + ", " + rectPool[idx].posY() + ")");
-                    UI.text("Z-Index: " + rectPool[idx].posZ());
-                    UI.text("Rotation: " + rectPool[idx].rotZ());
-                    UI.text("Hovered: " + (rectPool[idx]._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "Icon") {
-                Std.atoi(key) => int idx;
-                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
-                    UI.text("Pos (World): (" + iconPool[idx].posX() + ", " + iconPool[idx].posY() + ")");
-                    UI.text("Z-Index: " + iconPool[idx].posZ());
-                    UI.text("Rotation: " + iconPool[idx].rotZ());
-                    UI.text("Path: " + iconPool[idx]._icon);
-                    UI.treePop();
-                }
-            } else if (type == "Label") {
-                Std.atoi(key) => int idx;
-                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
-                    UI.text("Pos (World): (" + labelPool[idx].posX() + ", " + labelPool[idx].posY() + ")");
-                    UI.text("Z-Index: " + labelPool[idx].posZ());
-                    UI.text("Rotation: " + labelPool[idx].rotZ());
-                    UI.text("Text: " + labelPool[idx]._label);
-                    UI.treePop();
-                }
-            } else if (type == "Meter") {
-                Std.atoi(key) => int idx;
-                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
-                    UI.text("Pos (World): (" + meterPool[idx].posX() + ", " + meterPool[idx].posY() + ")");
-                    UI.text("Z-Index: " + meterPool[idx].posZ());
-                    UI.text("Rotation: " + meterPool[idx].rotZ());
-                    UI.text("Value: " + meterPool[idx].val() + " [" + meterPool[idx].min() + ", " + meterPool[idx].max() + "]");
-                    UI.treePop();
-                }
-            } else if (type == "Button") {
-                buttons[key] @=> MomentaryButton b;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + b.posX() + ", " + b.posY() + ")");
-                    UI.text("Z-Index: " + b.posZ());
-                    UI.text("Rotation: " + b.rotZ());
-                    UI.text("Label: " + b.label());
-                    UI.text("Icon: " + b.icon());
-                    UI.text("Disabled: " + (b.disabled() ? "Yes" : "No"));
-                    UI.text("Hovered: " + (b._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "ToggleButton") {
-                toggleBtns[key] @=> ToggleButton tb;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + tb.posX() + ", " + tb.posY() + ")");
-                    UI.text("Z-Index: " + tb.posZ());
-                    UI.text("Rotation: " + tb.rotZ());
-                    UI.text("Label: " + tb.label());
-                    UI.text("Icon: " + tb.icon());
-                    UI.text("Toggled: " + (tb.toggled() ? "Yes" : "No"));
-                    UI.text("Disabled: " + (tb.disabled() ? "Yes" : "No"));
-                    UI.text("Hovered: " + (tb._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "Slider") {
-                sliders[key] @=> Slider s;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + s.posX() + ", " + s.posY() + ")");
-                    UI.text("Z-Index: " + s.posZ());
-                    UI.text("Rotation: " + s.rotZ());
-                    UI.text("Value: " + s.val());
-                    UI.text("Range: [" + s.min() + ", " + s.max() + "]");
-                    UI.text("Disabled: " + (s.disabled() ? "Yes" : "No"));
-                    UI.text("Hovered: " + (s._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "DiscreteSlider") {
-                discreteSliders[key] @=> DiscreteSlider ds;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + ds.posX() + ", " + ds.posY() + ")");
-                    UI.text("Z-Index: " + ds.posZ());
-                    UI.text("Rotation: " + ds.rotZ());
-                    UI.text("Value: " + ds.val());
-                    UI.text("Range: [" + ds.min() + ", " + ds.max() + "]");
-                    UI.text("Steps: " + ds.steps());
-                    UI.text("Disabled: " + (ds.disabled() ? "Yes" : "No"));
-                    UI.text("Hovered: " + (ds._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "Checkbox") {
-                checkboxes[key] @=> Checkbox c;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + c.posX() + ", " + c.posY() + ")");
-                    UI.text("Z-Index: " + c.posZ());
-                    UI.text("Rotation: " + c.rotZ());
-                    UI.text("Checked: " + (c.checked() ? "Yes" : "No"));
-                    UI.text("Disabled: " + (c.disabled() ? "Yes" : "No"));
-                    UI.text("Hovered: " + (c._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "Input") {
-                inputs[key] @=> Input inp;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + inp.posX() + ", " + inp.posY() + ")");
-                    UI.text("Z-Index: " + inp.posZ());
-                    UI.text("Rotation: " + inp.rotZ());
-                    UI.text("Value: " + inp.value());
-                    UI.text("Placeholder: " + inp.placeholder());
-                    UI.text("Focused: " + (inp.focused() ? "Yes" : "No"));
-                    UI.text("Disabled: " + (inp.disabled() ? "Yes" : "No"));
-                    UI.text("Hovered: " + (inp._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "Dropdown") {
-                dropdowns[key] @=> Dropdown d;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + d.posX() + ", " + d.posY() + ")");
-                    UI.text("Z-Index: " + d.posZ());
-                    UI.text("Rotation: " + d.rotZ());
-                    UI.text("Selected Index: " + d.selectedIndex());
-                    UI.text("Open: " + (d._open ? "Yes" : "No"));
-                    UI.text("Disabled: " + (d.disabled() ? "Yes" : "No"));
-                    UI.text("Hovered: " + (d._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "ColorPicker") {
-                colorPickers[key] @=> ColorPicker cp;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + cp.posX() + ", " + cp.posY() + ")");
-                    UI.text("Z-Index: " + cp.posZ());
-                    UI.text("Rotation: " + cp.rotZ());
-                    cp.color() => vec3 col;
-                    UI.text("Color RGB: (" + col.x + ", " + col.y + ", " + col.z + ")");
-                    UI.text("Disabled: " + (cp.disabled() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "Knob") {
-                knobs[key] @=> Knob kb;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + kb.posX() + ", " + kb.posY() + ")");
-                    UI.text("Z-Index: " + kb.posZ());
-                    UI.text("Rotation: " + kb.rotZ());
-                    UI.text("Value: " + kb.val());
-                    UI.text("Range: [" + kb.min() + ", " + kb.max() + "]");
-                    UI.text("Disabled: " + (kb.disabled() ? "Yes" : "No"));
-                    UI.text("Hovered: " + (kb._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "DiscreteKnob") {
-                discreteKnobs[key] @=> DiscreteKnob dk;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + dk.posX() + ", " + dk.posY() + ")");
-                    UI.text("Z-Index: " + dk.posZ());
-                    UI.text("Rotation: " + dk.rotZ());
-                    UI.text("Value: " + dk.val());
-                    UI.text("Range: [" + dk.min() + ", " + dk.max() + "]");
-                    UI.text("Steps: " + dk.steps());
-                    UI.text("Disabled: " + (dk.disabled() ? "Yes" : "No"));
-                    UI.text("Hovered: " + (dk._state.hovered() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "Separator") {
-                Std.atoi(key) => int idx;
-                if (UI.treeNode(type + ": " + type + "_" + key + "##" + i)) {
-                    UI.text("Pos (World): (" + separatorPool[idx].posX() + ", " + separatorPool[idx].posY() + ")");
-                    UI.text("Z-Index: " + separatorPool[idx].posZ());
-                    UI.text("Rotation: " + separatorPool[idx].rotZ());
-                    UI.treePop();
-                }
-            } else if (type == "Radio") {
-                radios[key] @=> Radio r;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + r.posX() + ", " + r.posY() + ")");
-                    UI.text("Z-Index: " + r.posZ());
-                    UI.text("Rotation: " + r.rotZ());
-                    UI.text("Selected Index: " + r.selectedIndex());
-                    UI.text("Disabled: " + (r.disabled() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            } else if (type == "Spinner") {
-                spinners[key] @=> Spinner sp;
-                if (UI.treeNode(type + ": " + key + "##" + i)) {
-                    UI.text("ID: " + key);
-                    UI.text("Pos (World): (" + sp.posX() + ", " + sp.posY() + ")");
-                    UI.text("Z-Index: " + sp.posZ());
-                    UI.text("Rotation: " + sp.rotZ());
-                    UI.text("Value: " + sp.val());
-                    UI.text("Range: [" + sp.min() + ", " + sp.max() + "]");
-                    UI.text("Disabled: " + (sp.disabled() ? "Yes" : "No"));
-                    UI.treePop();
-                }
-            }
-        }
-
-        UI.end();
+        _debug.renderScenegraph(
+            rectPool, rectCount,
+            iconPool, iconCount,
+            labelPool, labelCount,
+            meterPool, meterCount,
+            separatorPool, separatorCount,
+            buttons, toggleBtns,
+            sliders, discreteSliders,
+            checkboxes, inputs,
+            dropdowns, colorPickers,
+            knobs, discreteKnobs,
+            radios, spinners,
+            currentFrame
+        );
     }
 
     // ==== Pooled Components (Stateless) ====
@@ -1003,7 +713,7 @@ public class ChuGUI extends GGen {
     @doc "Render a button with given label and icon at the given position in NDC coordinates; returns 1 if the button is clicked during the current frame."
     fun int button(string label, string icon, vec2 pos, int disabled) {
         label != "" ? label : icon => string key;
-        getID() != "" ? getID() : key => string id;
+        _deduplicateId(getID() != "" ? getID() : key) => string id;
         if (!buttons.isInMap(id)) {
             new MomentaryButton() @=> buttons[id];
         }
@@ -1048,7 +758,7 @@ public class ChuGUI extends GGen {
     @doc "Render a toggle button at the given position in NDC coordinates; returns 1 if the button is toggled during the current frame."
     fun int toggleButton(string label, string icon, vec2 pos, int toggled, int disabled) {
         label != "" ? label : icon => string key;
-        getID() != "" ? getID() : key => string id;
+        _deduplicateId(getID() != "" ? getID() : key) => string id;
         if (!toggleBtns.isInMap(id)) {
             new ToggleButton() @=> toggleBtns[id];
         }
@@ -1080,7 +790,7 @@ public class ChuGUI extends GGen {
         _containerAdvance(b);
 
         b @=> lastComponent;
-        "Button" => _lastComponentType;
+        "ToggleButton" => _lastComponentType;
         id => _lastComponentId;
         return b.toggled();
     }
@@ -1090,7 +800,7 @@ public class ChuGUI extends GGen {
     fun float slider(string id, vec2 pos, float min, float max, float val) { return slider(id, pos, min, max, val, false); }
     @doc "Render a slider at the given position in NDC coordinates; returns the value at the current frame."
     fun float slider(string id, vec2 pos, float min, float max, float val, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!sliders.isInMap(_id)) {
             new Slider() @=> sliders[_id];
         }
@@ -1131,7 +841,7 @@ public class ChuGUI extends GGen {
     fun float discreteSlider(string id, vec2 pos, float min, float max, int steps, float val) { return discreteSlider(id, pos, min, max, steps, val, false); }
     @doc "Render a discrete slider at the given position in NDC coordinates; returns the value at the current frame."
     fun float discreteSlider(string id, vec2 pos, float min, float max, int steps, float val, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!discreteSliders.isInMap(_id)) {
             new DiscreteSlider() @=> discreteSliders[_id];
         }
@@ -1164,7 +874,7 @@ public class ChuGUI extends GGen {
         _containerAdvance(slider);
 
         slider @=> lastComponent;
-        "Slider" => _lastComponentType;
+        "DiscreteSlider" => _lastComponentType;
         _id => _lastComponentId;
         return slider.val();
     }
@@ -1174,7 +884,7 @@ public class ChuGUI extends GGen {
     fun int checkbox(string id, vec2 pos, int checked) { return checkbox(id, pos, checked, false); }
     @doc "Render a checkbox at the given position in NDC coordinates; returns 1 if the checkbox is checked during the current frame."
     fun int checkbox(string id, vec2 pos, int checked, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!checkboxes.isInMap(_id)) {
             new Checkbox() @=> checkboxes[_id];
         }
@@ -1216,7 +926,7 @@ public class ChuGUI extends GGen {
     fun string input(string id, vec2 pos, string value, string placeholder) { return input(id, pos, value, placeholder, false); }
     @doc "Render an input field at the given position in NDC coordinates; returns the input at the current frame."
     fun string input(string id, vec2 pos, string value, string placeholder, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!inputs.isInMap(_id)) {
             new Input() @=> inputs[_id];
         }
@@ -1257,7 +967,7 @@ public class ChuGUI extends GGen {
     fun int dropdown(string id, vec2 pos, string options[], int selectedIndex) { return dropdown(id, pos, options, selectedIndex, false); }
     @doc "Render a dropdown at the given position in NDC coordinates; returns the selected option at the current frame."
     fun int dropdown(string id, vec2 pos, string options[], int selectedIndex, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!dropdowns.isInMap(_id)) {
             new Dropdown() @=> dropdowns[_id];
         }
@@ -1299,7 +1009,7 @@ public class ChuGUI extends GGen {
     fun vec3 colorPicker(string id, vec2 pos, vec3 color) { return colorPicker(id, pos, color, false); }
     @doc "Render a color picker at the given position in NDC coordinates; returns the selected color at the current frame."
     fun vec3 colorPicker(string id, vec2 pos, vec3 color, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!colorPickers.isInMap(_id)) {
             new ColorPicker() @=> colorPickers[_id];
         }
@@ -1339,7 +1049,7 @@ public class ChuGUI extends GGen {
     fun float knob(string id, vec2 pos, float min, float max, float val) { return knob(id, pos, min, max, val, false); }
     @doc "Render a knob at the given position in NDC coordinates; returns the value at the current frame."
     fun float knob(string id, vec2 pos, float min, float max, float val, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!knobs.isInMap(_id)) {
             new Knob() @=> knobs[_id];
         }
@@ -1381,7 +1091,7 @@ public class ChuGUI extends GGen {
     fun float discreteKnob(string id, vec2 pos, float min, float max, int steps, float val) { return discreteKnob(id, pos, min, max, steps, val, false); }
     @doc "Render a discrete knob at the given position; returns the value at the current frame."
     fun float discreteKnob(string id, vec2 pos, float min, float max, int steps, float val, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!discreteKnobs.isInMap(_id)) {
             new DiscreteKnob() @=> discreteKnobs[_id];
         }
@@ -1422,7 +1132,7 @@ public class ChuGUI extends GGen {
     fun int radio(string groupId, vec2 pos, string options[], int selectedIndex) { return radio(groupId, pos, options, selectedIndex, false); }
     @doc "Render a radio group at the given position in NDC coordinates; returns the selected option at the current frame."
     fun int radio(string groupId, vec2 pos, string options[], int selectedIndex, int disabled) {
-        getID() != "" ? getID() : groupId => string _id;
+        _deduplicateId(getID() != "" ? getID() : groupId) => string _id;
         if (!radios.isInMap(_id)) {
             new Radio() @=> radios[_id];
         }
@@ -1463,7 +1173,7 @@ public class ChuGUI extends GGen {
     fun int spinner(string id, vec2 pos, int min, int max, int val) { return spinner(id, pos, min, max, val, false); }
     @doc "Render a spinner at the given position in NDC coordinates; returns the value at the current frame."
     fun int spinner(string id, vec2 pos, int min, int max, int val, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!spinners.isInMap(_id)) {
             new Spinner() @=> spinners[_id];
         }
@@ -1602,7 +1312,12 @@ public class ChuGUI extends GGen {
     fun void spacer(float size) {
         if (_containerStack.size() == 0) return;
         UIUtil.sizeToWorld(size) => float worldSize;
-        _containerStack[_containerStack.size()-1].advance(@(worldSize, worldSize));
+        _containerStack[_containerStack.size()-1] @=> ContainerContext ctx;
+        if (ctx._layout == "row") {
+            ctx.advance(@(worldSize, 0.0));
+        } else {
+            ctx.advance(@(0.0, worldSize));
+        }
     }
 
     // Enums

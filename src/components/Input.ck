@@ -258,6 +258,8 @@ public class Input extends GComponent {
         if (!_disabled) {
             if (_state.pressed() && !_focused) {
                 true => _focused;
+                true => _cursorVisible;
+                0.0 => _cursorTimer;
             } else if (_state.mouseDown() && !_state.hovered()) {
                 false => _focused;
             }
