@@ -82,7 +82,10 @@ public class Input extends GComponent {
             ) => int isRepeatable;
             if (!isRepeatable) continue;
 
-            if (k >= lastKey.size()) lastKey.size(k+1);
+            if (k >= lastKey.size()) {
+                if (k > 512) continue;
+                lastKey.size(k+1);
+            }
             if (lastKey[k]==0) { frameCount => lastKey[k]; }
             frameCount - lastKey[k] => int elapsed;
             
@@ -148,7 +151,7 @@ public class Input extends GComponent {
         }
         // clear released keys
         for (0 => int k; k < lastKey.size(); k++) {
-            if (!GWindow.key(k)) {
+            if (lastKey[k] != 0 && !GWindow.key(k)) {
                 0 => lastKey[k];
             }
         }

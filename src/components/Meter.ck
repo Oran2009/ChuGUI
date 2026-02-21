@@ -54,11 +54,11 @@ public class Meter extends GComponent {
             Math.clampf(norm, 0, 1) => norm;
 
             borderWidth * Math.min(size.x, size.y) * 0.5 => float borderW;
-            size.x - borderW => float innerW;
-            size.y - borderW => float innerH;
+            size.x - borderW * 2 => float innerW;
+            size.y - borderW * 2 => float innerH;
             innerW * norm => float fillW;
 
-            -size.x/2.0 + borderW/2.0 + fillW/2.0 => float fillCenterX;
+            -size.x/2.0 + borderW + fillW/2.0 => float fillCenterX;
 
             borderRadius * Math.min(innerW, innerH) * 0.5 => float fillRadAbs;
             fillRadAbs / Math.max(0.001, Math.min(fillW, innerH)) => float fillRadFrac;

@@ -740,12 +740,18 @@ public class UIStyle {
     fun static void popVar() {
         if (varOrder.size() == 0) return;
         varOrder[varOrder.size() - 1] => string entry;
-        varOrder.popBack();
         entry.substring(0, 2) => string type;
         entry.substring(2) => string key;
-        if (type == "f:" && floatStacks.isInMap(key) && floatStacks[key].size() > 0) floatStacks[key].popBack();
-        else if (type == "v:" && vec2Stacks.isInMap(key) && vec2Stacks[key].size() > 0) vec2Stacks[key].popBack();
-        else if (type == "s:" && stringStacks.isInMap(key) && stringStacks[key].size() > 0) stringStacks[key].popBack();
+        if (type == "f:" && floatStacks.isInMap(key) && floatStacks[key].size() > 0) {
+            floatStacks[key].popBack();
+            varOrder.popBack();
+        } else if (type == "v:" && vec2Stacks.isInMap(key) && vec2Stacks[key].size() > 0) {
+            vec2Stacks[key].popBack();
+            varOrder.popBack();
+        } else if (type == "s:" && stringStacks.isInMap(key) && stringStacks[key].size() > 0) {
+            stringStacks[key].popBack();
+            varOrder.popBack();
+        }
     }
     @doc "Pop the last 'count' variable style overrides. Must be preceded by 'count' pushVar() calls."
     fun static void popVar(int count) {

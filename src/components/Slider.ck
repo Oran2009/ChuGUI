@@ -142,7 +142,7 @@ public class Slider extends GComponent {
 
 public class DiscreteSlider extends Slider {
     true => int recreateTicks;
-    int _steps;
+    2 => int _steps;
     GRect ticks[0];
 
     // ==== Getters and Setters ====

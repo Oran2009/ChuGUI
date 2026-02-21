@@ -21,6 +21,7 @@ public class GIcon extends GMesh {
             TextureLoadDesc desc;
             true => desc.flip_y;
             Texture.load(path, desc) @=> tex;
+            if (tex == null) return;
             IconCache.set(path, tex);
         }
         tex @=> _tex;

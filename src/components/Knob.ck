@@ -32,7 +32,7 @@ public class Knob extends GComponent {
     fun float val() { return _val; }
     fun void val(float v) {
         Math.clampf(v, _min, _max) => _val;
-        updateIndicator();
+        if (gKnob.size().x > 0) updateIndicator();
     }
 
     // ==== Interaction ====
@@ -131,7 +131,7 @@ public class Knob extends GComponent {
 
 public class DiscreteKnob extends Knob {
     true => int recreateTicks;
-    int _steps;
+    2 => int _steps;
     GRect ticks[0];
 
     // ==== Getters and Setters ====

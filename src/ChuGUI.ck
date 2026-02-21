@@ -464,25 +464,6 @@ public class ChuGUI extends GGen {
         _containerStack[_containerStack.size()-1].advance(comp.computedSize());
     }
 
-    // ==== Component Management ====
-
-    @doc "Remove a mapped component by its ID, freeing its map entry. Use this when dynamically creating/destroying components to prevent unbounded map growth."
-    fun void removeComponent(string id) {
-        if (buttons.isInMap(id)) { buttons[id] --< this; buttons.erase(id); }
-        if (toggleBtns.isInMap(id)) { toggleBtns[id] --< this; toggleBtns.erase(id); }
-        if (sliders.isInMap(id)) { sliders[id] --< this; sliders.erase(id); }
-        if (discreteSliders.isInMap(id)) { discreteSliders[id] --< this; discreteSliders.erase(id); }
-        if (checkboxes.isInMap(id)) { checkboxes[id] --< this; checkboxes.erase(id); }
-        if (inputs.isInMap(id)) { inputs[id] --< this; inputs.erase(id); }
-        if (dropdowns.isInMap(id)) { dropdowns[id] --< this; dropdowns.erase(id); }
-        if (colorPickers.isInMap(id)) { colorPickers[id] --< this; colorPickers.erase(id); }
-        if (knobs.isInMap(id)) { knobs[id] --< this; knobs.erase(id); }
-        if (discreteKnobs.isInMap(id)) { discreteKnobs[id] --< this; discreteKnobs.erase(id); }
-        if (radios.isInMap(id)) { radios[id] --< this; radios.erase(id); }
-        if (spinners.isInMap(id)) { spinners[id] --< this; spinners.erase(id); }
-        _debug.remove(id);
-    }
-
     // ==== Debug Panel ====
 
     @doc "Add the last rendered component to the debug panel with an auto-generated ID."

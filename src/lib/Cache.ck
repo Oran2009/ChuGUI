@@ -12,9 +12,7 @@ public class IconCache {
         }
         // Evict oldest if at capacity
         while (cache.size() >= MAX_SIZE && _evictIdx < _insertionOrder.size()) {
-            if (cache.isInMap(_insertionOrder[_evictIdx])) {
-                cache.erase(_insertionOrder[_evictIdx]);
-            }
+            cache.erase(_insertionOrder[_evictIdx]);
             _evictIdx++;
         }
         // Compact insertion order array if front half is stale

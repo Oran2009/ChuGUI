@@ -30,11 +30,13 @@ public class Spinner extends GComponent {
     fun int min() { return _min; }
     fun void min(int min) {
         min => _min;
+        if (_min > _max) _min => _max;
         Math.clampi(_val, _min, _max) => _val;
     }
     fun int max() { return _max; }
     fun void max(int max) {
         max => _max;
+        if (_max < _min) _max => _min;
         Math.clampi(_val, _min, _max) => _val;
     }
 
