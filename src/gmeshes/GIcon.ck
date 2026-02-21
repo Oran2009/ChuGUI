@@ -8,7 +8,7 @@ public class GIcon extends GMesh {
     @doc "Default constructor for GIcon."
     fun GIcon() {
         _mat.transparent(true);
-        _mat.sampler(TextureSampler.nearest());
+        _mat.sampler(TextureSampler.linear());
         _mat => this.mat;
         new PlaneGeometry() => this.geo;
     }

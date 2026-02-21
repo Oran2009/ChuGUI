@@ -129,6 +129,7 @@ public class Radio extends GComponent {
     // ==== UIUtility ====
 
     fun int optionsChanged(string options[]) {
+        if (_optionLabels == null) return 1;
         if (options.size() != _optionLabels.size()) {
             return 1;
         }

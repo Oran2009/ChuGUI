@@ -39,6 +39,7 @@ public class IconCache {
     }
 
     fun static Texture get(string key) {
+        if (!cache.isInMap(key)) return null;
         return cache[key];
     }
 

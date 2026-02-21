@@ -201,7 +201,7 @@ public class Dropdown extends GComponent {
                 false => int clickedOnItem;
                 for (0 => int i; i < _options.size(); i++) {
                     UIUtil.hovered(this, gItemRects[i]) => int hovered;
-                    if (hovered && _state.mouseState()) {
+                    if (hovered && GWindow.mouseLeftDown()) {
                         i => _selectedIndex;
                         clampSelection();
                         false => _open;

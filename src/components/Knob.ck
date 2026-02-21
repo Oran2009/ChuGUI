@@ -146,6 +146,9 @@ public class DiscreteKnob extends Knob {
     // ==== Display ====
 
     fun void createTicks() {
+        gKnob.size().x / 2.0 => float knobRadius;
+        if (knobRadius <= 0.0) return;
+
         for (0 => int i; i < ticks.size(); i++) {
             ticks[i] --< this;
         }
@@ -153,8 +156,6 @@ public class DiscreteKnob extends Knob {
 
         -0.75 * Math.PI => float angleMin;
         -2.25 * Math.PI => float angleMax;
-
-        gKnob.size().x / 2.0 => float knobRadius;
         gKnob.borderWidth() => float borderW;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_KNOB_TICK_RADIUS, 0.0)) => float tickGap;
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_KNOB_TICK_SIZE, @(0.04, 0.12))) => vec2 tickSize;

@@ -163,8 +163,8 @@ public class Debug {
     }
 
     fun void popOverrides(string compId) {
-        UIStyle.popColor(DebugStyles.countColorOverrides(compId));
-        UIStyle.popVar(DebugStyles.countVarOverrides(compId));
+        UIStyle.popColor(DebugStyles.lastColorPushCount(compId));
+        UIStyle.popVar(DebugStyles.lastVarPushCount(compId));
     }
 
     // ==== Debug Panel Rendering ====

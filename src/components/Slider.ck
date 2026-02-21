@@ -128,10 +128,10 @@ public class Slider extends GComponent {
                 dx * c + dy * s => float localX;
 
                 gTrack.size().x / 2.0 => float halfW;
-
-                (localX + halfW) / (2.0 * halfW) => float norm;
-
-                drag(norm);
+                if (halfW > 0.0) {
+                    (localX + halfW) / (2.0 * halfW) => float norm;
+                    drag(norm);
+                }
             }
         }
 
@@ -159,12 +159,13 @@ public class DiscreteSlider extends Slider {
     // ==== Display ====
 
     fun void createTicks() {
+        gTrack.size().x / 2.0 => float halfW;
+        if (halfW <= 0.0) return;
+
         for (0 => int i; i < ticks.size(); i++) {
             ticks[i] --< this;
         }
         ticks.clear();
-
-        gTrack.size().x / 2.0 => float halfW;
         gTrack.borderRadius() => float cornerR;
 
         -halfW + cornerR => float startX;
@@ -332,10 +333,10 @@ public class DiscreteSlider extends Slider {
                 dx * c + dy * s => float localX;
 
                 gTrack.size().x / 2.0 => float halfW;
-
-                (localX + halfW) / (2.0 * halfW) => float norm;
-
-                drag(norm);
+                if (halfW > 0.0) {
+                    (localX + halfW) / (2.0 * halfW) => float norm;
+                    drag(norm);
+                }
             }
         }
 

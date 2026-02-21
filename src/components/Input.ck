@@ -49,6 +49,11 @@ public class Input extends GComponent {
         UIStyle.varFloat(UIStyle.VAR_INPUT_KEY_REPEAT_RATE, 5) $ int => repeatRate;
 
         frameCount++;
+        // Prevent unbounded accumulation (overflow after ~414 days at 60fps)
+        if (frameCount > 1000000) {
+            0 => frameCount;
+            lastKey.size(0);
+        }
 
         if (GWindow.keyDown(GWindow.Key_Home)) {
             0 => _cursorPos;
@@ -83,7 +88,7 @@ public class Input extends GComponent {
             if (!isRepeatable) continue;
 
             if (k >= lastKey.size()) {
-                if (k > 512) continue;
+                if (k >= 512) continue;
                 lastKey.size(k+1);
             }
             if (lastKey[k]==0) { frameCount => lastKey[k]; }

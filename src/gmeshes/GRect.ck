@@ -16,7 +16,8 @@ public class GRect extends GMesh {
     @doc "Default constructor for GRect."
     fun GRect() {
         _mat.init();
-       _mat => this.material;
+        _mat => this.material;
+        _mat.size(_size);
         _geo.build(_size.x, _size.y, 1, 1);
         _geo => this.geo;
     }
