@@ -1,6 +1,8 @@
 @import "../lib/UIUtil.ck"
 @import "../lib/MouseState.ck"
 @import "../lib/GComponent.ck"
+@import "../lib/RayUtil.ck"
+@import "../lib/UIGlobals.ck"
 @import "../gmeshes/GRect.ck"
 @import "../UIStyle.ck"
 
@@ -105,27 +107,39 @@ public class Slider extends GComponent {
 
     fun void update() {
         _state.update();
-        
+
         if (!_disabled) {
             if (_state.dragging()) {
-                _state.mouseWorld() => vec3 mouseWorld;
-                this.posWorld().x => float cx;
-                this.posWorld().y => float cy;
-                mouseWorld.x - cx => float dx;
-                mouseWorld.y - cy => float dy;
-
-                // account for rotation
-                this.rotZ() => float angle;
-                Math.cos(angle) => float c;
-                Math.sin(angle) => float s;
-
-                dx * c + dy * s => float localX;
-
-                gTrack.size().x / 2.0 => float halfW;
-
-                (localX + halfW) / (2.0 * halfW) => float norm;
-
-                drag(norm);
+                if (UIGlobals.is3D && UIGlobals.currentPanel != null) {
+                    // 3D mode: use panel-local coordinates
+                    _state.mouseLocal() => vec2 mouseLocal;
+                    UIGlobals.currentPanel @=> GGen panel;
+                    RayUtil.worldToLocal2D(this.posWorld(), panel.posWorld(), panel.right(), panel.up()) => vec2 compLocal;
+                    mouseLocal.x - compLocal.x => float dx;
+                    mouseLocal.y - compLocal.y => float dy;
+                    // account for rotation relative to panel
+                    this.rotZ() - panel.rotZ() => float angle;
+                    Math.cos(angle) => float c;
+                    Math.sin(angle) => float s;
+                    dx * c + dy * s => float localX;
+                    gTrack.size().x / 2.0 => float halfW;
+                    (localX + halfW) / (2.0 * halfW) => float norm;
+                    drag(norm);
+                } else {
+                    // Original flat mode
+                    _state.mouseWorld() => vec3 mouseWorld;
+                    this.posWorld().x => float cx;
+                    this.posWorld().y => float cy;
+                    mouseWorld.x - cx => float dx;
+                    mouseWorld.y - cy => float dy;
+                    this.rotZ() => float angle;
+                    Math.cos(angle) => float c;
+                    Math.sin(angle) => float s;
+                    dx * c + dy * s => float localX;
+                    gTrack.size().x / 2.0 => float halfW;
+                    (localX + halfW) / (2.0 * halfW) => float norm;
+                    drag(norm);
+                }
             }
         }
 
@@ -304,24 +318,36 @@ public class DiscreteSlider extends Slider {
 
         if (!_disabled) {
             if (_state.dragging()) {
-                _state.mouseWorld() => vec3 mouseWorld;
-                this.posWorld().x => float cx;
-                this.posWorld().y => float cy;
-                mouseWorld.x - cx => float dx;
-                mouseWorld.y - cy => float dy;
-
-                // account for rotation
-                this.rotZ() => float angle;
-                Math.cos(angle) => float c;
-                Math.sin(angle) => float s;
-
-                dx * c + dy * s => float localX;
-
-                gTrack.size().x / 2.0 => float halfW;
-
-                (localX + halfW) / (2.0 * halfW) => float norm;
-
-                drag(norm);
+                if (UIGlobals.is3D && UIGlobals.currentPanel != null) {
+                    // 3D mode: use panel-local coordinates
+                    _state.mouseLocal() => vec2 mouseLocal;
+                    UIGlobals.currentPanel @=> GGen panel;
+                    RayUtil.worldToLocal2D(this.posWorld(), panel.posWorld(), panel.right(), panel.up()) => vec2 compLocal;
+                    mouseLocal.x - compLocal.x => float dx;
+                    mouseLocal.y - compLocal.y => float dy;
+                    // account for rotation relative to panel
+                    this.rotZ() - panel.rotZ() => float angle;
+                    Math.cos(angle) => float c;
+                    Math.sin(angle) => float s;
+                    dx * c + dy * s => float localX;
+                    gTrack.size().x / 2.0 => float halfW;
+                    (localX + halfW) / (2.0 * halfW) => float norm;
+                    drag(norm);
+                } else {
+                    // Original flat mode
+                    _state.mouseWorld() => vec3 mouseWorld;
+                    this.posWorld().x => float cx;
+                    this.posWorld().y => float cy;
+                    mouseWorld.x - cx => float dx;
+                    mouseWorld.y - cy => float dy;
+                    this.rotZ() => float angle;
+                    Math.cos(angle) => float c;
+                    Math.sin(angle) => float s;
+                    dx * c + dy * s => float localX;
+                    gTrack.size().x / 2.0 => float halfW;
+                    (localX + halfW) / (2.0 * halfW) => float norm;
+                    drag(norm);
+                }
             }
         }
 

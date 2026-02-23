@@ -1,5 +1,6 @@
 @import "UIGlobals.ck"
 @import "MouseState.ck"
+@import "RayUtil.ck"
 @import "../UIStyle.ck"
 
 public class GComponent extends GGen {
@@ -31,7 +32,29 @@ public class GComponent extends GGen {
     fun GGen pos(vec2 pos) {
         if (UIGlobals.posUnits == "WORLD") {
             pos => _pos;
+        } else if (_is3D && _panel != null) {
+            // 3D mode: project NDC point onto panel's plane
+            GG.camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 nearNDC;
+            GG.camera().NDCToWorldPos(@(pos.x, pos.y, 1)) => vec3 farNDC;
+            @(farNDC.x - nearNDC.x, farNDC.y - nearNDC.y, farNDC.z - nearNDC.z) => vec3 dir;
+            RayUtil.normalize3(dir) => dir;
+
+            _panel.posWorld() => vec3 panelPos;
+            _panel.forward() => vec3 normal;
+            _panel.right() => vec3 right;
+            _panel.up() => vec3 up;
+
+            RayUtil.rayPlaneT(nearNDC, dir, panelPos, normal) => float t;
+            if (t > 0) {
+                @(nearNDC.x + t * dir.x,
+                  nearNDC.y + t * dir.y,
+                  nearNDC.z + t * dir.z) => vec3 hitWorld;
+                RayUtil.worldToLocal2D(hitWorld, panelPos, right, up) => _pos;
+            } else {
+                pos => _pos;  // fallback
+            }
         } else {
+            // Original flat mode
             GG.camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 worldPos;
             @(worldPos.x, worldPos.y) => _pos;
         }

@@ -1,5 +1,7 @@
 @import "../gmeshes/GRect.ck"
 @import "UIUtil.ck"
+@import "RayUtil.ck"
+@import "UIGlobals.ck"
 
 public class CursorState {
     static MouseState @ _activeStates[0];
@@ -57,6 +59,34 @@ public class MouseState {
     fun int disabled() { return _disabled; }
 
     fun vec3 mouseWorld() { return GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 1); }
+
+    // Returns mouse position in panel-local 2D coordinates (for 3D mode)
+    fun vec2 mouseLocal() {
+        if (!UIGlobals.is3D || UIGlobals.currentPanel == null) {
+            // Flat mode: return world XY
+            mouseWorld() => vec3 mw;
+            return @(mw.x, mw.y);
+        }
+
+        UIGlobals.currentPanel @=> GGen panel;
+        panel.posWorld() => vec3 panelPos;
+        panel.forward() => vec3 normal;
+        panel.right() => vec3 right;
+        panel.up() => vec3 up;
+
+        RayUtil.mouseRayOrigin() => vec3 rayOrigin;
+        RayUtil.mouseRayDir() => vec3 rayDir;
+
+        RayUtil.rayPlaneT(rayOrigin, rayDir, panelPos, normal) => float t;
+        if (t < 0) return @(0, 0);
+
+        @(rayOrigin.x + t * rayDir.x,
+          rayOrigin.y + t * rayDir.y,
+          rayOrigin.z + t * rayDir.z) => vec3 hitWorld;
+
+        return RayUtil.worldToLocal2D(hitWorld, panelPos, right, up);
+    }
+
     fun int mouseDown() { return _mouseDown; }
     fun int mouseState() { return _mouseState; }
 
