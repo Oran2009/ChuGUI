@@ -163,9 +163,13 @@ public class ChuGUI extends GGen {
     @doc "(hidden)"
     fun void update(float dt) {
         currentFrame++;
-        
+
         GG.fps() $ int => int fps;
         (fps != 0) ? fps : 60 %=> currentFrame;
+
+        // Reset 3D hit tracking each frame (safe to call from multiple panels;
+        // all update() calls run before any component hover checks)
+        UIGlobals.resetHitTracking();
 
         // Detect 3D mode: perspective camera or rotated panel
         (GG.camera().mode() == GCamera.PERSPECTIVE ||

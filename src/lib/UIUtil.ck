@@ -153,6 +153,17 @@ public class UIUtil {
         RayUtil.rayPlaneT(rayOrigin, rayDir, panelPos, normal) => float t;
         if (t < 0) return 0;  // behind camera or parallel
 
+        // Multi-panel occlusion: if a closer panel already claimed this ray, reject
+        if (UIGlobals.closestHitPanel != null && UIGlobals.closestHitPanel != panel && t > UIGlobals.closestHitT) {
+            return 0;
+        }
+
+        // If this hit is closer, update tracking
+        if (t < UIGlobals.closestHitT) {
+            t => UIGlobals.closestHitT;
+            panel @=> UIGlobals.closestHitPanel;
+        }
+
         // Hit point in world space
         @(rayOrigin.x + t * rayDir.x,
           rayOrigin.y + t * rayDir.y,
