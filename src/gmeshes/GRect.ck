@@ -56,4 +56,11 @@ public class GRect extends GMesh {
 
     @doc "Set whether the rect is transparent or not."
     fun void transparent(int transparent) { _mat.transparent(transparent); }
+
+    fun void lightDir(vec2 v) { _mat.lightDir(v); }
+    fun void bevelStrength(float v) { _mat.bevelStrength(v); }
+    fun void shadowOffset(vec2 v) { _mat.shadowOffset(v); }
+    fun void shadowBlur(float v) { _mat.shadowBlur(v); }
+    fun void shadowColor(vec4 v) { _mat.shadowColor(v); }
+    fun void innerShadowWidth(float v) { _mat.innerShadowWidth(v); }
 }

@@ -17,6 +17,10 @@ public class UIStyle {
     @doc "Apply with pushColor(), using a vec3 or vec4 value."
     "rect.border"                 => static string COL_RECT_BORDER;
 
+    // SDF 3D Effects
+    @doc "Apply with pushColor(), using a vec4 value."
+    "shadow"                      => static string COL_SHADOW;
+
     // Icon
     @doc "Apply with pushColor(), using a vec3 or vec4 value."
     "icon"                        => static string COL_ICON;
@@ -288,6 +292,18 @@ public class UIStyle {
     "rect.z_index"                => static string VAR_RECT_Z_INDEX;
     @doc "Apply with pushVar(), using a float value."
     "rect.rotate"                 => static string VAR_RECT_ROTATE;
+
+    // SDF 3D Effects
+    @doc "Apply with pushVar(), using a vec2 value. Direction of bevel light."
+    "bevel.light_dir"             => static string VAR_BEVEL_LIGHT_DIR;
+    @doc "Apply with pushVar(), using a float value. Intensity of bevel effect (0 = off)."
+    "bevel.strength"              => static string VAR_BEVEL_STRENGTH;
+    @doc "Apply with pushVar(), using a vec2 value. Offset of drop shadow."
+    "shadow.offset"               => static string VAR_SHADOW_OFFSET;
+    @doc "Apply with pushVar(), using a float value. Blur radius of drop shadow."
+    "shadow.blur"                 => static string VAR_SHADOW_BLUR;
+    @doc "Apply with pushVar(), using a float value. Width of inner shadow (0 = off)."
+    "inner_shadow.width"          => static string VAR_INNER_SHADOW_WIDTH;
 
     // Icon
     @doc "Apply with pushVar(), using an int value."

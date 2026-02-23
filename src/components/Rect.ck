@@ -31,6 +31,21 @@ public class Rect extends GComponent {
         gRect.borderWidth(borderWidth);
         gRect.borderColor(borderColor);
 
+        // SDF 3D effects
+        UIStyle.varVec2(UIStyle.VAR_BEVEL_LIGHT_DIR, @(0, 0)) => vec2 lightDir;
+        UIStyle.varFloat(UIStyle.VAR_BEVEL_STRENGTH, 0) => float bevelStrength;
+        UIStyle.varVec2(UIStyle.VAR_SHADOW_OFFSET, @(0, 0)) => vec2 shadowOffset;
+        UIStyle.varFloat(UIStyle.VAR_SHADOW_BLUR, 0) => float shadowBlur;
+        UIStyle.color(UIStyle.COL_SHADOW, @(0, 0, 0, 0)) => vec4 shadowColor;
+        UIStyle.varFloat(UIStyle.VAR_INNER_SHADOW_WIDTH, 0) => float innerShadowWidth;
+
+        gRect.lightDir(lightDir);
+        gRect.bevelStrength(bevelStrength);
+        gRect.shadowOffset(shadowOffset);
+        gRect.shadowBlur(shadowBlur);
+        gRect.shadowColor(shadowColor);
+        gRect.innerShadowWidth(innerShadowWidth);
+
         applyLayout(size, controlPoints, zIndex, rotate);
     }
 
