@@ -632,6 +632,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(debugId)) {
@@ -674,6 +675,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(debugId)) {
@@ -716,6 +718,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(debugId)) {
@@ -760,6 +763,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(debugId)) {
@@ -813,6 +817,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(id)) {
@@ -864,6 +869,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(id)) {
@@ -911,6 +917,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -958,6 +965,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -1003,6 +1011,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -1051,6 +1060,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -1098,6 +1108,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -1143,6 +1154,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -1190,6 +1202,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -1236,6 +1249,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -1283,6 +1297,7 @@ public class ChuGUI extends GGen {
         _sizeUnits => UIGlobals.sizeUnits;
         _posUnits => UIGlobals.posUnits;
         this @=> UIGlobals.currentPanel;
+        _is3D => UIGlobals.is3D;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
