@@ -28,7 +28,7 @@ while (true) {
 
     gui.label("3D ChuGUI", @(0, 1.5));
 
-    if (gui.button("Click Me", @(0, 0.8)).clicked()) {
+    if (gui.button("Click Me", @(0, 0.8))) {
         <<< "Button clicked!" >>>;
     }
 

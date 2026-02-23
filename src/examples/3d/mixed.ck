@@ -34,7 +34,7 @@ while (true) {
 
     controls.label("Controls", @(0, 1));
 
-    if (controls.button("Score +1", @(0, 0.3)).clicked()) {
+    if (controls.button("Score +1", @(0, 0.3))) {
         score++;
     }
 
