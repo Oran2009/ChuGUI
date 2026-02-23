@@ -99,6 +99,21 @@ public class ChuGUI extends GGen {
     @doc "(hidden)"
     int _debugAddCallCount;  // Tracks position in render order per frame
 
+    // ==== 3D Detection ====
+
+    @doc "(hidden)"
+    int _is3D;
+
+    @doc "Returns whether this panel is in 3D mode (perspective camera or rotated panel)."
+    fun int is3D() { return _is3D; }
+
+    // ==== Per-Instance Units ====
+
+    @doc "(hidden)"
+    "NDC" => string _sizeUnits;
+    @doc "(hidden)"
+    "NDC" => string _posUnits;
+
     // ImGUI wrappers (reused across frames to avoid allocation)
     // Uses flat maps with compound keys: "compId/styleKey"
     @doc "(hidden)"
@@ -151,6 +166,10 @@ public class ChuGUI extends GGen {
         
         GG.fps() $ int => int fps;
         (fps != 0) ? fps : 60 %=> currentFrame;
+
+        // Detect 3D mode: perspective camera or rotated panel
+        (GG.camera().mode() == GCamera.PERSPECTIVE ||
+         this.rotX() != 0 || this.rotY() != 0) => _is3D;
 
         null => lastComponent;
 
@@ -222,17 +241,21 @@ public class ChuGUI extends GGen {
 
     @doc "Set the unit system for both positions and sizes of components. Either ChuGUI.NDC or ChuGUI.WORLD."
     fun void units(string unit) {
+        unit => _sizeUnits;
+        unit => _posUnits;
         unit => UIGlobals.sizeUnits;
         unit => UIGlobals.posUnits;
     }
 
     @doc "Set the unit system for the size of components. Either ChuGUI.NDC or ChuGUI.WORLD."
     fun void sizeUnits(string unit) {
+        unit => _sizeUnits;
         unit => UIGlobals.sizeUnits;
     }
 
     @doc "Set the unit system for the position of components. Either ChuGUI.NDC or ChuGUI.WORLD."
     fun void posUnits(string unit) {
+        unit => _posUnits;
         unit => UIGlobals.posUnits;
     }
 
@@ -604,6 +627,12 @@ public class ChuGUI extends GGen {
         // Calculate debug ID for this rect (before incrementing count)
         "Rect_" + rectCount => string debugId;
 
+        rect.panel(this);
+        rect.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
+
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(debugId)) {
             DebugStyles.applyOverrides(debugId);
@@ -640,6 +669,12 @@ public class ChuGUI extends GGen {
         // Calculate debug ID for this icon (before incrementing count)
         "Icon_" + iconCount => string debugId;
 
+        icon.panel(this);
+        icon.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
+
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(debugId)) {
             DebugStyles.applyOverrides(debugId);
@@ -675,6 +710,12 @@ public class ChuGUI extends GGen {
 
         // Calculate debug ID for this label (before incrementing count)
         "Label_" + labelCount => string debugId;
+
+        label.panel(this);
+        label.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
 
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(debugId)) {
@@ -713,6 +754,12 @@ public class ChuGUI extends GGen {
 
         // Calculate debug ID for this meter (before incrementing count)
         "Meter_" + meterCount => string debugId;
+
+        meter.panel(this);
+        meter.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
 
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(debugId)) {
@@ -761,6 +808,12 @@ public class ChuGUI extends GGen {
             b --> this;
         }
 
+        b.panel(this);
+        b.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
+
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(id)) {
             DebugStyles.applyOverrides(id);
@@ -806,6 +859,12 @@ public class ChuGUI extends GGen {
             b --> this;
         }
 
+        b.panel(this);
+        b.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
+
         // Apply debug overrides if component is being debugged
         if (_debugEnabled && isDebugging(id)) {
             DebugStyles.applyOverrides(id);
@@ -846,6 +905,12 @@ public class ChuGUI extends GGen {
         if (slider.parent() == null) {
             slider --> this;
         }
+
+        slider.panel(this);
+        slider.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -888,6 +953,12 @@ public class ChuGUI extends GGen {
             slider --> this;
         }
 
+        slider.panel(this);
+        slider.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
+
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
             DebugStyles.applyOverrides(_id);
@@ -926,6 +997,12 @@ public class ChuGUI extends GGen {
         if (checkbox.parent() == null) {
             checkbox --> this;
         }
+
+        checkbox.panel(this);
+        checkbox.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -969,6 +1046,12 @@ public class ChuGUI extends GGen {
             input --> this;
         }
 
+        input.panel(this);
+        input.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
+
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
             DebugStyles.applyOverrides(_id);
@@ -1010,6 +1093,12 @@ public class ChuGUI extends GGen {
             dropdown --> this;
         }
 
+        dropdown.panel(this);
+        dropdown.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
+
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
             DebugStyles.applyOverrides(_id);
@@ -1048,6 +1137,12 @@ public class ChuGUI extends GGen {
         if (colorPicker.parent() == null) {
             colorPicker --> this;
         }
+
+        colorPicker.panel(this);
+        colorPicker.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -1090,6 +1185,12 @@ public class ChuGUI extends GGen {
             knob --> this;
         }
 
+        knob.panel(this);
+        knob.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
+
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
             DebugStyles.applyOverrides(_id);
@@ -1129,6 +1230,12 @@ public class ChuGUI extends GGen {
         if (radio.parent() == null) {
             radio --> this;
         }
+
+        radio.panel(this);
+        radio.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {
@@ -1170,6 +1277,12 @@ public class ChuGUI extends GGen {
         if (spinner.parent() == null) {
             spinner --> this;
         }
+
+        spinner.panel(this);
+        spinner.is3D(_is3D);
+        _sizeUnits => UIGlobals.sizeUnits;
+        _posUnits => UIGlobals.posUnits;
+        this @=> UIGlobals.currentPanel;
 
         // Apply debug overrides
         if (_debugEnabled && isDebugging(_id)) {

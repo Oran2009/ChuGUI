@@ -11,6 +11,18 @@ public class GComponent extends GGen {
 
     MouseState _state;
 
+    // Reference to owning ChuGUI panel (set when component is attached)
+    GGen @ _panel;
+
+    fun GGen panel() { return _panel; }
+    fun void panel(GGen p) { p @=> _panel; }
+
+    // 3D mode flag (set by the panel each frame)
+    int _is3D;
+
+    fun int is3D() { return _is3D; }
+    fun void is3D(int v) { v => _is3D; }
+
     // ==== Getters and Setters ====
 
     fun int frame() { return _frame; }
