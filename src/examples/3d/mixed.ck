@@ -20,7 +20,7 @@ controls.posZ(-4);
 controls.rotY(0.2);
 
 // HUD panel parented to camera (always faces viewer)
-ChuGUI hud --> GG.camera();
+ChuGUI hud --> GG.scene().camera();
 hud.units(ChuGUI.WORLD);
 hud.posZ(-2);
 

@@ -7,15 +7,15 @@ public class UIUtil {
 
     // Convert NDC size to world size
     fun static vec2 NDCToWorldSize(vec2 ndcSize) {
-        GG.camera().NDCToWorldPos(@(ndcSize.x, ndcSize.y, 0)) => vec3 worldPos;
-        GG.camera().NDCToWorldPos(@(0, 0, 0)) => vec3 origin;
+        GG.scene().camera().NDCToWorldPos(@(ndcSize.x, ndcSize.y, 0)) => vec3 worldPos;
+        GG.scene().camera().NDCToWorldPos(@(0, 0, 0)) => vec3 origin;
         return @(Math.fabs(worldPos.x - origin.x), Math.fabs(worldPos.y - origin.y));
     }
 
     // Convert world size to NDC size
     fun static vec2 worldToNDCSize(vec2 worldSize) {
-        GG.camera().worldPosToNDC(@(worldSize.x, worldSize.y, 0)) => vec3 ndcPos;
-        GG.camera().worldPosToNDC(@(0, 0, 0)) => vec3 origin;
+        GG.scene().camera().worldPosToNDC(@(worldSize.x, worldSize.y, 0)) => vec3 ndcPos;
+        GG.scene().camera().worldPosToNDC(@(0, 0, 0)) => vec3 origin;
         return @(Math.fabs(ndcPos.x - origin.x), Math.fabs(ndcPos.y - origin.y));
     }
 
@@ -27,14 +27,14 @@ public class UIUtil {
         panel.up() => vec3 up;
 
         // Project origin NDC point onto panel
-        GG.camera().NDCToWorldPos(@(0, 0, 0)) => vec3 origNear;
-        GG.camera().NDCToWorldPos(@(0, 0, 1)) => vec3 origFar;
+        GG.scene().camera().NDCToWorldPos(@(0, 0, 0)) => vec3 origNear;
+        GG.scene().camera().NDCToWorldPos(@(0, 0, 1)) => vec3 origFar;
         RayUtil.normalize3(@(origFar.x - origNear.x, origFar.y - origNear.y, origFar.z - origNear.z)) => vec3 origDir;
         RayUtil.rayPlaneT(origNear, origDir, panelPos, normal) => float t0;
 
         // Project offset NDC point onto panel
-        GG.camera().NDCToWorldPos(@(ndcSize.x, ndcSize.y, 0)) => vec3 offNear;
-        GG.camera().NDCToWorldPos(@(ndcSize.x, ndcSize.y, 1)) => vec3 offFar;
+        GG.scene().camera().NDCToWorldPos(@(ndcSize.x, ndcSize.y, 0)) => vec3 offNear;
+        GG.scene().camera().NDCToWorldPos(@(ndcSize.x, ndcSize.y, 1)) => vec3 offFar;
         RayUtil.normalize3(@(offFar.x - offNear.x, offFar.y - offNear.y, offFar.z - offNear.z)) => vec3 offDir;
         RayUtil.rayPlaneT(offNear, offDir, panelPos, normal) => float t1;
 
@@ -82,7 +82,7 @@ public class UIUtil {
         if (UIGlobals.posUnits == "WORLD") {
             return pos;
         } else {
-            GG.camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 worldPos;
+            GG.scene().camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 worldPos;
             return @(worldPos.x, worldPos.y);
         }
     }
@@ -96,7 +96,7 @@ public class UIUtil {
         }
 
         // Original 2D hit testing (flat mode)
-        GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 1) => vec3 mouseWorld;
+        GG.scene().camera().screenCoordToWorldPos(GWindow.mousePos(), 1) => vec3 mouseWorld;
 
         ggen.posWorld().x => float cx;
         ggen.posWorld().y => float cy;

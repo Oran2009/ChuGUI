@@ -68,7 +68,7 @@ public class RadioOption extends GComponent {
             gIndicator.color(selectedColor);
             gIndicator.borderRadius(borderRadius); // fully circular
             gIndicator.borderWidth(0);
-            gIndicator.posZ(0.1);
+            gIndicator.posZ(0.001);
             if (gIndicator.parent() != this) gIndicator --> this;
         } else {
             if (gIndicator.parent() == this) gIndicator --< this;

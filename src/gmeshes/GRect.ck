@@ -35,13 +35,21 @@ public class GRect extends GMesh {
         _mat.borderWidth(borderWidth);
     }
 
+    // Recompute mesh padding from shadow params and rebuild geometry
+    fun void rebuildGeo() {
+        Math.fabs(_mat.shadowOffset().x) + _mat.shadowBlur() => float padX;
+        Math.fabs(_mat.shadowOffset().y) + _mat.shadowBlur() => float padY;
+        _mat.padding(@(padX, padY));
+        _geo.build(_size.x + 2*padX, _size.y + 2*padY, 1, 1);
+    }
+
     @doc "Get the size."
     fun vec2 size() { return _size; }
     @doc "Set the size."
     fun void size(vec2 size) {
         size => _size;
         _mat.size(size);
-        _geo.build(_size.x, _size.y, 1, 1);
+        rebuildGeo();
     }
 
     @doc "Get the color."
@@ -59,8 +67,8 @@ public class GRect extends GMesh {
 
     fun void lightDir(vec2 v) { _mat.lightDir(v); }
     fun void bevelStrength(float v) { _mat.bevelStrength(v); }
-    fun void shadowOffset(vec2 v) { _mat.shadowOffset(v); }
-    fun void shadowBlur(float v) { _mat.shadowBlur(v); }
+    fun void shadowOffset(vec2 v) { _mat.shadowOffset(v); rebuildGeo(); }
+    fun void shadowBlur(float v) { _mat.shadowBlur(v); rebuildGeo(); }
     fun void shadowColor(vec4 v) { _mat.shadowColor(v); }
     fun void innerShadowWidth(float v) { _mat.innerShadowWidth(v); }
 }

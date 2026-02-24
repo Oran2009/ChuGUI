@@ -95,7 +95,7 @@ public class Button extends GComponent {
             gText.text(_label);
             gText.color(textColor);
             gText.size(textSize);
-            gText.pos(@(textX, 0, 0.1));
+            gText.pos(@(textX, 0, 0.001));
         } else {
             if (gText.parent() != null) gText --< this;
         }
@@ -105,7 +105,7 @@ public class Button extends GComponent {
             if (gIcon.parent() == null) gIcon --> this;
             gIcon.sca(@(iconSize, iconSize, 1));
             gIcon.color(iconColor);
-            gIcon.pos(@(iconX, 0, 0.1));
+            gIcon.pos(@(iconX, 0, 0.001));
         } else {
             if (gIcon.parent() != null) gIcon --< this;
         }

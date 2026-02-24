@@ -34,8 +34,8 @@ public class GComponent extends GGen {
             pos => _pos;
         } else if (_is3D && _panel != null) {
             // 3D mode: project NDC point onto panel's plane
-            GG.camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 nearNDC;
-            GG.camera().NDCToWorldPos(@(pos.x, pos.y, 1)) => vec3 farNDC;
+            GG.scene().camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 nearNDC;
+            GG.scene().camera().NDCToWorldPos(@(pos.x, pos.y, 1)) => vec3 farNDC;
             @(farNDC.x - nearNDC.x, farNDC.y - nearNDC.y, farNDC.z - nearNDC.z) => vec3 dir;
             RayUtil.normalize3(dir) => dir;
 
@@ -55,7 +55,7 @@ public class GComponent extends GGen {
             }
         } else {
             // Original flat mode
-            GG.camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 worldPos;
+            GG.scene().camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 worldPos;
             @(worldPos.x, worldPos.y) => _pos;
         }
         return this;

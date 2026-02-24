@@ -58,7 +58,7 @@ public class MouseState {
     fun void disabled(int disabled) { disabled => _disabled; }
     fun int disabled() { return _disabled; }
 
-    fun vec3 mouseWorld() { return GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 1); }
+    fun vec3 mouseWorld() { return GG.scene().camera().screenCoordToWorldPos(GWindow.mousePos(), 1); }
 
     // Returns mouse position in panel-local 2D coordinates (for 3D mode)
     fun vec2 mouseLocal() {

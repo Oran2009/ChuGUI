@@ -19,14 +19,14 @@ public class RayUtil {
     // Note: samples GWindow.mousePos() independently from mouseRayDir().
     // Callers needing both should be aware they may sample at different times.
     fun static vec3 mouseRayOrigin() {
-        return GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 0);
+        return GG.scene().camera().screenCoordToWorldPos(GWindow.mousePos(), 0);
     }
 
     // Returns the normalized ray direction from the camera through the current mouse pixel.
     fun static vec3 mouseRayDir() {
         GWindow.mousePos() => vec2 mp;
-        GG.camera().screenCoordToWorldPos(mp, 0) => vec3 near;
-        GG.camera().screenCoordToWorldPos(mp, 1) => vec3 far;
+        GG.scene().camera().screenCoordToWorldPos(mp, 0) => vec3 near;
+        GG.scene().camera().screenCoordToWorldPos(mp, 1) => vec3 far;
         return normalize3(@(far.x - near.x, far.y - near.y, far.z - near.z));
     }
 

@@ -121,7 +121,7 @@ public class Dropdown extends GComponent {
         gLabel.size(textSize);
         gLabel.controlPoints(@(0,0.5));
         gLabel.posX(-size.x/2 + 0.1 * size.x);
-        gLabel.posZ(0.1);
+        gLabel.posZ(0.001);
 
         gArrow.color(arrowColor);
         gArrow.sca(@(textSize,textSize));
@@ -170,7 +170,7 @@ public class Dropdown extends GComponent {
                 t.controlPoints(@(0,0.5));
                 t.posY(r.pos().y);
                 t.posX(-size.x/2 + 0.1 * size.x);
-                t.posZ(0.1);
+                t.posZ(0.001);
             }
         } else {
             if (gList.parent() != null) { gList --< this; }

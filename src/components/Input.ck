@@ -197,7 +197,7 @@ public class Input extends GComponent {
         }
         gText.size(textSize);
         gText.maxWidth(fieldSize.x - 0.1);
-        gText.posZ(0.1);
+        gText.posZ(0.001);
         gText.controlPoints(@(0, 0.5));
         
         // Position text to left side with padding
@@ -210,7 +210,7 @@ public class Input extends GComponent {
         gCursor.color(cursorColor);
         gCursor.borderRadius(0);
         gCursor.borderWidth(0);
-        gCursor.posZ(0.2);
+        gCursor.posZ(0.002);
         
         // Show/hide cursor based on focus and blink state
         if (_focused && _cursorVisible) {

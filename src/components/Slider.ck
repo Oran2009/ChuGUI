@@ -100,7 +100,7 @@ public class Slider extends GComponent {
         gHandle.borderRadius(handleBorderRadius);
         gHandle.borderWidth(handleBorderWidth);
         gHandle.borderColor(handleBorderColor);
-        gHandle.posZ(0.2);
+        gHandle.posZ(0.001);
 
         applyLayout(@(trackSize.x + handleSize.x, handleSize.y), controlPoints, zIndex, rotate);
     }
@@ -298,7 +298,7 @@ public class DiscreteSlider extends Slider {
         gHandle.borderRadius(handleBorderRadius);
         gHandle.borderWidth(handleBorderWidth);
         gHandle.borderColor(handleBorderColor);
-        gHandle.posZ(0.2);
+        gHandle.posZ(0.001);
 
         if (recreateTicks) {
             createTicks();

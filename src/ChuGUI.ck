@@ -172,7 +172,7 @@ public class ChuGUI extends GGen {
         UIGlobals.resetHitTracking();
 
         // Detect 3D mode: perspective camera or rotated panel
-        (GG.camera().mode() == GCamera.PERSPECTIVE ||
+        (GG.scene().camera().mode() == GCamera.PERSPECTIVE ||
          this.rotX() != 0 || this.rotY() != 0) => _is3D;
 
         null => lastComponent;

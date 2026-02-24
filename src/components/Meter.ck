@@ -68,7 +68,7 @@ public class Meter extends GComponent {
             gFill.borderColor(@(0,0,0,0));
             gFill.posX(fillCenterX);
             gFill.posY(0);
-            gFill.posZ(0.1);
+            gFill.posZ(0.001);
         } else {
             gFill.size(@(0, 0));
         }

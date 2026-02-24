@@ -9,6 +9,7 @@ public class RectMaterial extends Material {
     float _shadowBlur;
     vec4 _shadowColor;
     float _innerShadowWidth;
+    vec2 _padding;
 
     // ---- Getters and Setters ----
 
@@ -44,6 +45,9 @@ public class RectMaterial extends Material {
 
     fun float innerShadowWidth() { return _innerShadowWidth; }
     fun void innerShadowWidth(float v) { v => _innerShadowWidth; update(); }
+
+    fun vec2 padding() { return _padding; }
+    fun void padding(vec2 v) { v => _padding; update(); }
 
     // ---- WGSL Functions ----
 
@@ -91,16 +95,17 @@ public class RectMaterial extends Material {
             @group(1) @binding(8) var<uniform> u_shadowBlur : f32;
             @group(1) @binding(9) var<uniform> u_shadowColor : vec4<f32>;
             @group(1) @binding(10) var<uniform> u_innerShadowWidth : f32;
+            @group(1) @binding(11) var<uniform> u_padding : vec2<f32>;
+
+            fn sdRoundedBox(p: vec2<f32>, b: vec2<f32>, r: f32) -> f32 {
+                let q = abs(p) - b + vec2<f32>(r);
+                return length(max(q, vec2<f32>(0.0))) + min(max(q.x, q.y), 0.0) - r;
+            }
 
             fn getEdgeDist(uv: vec2<f32>) -> f32 {
-                let ndc = vec2<f32>(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0);
-                let planeSpaceCoord = vec2<f32>(u_size.x * 0.5 * ndc.x, u_size.y * 0.5 * ndc.y);
-                let corner = u_size * 0.5;
-                let offsetCorner = corner - abs(planeSpaceCoord);
-                let innerRadDist = min(offsetCorner.x, offsetCorner.y) * -1.0;
-                let roundedDist = length(max(abs(planeSpaceCoord) - u_size * 0.5 + u_borderRadius, vec2<f32>(0.0))) - u_borderRadius;
-                let s = step(innerRadDist * -1.0, u_borderRadius);
-                return mix(innerRadDist, roundedDist, s);
+                let totalSize = u_size + 2.0 * u_padding;
+                let p = (uv * 2.0 - 1.0) * totalSize * 0.5;
+                return sdRoundedBox(p, u_size * 0.5, u_borderRadius);
             }
 
             @fragment
@@ -110,7 +115,7 @@ public class RectMaterial extends Material {
                 // Drop shadow (rendered behind main shape)
                 var shadowAlpha = 0.0;
                 if (u_shadowBlur > 0.0 || (u_shadowOffset.x != 0.0 || u_shadowOffset.y != 0.0)) {
-                    let shadowUV = in.v_uv - u_shadowOffset / u_size;
+                    let shadowUV = in.v_uv - u_shadowOffset / (u_size + 2.0 * u_padding);
                     let shadowDist = getEdgeDist(shadowUV);
                     shadowAlpha = smoothstep(u_shadowBlur, 0.0, shadowDist) * u_shadowColor.a;
                 }
@@ -129,28 +134,35 @@ public class RectMaterial extends Material {
                     finalColor = u_borderColor;
                 }
 
-                // Bevel effect using SDF gradient as surface normal
+                // Bevel effect — sample SDF at offsets for smooth gradient,
+                // restrict to edge band to avoid interior crease artifacts
                 if (u_bevelStrength != 0.0 && length(u_lightDir) > 0.001) {
-                    let dx = dpdx(edgeDist);
-                    let dy = dpdy(edgeDist);
+                    let eps = 1.0 / 256.0;
+                    let dx = getEdgeDist(in.v_uv + vec2<f32>(eps, 0.0)) - getEdgeDist(in.v_uv - vec2<f32>(eps, 0.0));
+                    let dy = getEdgeDist(in.v_uv + vec2<f32>(0.0, eps)) - getEdgeDist(in.v_uv - vec2<f32>(0.0, eps));
                     let gradLen = sqrt(dx * dx + dy * dy);
                     if (gradLen > 0.001) {
                         let gradient = vec2<f32>(dx, dy) / gradLen;
                         let lighting = dot(gradient, normalize(u_lightDir)) * u_bevelStrength;
+                        // Fade bevel from full at edge to zero inside
+                        let bevelWidth = max(u_borderRadius, min(u_size.x, u_size.y) * 0.15);
+                        let bevelMask = 1.0 - smoothstep(0.0, bevelWidth, -edgeDist);
+                        let adjusted = lighting * bevelMask;
                         finalColor = vec4<f32>(
-                            clamp(finalColor.r + lighting, 0.0, 1.0),
-                            clamp(finalColor.g + lighting, 0.0, 1.0),
-                            clamp(finalColor.b + lighting, 0.0, 1.0),
+                            clamp(finalColor.r + adjusted, 0.0, 1.0),
+                            clamp(finalColor.g + adjusted, 0.0, 1.0),
+                            clamp(finalColor.b + adjusted, 0.0, 1.0),
                             finalColor.a
                         );
                     }
                 }
 
-                // Inner shadow
+                // Inner shadow — darken near edges, not to pure black
                 if (u_innerShadowWidth > 0.0) {
                     let innerFactor = smoothstep(0.0, u_innerShadowWidth, -edgeDist);
+                    let shadowDarken = mix(0.4, 1.0, innerFactor);
                     finalColor = vec4<f32>(
-                        finalColor.rgb * innerFactor,
+                        finalColor.rgb * shadowDarken,
                         finalColor.a
                     );
                 }
@@ -181,5 +193,6 @@ public class RectMaterial extends Material {
         uniformFloat(8, _shadowBlur);
         uniformFloat4(9, _shadowColor);
         uniformFloat(10, _innerShadowWidth);
+        uniformFloat2(11, _padding);
     }
 }
