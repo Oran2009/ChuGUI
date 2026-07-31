@@ -1,29 +1,10 @@
 @import "../gmeshes/GRect.ck"
 @import "UIUtil.ck"
 
+// TODO: CursorState is reserved for future cursor management.
+// UI.setMouseCursor() cannot be called from GGen.update() because
+// GGen callbacks run before the ImGUI frame starts.
 public class CursorState {
-    static MouseState @ _activeStates[0];
-
-    // Called at start of each frame to clear active states
-    fun static void clearStates() {
-        _activeStates.clear();
-    }
-
-    // Called by MouseState.update() to register as active this frame
-    fun static void registerActive(MouseState @ state) {
-        _activeStates << state;
-    }
-
-    // Update cursor based on active states only
-    fun static void update() {
-        for (MouseState state : _activeStates) {
-            if (UIUtil.hovered(state.element(), state.rect()) && state.disabled()) {
-                UI.setMouseCursor(UI_MouseCursor.NotAllowed);
-                return;
-            }
-        }
-        UI.setMouseCursor(UI_MouseCursor.Arrow);
-    }
 }
 
 public class MouseState {
@@ -56,7 +37,7 @@ public class MouseState {
     fun void disabled(int disabled) { disabled => _disabled; }
     fun int disabled() { return _disabled; }
 
-    fun vec3 mouseWorld() { return GG.camera().screenCoordToWorldPos(GWindow.mousePos(), 1); }
+    fun vec3 mouseWorld() { return UIUtil.mouseWorld(); }
     fun int mouseDown() { return _mouseDown; }
     fun int mouseState() { return _mouseState; }
 
@@ -76,9 +57,6 @@ public class MouseState {
     // ==== Update ====
 
     fun void update() {
-        // Register as active this frame (for cursor state tracking)
-        CursorState.registerActive(this);
-
         UIUtil.hovered(_element, _rect) => _hovered;
 
         GWindow.mouseLeftDown() => _mouseDown;
@@ -93,7 +71,5 @@ public class MouseState {
         if (_pressed && !_pressedLast) { !_toggled => _toggled; }
 
         _pressed => _pressedLast;
-
-        CursorState.update();
     }
 }

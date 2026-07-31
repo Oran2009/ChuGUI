@@ -59,10 +59,6 @@ public class ColorPicker extends GComponent {
             saturation => hsv.y;
         }
 
-        if (hsv.y == 0) {
-            value => hsv.z;
-        }
-
         hsv.x => hue;
         hsv.y => saturation;
         hsv.z => value;
@@ -78,10 +74,13 @@ public class ColorPicker extends GComponent {
 
     fun void updateUI() {
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_COLOR_PICKER_SIZE, @(2.0, 1.0))) => vec2 pickerSize;
-        UIStyle.varVec2(UIStyle.VAR_COLOR_PICKER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> pickerSize;
+        UIStyle.varVec2(UIStyle.VAR_COLOR_PICKER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
 
-        pickerSize.x * 0.3 => float previewWidth;
-        pickerSize.x * 0.7 => float sliderWidth;
+        UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_PREVIEW_RATIO, 0.3) => float previewRatio;
+        pickerSize.x * previewRatio => float previewWidth;
+        pickerSize.x * (1.0 - previewRatio) => float sliderWidth;
         pickerSize.y / 3.0 => float sliderHeightSpacing;
 
         0.25 * pickerSize.x => float spacing;
@@ -151,14 +150,10 @@ public class ColorPicker extends GComponent {
         satSlider.val(saturation);
         valSlider.val(value);
 
-        UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_Z_INDEX, 0.0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_ROTATE, 0.0) => float rotate;
+        UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0.0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_COLOR_PICKER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0.0)) => float rotate;
 
         applyLayout(@(totalWidth + sliderHandleSize, pickerSize.y), controlPoints, zIndex, rotate);
-        previewRect.rotX(rotate);
-        hueSlider.rotX(rotate);
-        satSlider.rotX(rotate);
-        valSlider.rotX(rotate);
     }
 
     fun void update() {

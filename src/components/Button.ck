@@ -44,14 +44,18 @@ public class Button extends GComponent {
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_BUTTON_SIZE, @(3, 0.5))) => vec2 size;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_TEXT_SIZE, 0.2)) => float textSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_ICON_SIZE, textSize)) => float iconSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_RADIUS, 0)) => float borderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_WIDTH, 0)) => float borderWidth;
-        UIStyle.varString(UIStyle.VAR_BUTTON_FONT, "") => string font;
+        UIStyle.varFloat(UIStyle.VAR_BUTTON_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
+        scale *=> textSize;
+        scale *=> iconSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_BUTTON_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0))) => float borderWidth;
+        UIStyle.varString(UIStyle.VAR_BUTTON_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
         UIStyle.varString(UIStyle.VAR_BUTTON_ICON_POSITION, UIStyle.LEFT) => string iconPos;
 
-        UIStyle.varVec2(UIStyle.VAR_BUTTON_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_BUTTON_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_BUTTON_ROTATE, 0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_BUTTON_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_BUTTON_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_BUTTON_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         // state
         if (_disabled) {
@@ -79,9 +83,9 @@ public class Button extends GComponent {
         gBtn.borderColor(borderColor);
 
         // layout
-        (_label != "") ? textSize * _label.length() * 0.5 : 0. => float textW;
+        (_label != "") ? textSize * _label.length() * 0.6 : 0. => float textW;
         (_icon != "") ? iconSize : 0. => float iconW;
-        0.2 * size.y => float spacing;
+        UIStyle.varFloat(UIStyle.VAR_BUTTON_ICON_SPACING, 0.2) * size.y => float spacing;
         if (textW == 0 || iconW == 0) { 0. => spacing; }
         textW + iconW + ((_label!="" && _icon!="") ? spacing : 0.) => float totalW;
         -totalW * 0.5 => float startX;

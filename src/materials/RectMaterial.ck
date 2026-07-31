@@ -7,19 +7,19 @@ public class RectMaterial extends Material {
     // ---- Getters and Setters ----
 
     fun float borderRadius() { return _borderRadius; }
-    fun void borderRadius(float r) { r => _borderRadius; update(); }
+    fun void borderRadius(float r) { r => _borderRadius; uniformFloat(0, _borderRadius); }
 
     fun float borderWidth() { return _borderWidth; }
-    fun void borderWidth(float borderWidth) { borderWidth => _borderWidth; update(); }
+    fun void borderWidth(float borderWidth) { borderWidth => _borderWidth; uniformFloat(1, _borderWidth); }
 
     fun vec2 size() { return _size; }
-    fun void size(vec2 s) { s => _size; update(); }
-    
+    fun void size(vec2 s) { s => _size; uniformFloat2(2, _size); }
+
     fun vec4 color() { return _color; }
-    fun void color(vec4 c) { c => _color; update(); }
-    
+    fun void color(vec4 c) { c => _color; uniformFloat4(3, _color); }
+
     fun vec4 borderColor() { return _borderColor; }
-    fun void borderColor(vec4 borderColor) { borderColor => _borderColor; update(); }
+    fun void borderColor(vec4 borderColor) { borderColor => _borderColor; uniformFloat4(4, _borderColor); }
 
     // ---- WGSL Functions ----
 
@@ -73,19 +73,24 @@ public class RectMaterial extends Material {
                 return mix(innerRadDist, roundedDist, s);
             }
 
-            @fragment 
+            @fragment
             fn fs_main(in : FragmentInput) -> @location(0) vec4<f32> {
                 let edgeDist = getEdgeDist(in.v_uv);
-                
-                if (edgeDist > 0.0) {
+
+                // Anti-aliased edge using screen-space derivatives
+                let aa = fwidth(edgeDist);
+                let alpha = 1.0 - smoothstep(-aa, aa, edgeDist);
+                if (alpha <= 0.0) {
                     discard;
                 }
-                
+
                 var finalColor = u_color;
-                if (edgeDist * -1.0 < u_borderWidth) {
-                    finalColor = u_borderColor;
+                if (u_borderWidth > 0.0) {
+                    let borderFactor = smoothstep(-u_borderWidth - aa * 0.5, -u_borderWidth + aa * 0.5, edgeDist);
+                    finalColor = mix(u_color, u_borderColor, borderFactor);
                 }
-                
+                finalColor = vec4<f32>(finalColor.rgb, finalColor.a * alpha);
+
                 return finalColor;
             }
         " => string frag;

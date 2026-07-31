@@ -8,9 +8,6 @@ GG.camera().orthographic();
 ChuGUI gui --> GG.scene();
 gui.sizeUnits(ChuGUI.WORLD);
 
-// Enable debug mode
-gui.debugEnabled(true);
-
 // State variables
 0.5 => float sliderVal;
 false => int checkboxVal;
@@ -36,6 +33,7 @@ while (true) {
     gui.label("Hello World", @(-0.5, -0.1));
     gui.debugAdd();
 
-    // Render the debug panel
+    // Render the debug panel and scenegraph view
     gui.debug();
+    gui.debugScenegraph();
 }

@@ -11,7 +11,7 @@ public class Spinner extends GComponent {
     MomentaryButton plusButton --> this;
 
     int _min;
-    int _num;
+    int _val;
     int _max;
 
     fun Spinner() {
@@ -27,18 +27,24 @@ public class Spinner extends GComponent {
         if(plusButton != null) plusButton.disabled(disabled);
     }
 
+    fun int min() { return _min; }
     fun void min(int min) {
         min => _min;
+        if (_min > _max) _min => _max;
+        Math.clampi(_val, _min, _max) => _val;
     }
+    fun int max() { return _max; }
     fun void max(int max) {
         max => _max;
+        if (_max < _min) _max => _min;
+        Math.clampi(_val, _min, _max) => _val;
     }
 
-    fun void num(int num) {
-        num => _num;
+    fun void val(int val) {
+        Math.clampi(val, _min, _max) => _val;
     }
-    fun int num() {
-        return _num;
+    fun int val() {
+        return _val;
     }
 
     // ==== Update ====
@@ -50,11 +56,16 @@ public class Spinner extends GComponent {
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_SPINNER_BUTTON_SIZE, @(0.25, 0.25))) => vec2 buttonSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SPINNER_TEXT_SIZE, 0.2)) => float textSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_SPINNER_SPACING, 0.1)) => float spacing;
-        UIStyle.varString(UIStyle.VAR_SPINNER_FONT, "") => string font;
+        UIStyle.varFloat(UIStyle.VAR_SPINNER_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
+        scale *=> buttonSize;
+        scale *=> textSize;
+        scale *=> spacing;
+        UIStyle.varString(UIStyle.VAR_SPINNER_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
-        UIStyle.varVec2(UIStyle.VAR_SPINNER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_SPINNER_Z_INDEX, 0.0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_SPINNER_ROTATE, 0.0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_SPINNER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_SPINNER_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0.0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_SPINNER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0.0)) => float rotate;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_SPINNER_TEXT_DISABLED, textColor) => textColor;
@@ -66,11 +77,11 @@ public class Spinner extends GComponent {
         numLabel.gLabel.font(font);
         numLabel.gLabel.color(textColor);
         numLabel.gLabel.align(1); // center alignment
-        numLabel.gLabel.text(Std.itoa(_num));
+        numLabel.gLabel.text(Std.itoa(_val));
 
         buttonSize.x => float minusWidth;
         buttonSize.x => float plusWidth;
-        textSize * Std.itoa(_num).length() $ float => float labelWidth; // estimate for 3-digit numbers
+        textSize * Std.itoa(_val).length() $ float => float labelWidth; // estimate for 3-digit numbers
 
         minusWidth + spacing + labelWidth + spacing + plusWidth => float totalWidth;
         applyLayout(@(totalWidth, size.y), controlPoints, zIndex, rotate);
@@ -87,13 +98,13 @@ public class Spinner extends GComponent {
         plusButton.update();
 
         if (minusButton.clicked()) {
-            1 -=> _num;
+            1 -=> _val;
         }
         if (plusButton.clicked()) {
-            1 +=> _num;
+            1 +=> _val;
         }
 
-        Math.clampi(_num, _min, _max) => _num;
+        Math.clampi(_val, _min, _max) => _val;
 
         updateUI();
     }

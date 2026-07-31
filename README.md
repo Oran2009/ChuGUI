@@ -39,5 +39,4 @@ Congrats, you now have ChuGUI properly installed!
 - Check out the [Examples](https://ccrma.stanford.edu/~hoangben/ChuGUI/examples/) to get started using ChuGUI.
 
 ## Authors
-
 ChuGUI was created and is maintained by <a target="_blank" href="https://ccrma.stanford.edu/~hoangben/">Ben Hoang</a>.

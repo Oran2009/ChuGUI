@@ -47,6 +47,7 @@ ver.addFile("../src/components/Label.ck", "components");
 ver.addFile("../src/components/Meter.ck", "components");
 ver.addFile("../src/components/Radio.ck", "components");
 ver.addFile("../src/components/Rect.ck", "components");
+ver.addFile("../src/components/Separator.ck", "components");
 ver.addFile("../src/components/Slider.ck", "components");
 ver.addFile("../src/components/Spinner.ck", "components");
 
@@ -59,6 +60,8 @@ ver.addFile("../src/lib/MouseState.ck", "lib");
 ver.addFile("../src/lib/UIGlobals.ck", "lib");
 ver.addFile("../src/lib/UIUtil.ck", "lib");
 ver.addFile("../src/lib/ComponentStyleMap.ck", "lib");
+ver.addFile("../src/lib/ContainerContext.ck", "lib");
+ver.addFile("../src/lib/Debug.ck", "lib");
 ver.addFile("../src/lib/DebugStyles.ck", "lib");
 
 ver.addFile("../src/materials/RectMaterial.ck", "materials");
@@ -103,6 +106,10 @@ ver.addExampleFile("../src/examples/hud/assets/paw-print.png", "hud/assets");
 ver.addExampleFile("../src/examples/hud/assets/sword.png", "hud/assets");
 ver.addExampleFile("../src/examples/hud/assets/syringe.png", "hud/assets");
 ver.addExampleFile("../src/examples/hud/assets/tornado.png", "hud/assets");
+
+ver.addExampleFile("../src/examples/components/separator/basic.ck", "components/separator");
+ver.addExampleFile("../src/examples/components/tooltip/basic.ck", "components/tooltip");
+ver.addExampleFile("../src/examples/layout/basic.ck", "layout");
 
 ver.addExampleFile("../src/examples/debug/debug_test.ck", "debug");
 

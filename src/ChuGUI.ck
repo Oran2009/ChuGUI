@@ -1,9 +1,9 @@
 @import "lib/UIGlobals.ck"
 @import "lib/GComponent.ck"
+@import "lib/ContainerContext.ck"
 @import "lib/MouseState.ck"
 @import "lib/UIUtil.ck"
-@import "lib/ComponentStyleMap.ck"
-@import "lib/DebugStyles.ck"
+@import "lib/Debug.ck"
 @import "UIStyle.ck"
 @import "components/Rect.ck"
 @import "components/Icon.ck"
@@ -18,6 +18,7 @@
 @import "components/Meter.ck"
 @import "components/Radio.ck"
 @import "components/Spinner.ck"
+@import "components/Separator.ck"
 
 @doc "ChuGUI is a flexible immediate-mode 2D GUI toolkit for ChuGL."
 public class ChuGUI extends GGen {
@@ -49,6 +50,11 @@ public class ChuGUI extends GGen {
     @doc "(hidden)"
     int meterCount;
 
+    @doc "(hidden)"
+    Separator separatorPool[0];
+    @doc "(hidden)"
+    int separatorCount;
+
     // ==== Maps ====
     
     @doc "(hidden)"
@@ -75,38 +81,42 @@ public class ChuGUI extends GGen {
 
     @doc "(hidden)"
     Knob knobs[0];
-    
+
+    @doc "(hidden)"
+    DiscreteKnob discreteKnobs[0];
+
     @doc "(hidden)"
     Radio radios[0];
 
     @doc "(hidden)"
     Spinner spinners[0];
 
-    // ==== Debug State ====
+    // ==== Debug ====
 
     @doc "(hidden)"
-    int _debugEnabled;
-    @doc "(hidden)"
-    string _debugComponents[0];
-    @doc "(hidden)"
-    GComponent @ _debugComponentRefs[0];
-    @doc "(hidden)"
-    string _debugComponentTypes[0];
+    Debug _debug;
     @doc "(hidden)"
     string _lastComponentType;
     @doc "(hidden)"
     string _lastComponentId;
-    @doc "(hidden)"
-    int _debugAddCallCount;  // Tracks position in render order per frame
 
-    // ImGUI wrappers (reused across frames to avoid allocation)
-    // Uses flat maps with compound keys: "compId/styleKey"
+    // ==== Tooltip ====
+
     @doc "(hidden)"
-    UI_Float4 _colorWrappers[0];
+    GRect _tooltipRect;
     @doc "(hidden)"
-    UI_Float _floatWrappers[0];
+    GText _tooltipText;
     @doc "(hidden)"
-    UI_Float2 _vec2Wrappers[0];
+    float _tooltipTimer;
+    @doc "(hidden)"
+    GComponent @ _tooltipTarget;
+    @doc "(hidden)"
+    int _tooltipVisible;
+
+    // ==== Container Layout State ====
+
+    @doc "(hidden)"
+    ContainerContext _containerStack[0];
 
     // ==== Frame Management ====
 
@@ -114,16 +124,7 @@ public class ChuGUI extends GGen {
     int currentFrame;
 
     @doc "(hidden)"
-    fun void resetFrame(GComponent components[]) {
-        string keys[0];
-        components.getKeys(keys);
-        for (string k : keys) {
-            components[k] @=> GComponent c;
-            if (c != null) {
-                c.frame(-1);
-            }
-        }
-    }
+    string _mapKeys[0]; // Reusable scratch array to avoid per-frame allocations
 
     @doc "(hidden)"
     fun void cleanupPool(GComponent components[], int count) {
@@ -134,64 +135,84 @@ public class ChuGUI extends GGen {
         }
     }
 
+    // Combined cleanup + reset in a single pass (halves getKeys() calls)
     @doc "(hidden)"
-    fun void cleanupMap(GComponent components[]) {
-        string keys[0];
-        components.getKeys(keys);
-        for (string k : keys) {
+    fun void cleanupAndResetMap(GComponent components[]) {
+        components.getKeys(_mapKeys);
+        for (string k : _mapKeys) {
             components[k] @=> GComponent c;
-            if (c == null || c.parent() == null || c.frame() != -1) continue;
-            c --< this;
+            if (c == null) continue;
+            if (c.parent() != null && c.frame() == -1) {
+                c --< this;
+            }
+            c.frame(-1);
         }
     }
-    
+
+    @doc "(hidden)"
+    int _idUsageCount[0]; // per-frame ID collision counter
+
+    @doc "(hidden)"
+    fun string _deduplicateId(string id) {
+        if (_idUsageCount.isInMap(id)) {
+            _idUsageCount[id] + 1 => _idUsageCount[id];
+            <<< "ChuGUI warning: duplicate ID '" + id + "' — use pushID() to disambiguate" >>>;
+            return id + "##" + _idUsageCount[id];
+        } else {
+            1 => _idUsageCount[id];
+            return id;
+        }
+    }
+
     @doc "(hidden)"
     fun void update(float dt) {
         currentFrame++;
-        
-        GG.fps() $ int => int fps;
-        (fps != 0) ? fps : 60 %=> currentFrame;
 
         null => lastComponent;
 
+        _debug.frameReset();
+        // Fresh array each frame — .clear() may not reset associative entries in ChucK
+        int freshIdCount[0];
+        freshIdCount @=> _idUsageCount;
         UIStyle.clearStacks();
-        CursorState.clearStates();
+        UIUtil.cacheMousePos();
 
         cleanupPool(rectPool, rectCount);
         cleanupPool(iconPool, iconCount);
         cleanupPool(labelPool, labelCount);
         cleanupPool(meterPool, meterCount);
+        cleanupPool(separatorPool, separatorCount);
 
         0 => rectCount;
         0 => iconCount;
         0 => labelCount;
         0 => meterCount;
+        0 => separatorCount;
 
-        cleanupMap(buttons);
-        cleanupMap(toggleBtns);
-        cleanupMap(sliders);
-        cleanupMap(discreteSliders);
-        cleanupMap(checkboxes);
-        cleanupMap(inputs);
-        cleanupMap(dropdowns);
-        cleanupMap(colorPickers);
-        cleanupMap(knobs);
-        cleanupMap(radios);
-        cleanupMap(spinners);
-
-        resetFrame(buttons);
-        resetFrame(toggleBtns);
-        resetFrame(sliders);
-        resetFrame(discreteSliders);
-        resetFrame(checkboxes);
-        resetFrame(inputs);
-        resetFrame(dropdowns);
-        resetFrame(colorPickers);
-        resetFrame(knobs);
-        resetFrame(radios);
-        resetFrame(spinners);
+        // 12 map traversals: inherent to ChucK's lack of generic map types.
+        // Scratch array _mapKeys is reused (no per-frame allocation).
+        cleanupAndResetMap(buttons);
+        cleanupAndResetMap(toggleBtns);
+        cleanupAndResetMap(sliders);
+        cleanupAndResetMap(discreteSliders);
+        cleanupAndResetMap(checkboxes);
+        cleanupAndResetMap(inputs);
+        cleanupAndResetMap(dropdowns);
+        cleanupAndResetMap(colorPickers);
+        cleanupAndResetMap(knobs);
+        cleanupAndResetMap(discreteKnobs);
+        cleanupAndResetMap(radios);
+        cleanupAndResetMap(spinners);
 
         idStack.clear();
+        _containerStack.clear();
+
+        // Detach tooltip if it wasn't shown last frame
+        if (!_tooltipVisible) {
+            if (_tooltipRect.parent() != null) _tooltipRect --< this;
+            if (_tooltipText.parent() != null) _tooltipText --< this;
+        }
+        false => _tooltipVisible;
     }
 
     // ==== ID ====
@@ -220,20 +241,30 @@ public class ChuGUI extends GGen {
 
     // ==== Globals ====
 
-    @doc "Set the unit system for both positions and sizes of components. Either ChuGUI.NDC or ChuGUI.WORLD."
+    @doc "Set the unit system for both positions and sizes of components. ChuGUI.NDC, ChuGUI.WORLD, or ChuGUI.SCREEN."
     fun void units(string unit) {
         unit => UIGlobals.sizeUnits;
         unit => UIGlobals.posUnits;
     }
 
-    @doc "Set the unit system for the size of components. Either ChuGUI.NDC or ChuGUI.WORLD."
+    @doc "Set the unit system for the size of components. ChuGUI.NDC, ChuGUI.WORLD, or ChuGUI.SCREEN."
     fun void sizeUnits(string unit) {
         unit => UIGlobals.sizeUnits;
     }
 
-    @doc "Set the unit system for the position of components. Either ChuGUI.NDC or ChuGUI.WORLD."
+    @doc "Set the unit system for the position of components. ChuGUI.NDC, ChuGUI.WORLD, or ChuGUI.SCREEN."
     fun void posUnits(string unit) {
         unit => UIGlobals.posUnits;
+    }
+
+    @doc "Enable or disable gamma correction on the output pass. For 2D UI with sRGB colors (typical), disable gamma to avoid washed-out colors. Default is true (ChuGL default)."
+    fun void gammaCorrection(int enabled) {
+        GG.outputPass().gamma(enabled);
+    }
+
+    @doc "Get the current gamma correction state."
+    fun int gammaCorrection() {
+        return GG.outputPass().gamma();
     }
 
     // ==== UIUtil Functions ====
@@ -250,341 +281,221 @@ public class ChuGUI extends GGen {
 
     @doc "Returns whether the last component rendered is hovered or not."
     fun int hovered() {
+        if (lastComponent == null) return 0;
         return lastComponent._state.hovered();
+    }
+
+    @doc "Show a tooltip on hover for the last rendered component. Must be the very next ChuGUI call after the target component with no intervening render calls (e.g. rect(), button(), label()). The tooltip attaches to whatever lastComponent is at the time of this call. Appears after a configurable delay (UIStyle.VAR_TOOLTIP_DELAY)."
+    fun void tooltip(string text) {
+        if (lastComponent == null) return;
+        if (!lastComponent._state.hovered()) {
+            // Not hovering — if this was our target, reset
+            if (lastComponent == _tooltipTarget) {
+                0.0 => _tooltipTimer;
+                null @=> _tooltipTarget;
+            }
+            return;
+        }
+
+        // Hovering — check if target changed
+        if (lastComponent != _tooltipTarget) {
+            lastComponent @=> _tooltipTarget;
+            0.0 => _tooltipTimer;
+        }
+
+        // Accumulate timer
+        GG.fps() => float fps;
+        _tooltipTimer + (1.0 / ((fps > 0) ? fps : 60.0)) => _tooltipTimer;
+
+        // Check delay
+        UIStyle.varFloat(UIStyle.VAR_TOOLTIP_DELAY, 0.5) => float delay;
+        if (_tooltipTimer < delay) return;
+
+        // Show tooltip — read all style values
+        UIStyle.color(UIStyle.COL_TOOLTIP, @(0.15, 0.15, 0.15, 0.95)) => vec4 bgColor;
+        UIStyle.color(UIStyle.COL_TOOLTIP_TEXT, @(1, 1, 1, 1)) => vec4 textColor;
+        UIStyle.color(UIStyle.COL_TOOLTIP_BORDER, @(0.3, 0.3, 0.3, 1)) => vec4 borderColor;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_TOOLTIP_TEXT_SIZE, 0.12)) => float textSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_TOOLTIP_PADDING, 0.03)) => float padding;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_TOOLTIP_BORDER_RADIUS, 0.02)) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_TOOLTIP_BORDER_WIDTH, 0)) => float borderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_TOOLTIP_GAP, 0.03)) => float gap;
+        UIStyle.varFloat(UIStyle.VAR_TOOLTIP_Z_INDEX, 1.0) => float zIndex;
+        UIStyle.varString(UIStyle.VAR_TOOLTIP_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
+
+        // Size the background
+        UIStyle.varFloat(UIStyle.VAR_TOOLTIP_CHAR_WIDTH_RATIO, 0.6) => float charRatio;
+        text.length() $ float * textSize * charRatio + padding * 2 => float bgWidth;
+        textSize + padding * 2 => float bgHeight;
+
+        // Position relative to the component
+        _tooltipTarget.posWorld() => vec3 compPos;
+        _tooltipTarget.computedSize() => vec2 compSize;
+        UIStyle.varString(UIStyle.VAR_TOOLTIP_POSITION, UIStyle.BOTTOM) => string position;
+        compPos.x => float tipX;
+        compPos.y => float tipY;
+        if (position == UIStyle.TOP) {
+            compPos.y + compSize.y / 2.0 + gap + bgHeight / 2.0 => tipY;
+        } else if (position == UIStyle.BOTTOM) {
+            compPos.y - compSize.y / 2.0 - gap - bgHeight / 2.0 => tipY;
+        } else if (position == UIStyle.LEFT) {
+            compPos.x - compSize.x / 2.0 - gap - bgWidth / 2.0 => tipX;
+        } else if (position == UIStyle.RIGHT) {
+            compPos.x + compSize.x / 2.0 + gap + bgWidth / 2.0 => tipX;
+        }
+
+        // Configure rect
+        _tooltipRect.size(@(bgWidth, bgHeight));
+        _tooltipRect.color(bgColor);
+        _tooltipRect.borderRadius(borderRadius);
+        _tooltipRect.borderWidth(borderWidth);
+        _tooltipRect.borderColor(borderColor);
+        _tooltipRect.posX(tipX);
+        _tooltipRect.posY(tipY);
+        _tooltipRect.posZ(zIndex);
+
+        // Configure text
+        _tooltipText.text(text);
+        _tooltipText.font(font);
+        _tooltipText.color(textColor);
+        _tooltipText.size(textSize);
+        _tooltipText.controlPoints(@(0.5, 0.5));
+        _tooltipText.posX(tipX);
+        _tooltipText.posY(tipY);
+        _tooltipText.posZ(zIndex + 0.1);
+
+        // Attach
+        if (_tooltipRect.parent() == null) _tooltipRect --> this;
+        if (_tooltipText.parent() == null) _tooltipText --> this;
+        true => _tooltipVisible;
+    }
+
+    // ==== Container Layout ====
+
+    @doc "Begin a row container at the given position. Children are laid out left-to-right. When nested inside another container, position is ignored and the parent's cursor is used instead."
+    fun void beginRow(vec2 pos) { _beginContainer(pos, "row"); }
+    @doc "Begin a row container using the parent container's cursor position."
+    fun void beginRow() { _beginContainer("row"); }
+
+    @doc "Begin a column container at the given position. Children are laid out top-to-bottom. When nested inside another container, position is ignored and the parent's cursor is used instead."
+    fun void beginColumn(vec2 pos) { _beginContainer(pos, "column"); }
+    @doc "Begin a column container using the parent container's cursor position."
+    fun void beginColumn() { _beginContainer("column"); }
+
+    @doc "(hidden)"
+    fun void _beginContainer(vec2 pos, string layout) {
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_CONTAINER_SPACING, 0.1)) => float spacing;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_CONTAINER_PADDING, 0.0)) => float padding;
+
+        vec2 worldPos;
+        if (_containerStack.size() > 0) {
+            _containerStack[_containerStack.size()-1].nextPos() => worldPos;
+        } else {
+            if (UIGlobals.posUnits == "WORLD") {
+                pos => worldPos;
+            } else if (UIGlobals.posUnits == "SCREEN") {
+                UIUtil.screenToWorldPos(pos) => worldPos;
+            } else {
+                GG.camera().NDCToWorldPos(@(pos.x, pos.y, 0)) => vec3 wp;
+                @(wp.x, wp.y) => worldPos;
+            }
+        }
+
+        ContainerContext ctx;
+        ctx.init(worldPos, layout, spacing, padding);
+        _containerStack << ctx;
+
+        if (layout == "row") {
+            @(0, 0.5) => vec2 defaultCP;  // left, vertically centered
+            // When nested, inherit parent's cross-axis control point
+            if (_containerStack.size() > 1) {
+                UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, defaultCP) => vec2 parentCP;
+                parentCP.y => defaultCP.y;
+            }
+            UIStyle.pushVar(UIStyle.VAR_CONTROL_POINTS,
+                UIStyle.varVec2(UIStyle.VAR_CONTAINER_CONTROL_POINTS, defaultCP));
+        } else {
+            @(0, 1) => vec2 defaultCP;  // left, top-aligned
+            if (_containerStack.size() > 1) {
+                UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, defaultCP) => vec2 parentCP;
+                parentCP.x => defaultCP.x;
+            }
+            UIStyle.pushVar(UIStyle.VAR_CONTROL_POINTS,
+                UIStyle.varVec2(UIStyle.VAR_CONTAINER_CONTROL_POINTS, defaultCP));
+        }
+    }
+
+    @doc "(hidden)"
+    fun void _beginContainer(string layout) {
+        _beginContainer(@(0, 0), layout);
+    }
+
+    @doc "End a row container."
+    fun void endRow() { _endContainer(); }
+    @doc "End a column container."
+    fun void endColumn() { _endContainer(); }
+
+    @doc "(hidden)"
+    fun void _endContainer() {
+        if (_containerStack.size() == 0) return;
+
+        _containerStack[_containerStack.size()-1] @=> ContainerContext ctx;
+        ctx.totalSize() => vec2 totalSize;
+        _containerStack.popBack();
+
+        UIStyle.popVar();
+
+        if (_containerStack.size() > 0) {
+            _containerStack[_containerStack.size()-1].advance(totalSize);
+        }
+    }
+
+    @doc "(hidden)"
+    fun int _containerSetPos(GComponent @ comp) {
+        if (_containerStack.size() == 0) return false;
+        _containerStack[_containerStack.size()-1].nextPos() => vec2 worldPos;
+        comp.setPosWorld(worldPos);
+        return true;
+    }
+
+    @doc "(hidden)"
+    fun void _containerAdvance(GComponent @ comp) {
+        if (_containerStack.size() == 0) return;
+        _containerStack[_containerStack.size()-1].advance(comp.computedSize());
     }
 
     // ==== Debug Panel ====
 
-    @doc "Enable or disable the debug panel."
-    fun void debugEnabled(int enabled) {
-        enabled => _debugEnabled;
-        if (enabled) {
-            // Ensure style map is initialized
-            ComponentStyleMap.init();
-        }
-    }
-
-    @doc "Returns whether the debug panel is enabled."
-    fun int debugEnabled() {
-        return _debugEnabled;
-    }
-
     @doc "Add the last rendered component to the debug panel with an auto-generated ID."
-    fun void debugAdd() {
-        debugAdd("");
-    }
+    fun void debugAdd() { debugAdd(""); }
 
     @doc "Add the last rendered component to the debug panel with a custom ID."
     fun void debugAdd(string customId) {
-        if (lastComponent == null) return;
-
-        // Use internal component ID for overrides, custom ID for display
-        // For pooled components, _lastComponentId will be empty
-        _lastComponentId => string internalId;
-
-        // For mapped components (with internal ID), use that ID
-        // For pooled components, use type-specific counter (the count was already incremented)
-        "" => string overrideId;
-        if (internalId != "") {
-            internalId => overrideId;
-        } else {
-            // Use type-specific counter for pooled components
-            // The counter was already incremented after rendering, so subtract 1
-            if (_lastComponentType == "Rect") {
-                _lastComponentType + "_" + (rectCount - 1) => overrideId;
-            } else if (_lastComponentType == "Icon") {
-                _lastComponentType + "_" + (iconCount - 1) => overrideId;
-            } else if (_lastComponentType == "Label") {
-                _lastComponentType + "_" + (labelCount - 1) => overrideId;
-            } else if (_lastComponentType == "Meter") {
-                _lastComponentType + "_" + (meterCount - 1) => overrideId;
-            } else {
-                // Fallback for any other pooled types
-                _lastComponentType + "_" + _debugAddCallCount => overrideId;
-                _debugAddCallCount++;
-            }
-        }
-
-        // Check if already added (by override ID)
-        for (string existingId : _debugComponents) {
-            if (existingId == overrideId) return;
-        }
-
-        // Add to tracking arrays
-        // Note: Create copies of strings to avoid reference issues
-        "" + overrideId => string idCopy;
-        "" + _lastComponentType => string typeCopy;
-
-        _debugComponents << idCopy;
-        _debugComponentRefs << lastComponent;
-        _debugComponentTypes << typeCopy;
-
-        // Initialize debug styles for this component
-        DebugStyles.initComponent(idCopy, typeCopy);
+        _debug.add(customId, lastComponent, _lastComponentType, _lastComponentId,
+                    rectCount, iconCount, labelCount, meterCount, separatorCount);
     }
 
-    @doc "Check if a component is being debugged."
-    fun int isDebugging(string compId) {
-        for (string id : _debugComponents) {
-            if (id == compId) return true;
-        }
-        return false;
-    }
+    @doc "Render the debug panel. Call this each frame to enable debug mode."
+    fun void debug() { _debug.renderPanel(); }
 
-    @doc "Render the debug panel. Call this each frame when debug mode is enabled."
-    fun void debug() {
-        if (!_debugEnabled) return;
+    // ==== Scenegraph Debug View ====
 
-        // Reset debugAdd call counter for next frame
-        0 => _debugAddCallCount;
-
-        if (_debugComponents.size() == 0) return;
-
-        UI.begin("ChuGUI Debug Panel");
-
-        for (0 => int i; i < _debugComponents.size(); i++) {
-            _debugComponents[i] => string compId;
-            _debugComponentTypes[i] => string compType;
-
-            if (UI.treeNode(compType + ": " + compId)) {
-                // Reset button
-                if (UI.button("Reset All")) {
-                    DebugStyles.clearComponent(compId);
-                    DebugStyles.initComponent(compId, compType);
-                }
-
-                UI.separator();
-
-                // Colors section
-                ComponentStyleMap.getColorKeys(compType) @=> string colorKeys[];
-                if (colorKeys.size() > 0 && UI.treeNode("Colors")) {
-                    renderColorEditors(compId, colorKeys);
-                    UI.treePop();
-                }
-
-                // Float variables section
-                ComponentStyleMap.getFloatKeys(compType) @=> string floatKeys[];
-                if (floatKeys.size() > 0 && UI.treeNode("Size & Layout")) {
-                    renderFloatEditors(compId, floatKeys);
-                    UI.treePop();
-                }
-
-                // Vec2 variables section
-                ComponentStyleMap.getVec2Keys(compType) @=> string vec2Keys[];
-                if (vec2Keys.size() > 0 && UI.treeNode("Dimensions")) {
-                    renderVec2Editors(compId, vec2Keys);
-                    UI.treePop();
-                }
-
-                // String variables section
-                ComponentStyleMap.getStringKeys(compType) @=> string stringKeys[];
-                if (stringKeys.size() > 0 && UI.treeNode("Options")) {
-                    renderStringEditors(compId, stringKeys);
-                    UI.treePop();
-                }
-
-                UI.treePop();
-            }
-        }
-
-        UI.end();
-    }
-
-    @doc "(hidden)"
-    fun void renderColorEditors(string compId, string keys[]) {
-        for (string key : keys) {
-            // Compound key for flat map
-            compId + "/" + key => string wrapperKey;
-
-            // Get or create wrapper
-            if (!_colorWrappers.isInMap(wrapperKey)) {
-                new UI_Float4 @=> _colorWrappers[wrapperKey];
-            }
-            _colorWrappers[wrapperKey] @=> UI_Float4 wrapper;
-
-            // Load current value into wrapper
-            DebugStyles.getColor(compId, key) => vec4 col;
-            wrapper.val(col);
-
-            // Checkbox to enable override
-            UI_Bool enabled;
-            DebugStyles.isColorEnabled(compId, key) => enabled.val;
-            UI.checkbox("##en_" + key, enabled);
-            UI.sameLine();
-
-            // Color editor
-            if (UI.colorEdit(key, wrapper, UI_ColorEditFlags.AlphaBar)) {
-                DebugStyles.setColor(compId, key, wrapper.val());
-                DebugStyles.setColorEnabled(compId, key, 1);
-                1 => enabled.val;  // Also update checkbox state
-            }
-
-            // Store checkbox state (may have been toggled by user)
-            enabled.val() => int enabledInt;
-            DebugStyles.setColorEnabled(compId, key, enabledInt);
-        }
-    }
-
-    @doc "(hidden)"
-    fun void renderFloatEditors(string compId, string keys[]) {
-        for (string key : keys) {
-            // Compound key for flat map
-            compId + "/" + key => string wrapperKey;
-
-            // Get or create wrapper
-            if (!_floatWrappers.isInMap(wrapperKey)) {
-                new UI_Float @=> _floatWrappers[wrapperKey];
-            }
-            _floatWrappers[wrapperKey] @=> UI_Float wrapper;
-
-            // Load current value
-            DebugStyles.getFloat(compId, key) => wrapper.val;
-
-            // Checkbox to enable override
-            UI_Bool enabled;
-            DebugStyles.isFloatEnabled(compId, key) => enabled.val;
-            UI.checkbox("##en_" + key, enabled);
-            UI.sameLine();
-
-            // Use drag for unbounded values, slider for bounded
-            0 => int changed;
-            if (key.find("transparent") >= 0 || key.find("antialias") >= 0 ||
-                key.find("border_radius") >= 0 || key.find("border_width") >= 0 ||
-                key.find("check_width") >= 0) {
-                // Bounded 0-1
-                UI.slider(key, wrapper, 0.0, 1.0) => changed;
-            } else if (key.find("wrap") >= 0) {
-                // Wrap mode 0-2
-                UI.slider(key, wrapper, 0.0, 2.0) => changed;
-            } else if (key.find("rotate") >= 0) {
-                // Rotation -360 to 360
-                UI.slider(key, wrapper, -360.0, 360.0) => changed;
-            } else {
-                // Unbounded - use drag (z_index, size, spacing, characters, max_width, etc.)
-                UI.drag(key, wrapper) => changed;
-            }
-
-            if (changed) {
-                DebugStyles.setFloat(compId, key, wrapper.val());
-                DebugStyles.setFloatEnabled(compId, key, true);
-                true => enabled.val;
-            }
-
-            // Store checkbox state
-            DebugStyles.setFloatEnabled(compId, key, enabled.val());
-        }
-    }
-
-    @doc "(hidden)"
-    fun void renderVec2Editors(string compId, string keys[]) {
-        for (string key : keys) {
-            // Compound key for flat map
-            compId + "/" + key => string wrapperKey;
-
-            // Get or create wrapper
-            if (!_vec2Wrappers.isInMap(wrapperKey)) {
-                new UI_Float2 @=> _vec2Wrappers[wrapperKey];
-            }
-            _vec2Wrappers[wrapperKey] @=> UI_Float2 wrapper;
-
-            // Load current value
-            DebugStyles.getVec2(compId, key) => vec2 val;
-            wrapper.val(val);
-
-            // Checkbox to enable override
-            UI_Bool enabled;
-            DebugStyles.isVec2Enabled(compId, key) => enabled.val;
-            UI.checkbox("##en_" + key, enabled);
-            UI.sameLine();
-
-            // Drag input for vec2
-            if (UI.drag(key, wrapper)) {
-                wrapper.val() => vec2 newVal;
-
-                // Clamp control points to 0-1
-                if (key.find("control_points") >= 0) {
-                    Math.max(0.0, Math.min(1.0, newVal.x)) => newVal.x;
-                    Math.max(0.0, Math.min(1.0, newVal.y)) => newVal.y;
-                }
-                // Clamp sizes to non-negative values
-                else if (key.find("size") >= 0) {
-                    Math.max(0.0, newVal.x) => newVal.x;
-                    Math.max(0.0, newVal.y) => newVal.y;
-                }
-
-                DebugStyles.setVec2(compId, key, newVal);
-                DebugStyles.setVec2Enabled(compId, key, true);
-                true => enabled.val;
-            }
-
-            // Store checkbox state
-            DebugStyles.setVec2Enabled(compId, key, enabled.val());
-        }
-    }
-
-    @doc "(hidden)"
-    fun void renderStringEditors(string compId, string keys[]) {
-        for (string key : keys) {
-            DebugStyles.getString(compId, key) => string val;
-
-            // Checkbox to enable override
-            UI_Bool enabled;
-            DebugStyles.isStringEnabled(compId, key) => enabled.val;
-            UI.checkbox("##en_" + key, enabled);
-            UI.sameLine();
-
-            // For align/position options, use a combo
-            if (key.find("align") >= 0 || key.find("position") >= 0) {
-                ["LEFT", "CENTER", "RIGHT"] @=> string options[];
-                0 => int currentIdx;
-                if (val == "CENTER") 1 => currentIdx;
-                else if (val == "RIGHT") 2 => currentIdx;
-
-                UI_Int selectedIdx;
-                currentIdx => selectedIdx.val;
-                if (UI.combo(key, selectedIdx, options)) {
-                    DebugStyles.setString(compId, key, options[selectedIdx.val()]);
-                    DebugStyles.setStringEnabled(compId, key, true);
-                    true => enabled.val;
-                }
-            } else if (key.find("layout") >= 0) {
-                ["column", "row"] @=> string options[];
-                0 => int currentIdx;
-                if (val == "row") 1 => currentIdx;
-
-                UI_Int selectedIdx;
-                currentIdx => selectedIdx.val;
-                if (UI.combo(key, selectedIdx, options)) {
-                    DebugStyles.setString(compId, key, options[selectedIdx.val()]);
-                    DebugStyles.setStringEnabled(compId, key, true);
-                    true => enabled.val;
-                }
-            } else if (key.find("sampler") >= 0) {
-                ["NEAREST", "LINEAR"] @=> string options[];
-                0 => int currentIdx;
-                if (val == "LINEAR") 1 => currentIdx;
-
-                UI_Int selectedIdx;
-                currentIdx => selectedIdx.val;
-                if (UI.combo(key, selectedIdx, options)) {
-                    DebugStyles.setString(compId, key, options[selectedIdx.val()]);
-                    DebugStyles.setStringEnabled(compId, key, true);
-                    true => enabled.val;
-                }
-            } else {
-                // Generic text input
-                UI_String wrapper;
-                val => wrapper.val;
-                if (UI.inputText(key, wrapper)) {
-                    DebugStyles.setString(compId, key, wrapper.val());
-                    DebugStyles.setStringEnabled(compId, key, true);
-                    true => enabled.val;
-                }
-            }
-
-            // Store checkbox state (may have been toggled by user)
-            DebugStyles.setStringEnabled(compId, key, enabled.val());
-        }
+    @doc "Render the scenegraph debug view. Call this each frame to show the scenegraph."
+    fun void debugScenegraph() {
+        _debug.renderScenegraph(
+            rectPool, rectCount,
+            iconPool, iconCount,
+            labelPool, labelCount,
+            meterPool, meterCount,
+            separatorPool, separatorCount,
+            buttons, toggleBtns,
+            sliders, discreteSliders,
+            checkboxes, inputs,
+            dropdowns, colorPickers,
+            knobs, discreteKnobs,
+            radios, spinners,
+            currentFrame
+        );
     }
 
     // ==== Pooled Components (Stateless) ====
@@ -595,7 +506,7 @@ public class ChuGUI extends GGen {
         if (rectCount == rectPool.size()) rectPool << new Rect();
         rectPool[rectCount] @=> Rect rect;
 
-        rect.pos(pos);
+        if (!_containerSetPos(rect)) { rect.pos(pos); }
 
         if (rect.parent() == null) {
             rect --> this;
@@ -605,18 +516,19 @@ public class ChuGUI extends GGen {
         "Rect_" + rectCount => string debugId;
 
         // Apply debug overrides if component is being debugged
-        if (_debugEnabled && isDebugging(debugId)) {
-            DebugStyles.applyOverrides(debugId);
+        if (_debug.isDebugging(debugId)) {
+            _debug.applyOverrides(debugId, rect);
         }
 
         rect.frame(currentFrame);
         rect.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(debugId)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(debugId));
-            UIStyle.popVar(DebugStyles.countVarOverrides(debugId));
+        if (_debug.isDebugging(debugId)) {
+            _debug.popOverrides(debugId);
         }
+
+        _containerAdvance(rect);
 
         rect @=> lastComponent;
         "Rect" => _lastComponentType;
@@ -631,7 +543,7 @@ public class ChuGUI extends GGen {
         iconPool[iconCount] @=> Icon icon;
         icon.icon(iconPath);
 
-        icon.pos(pos);
+        if (!_containerSetPos(icon)) { icon.pos(pos); }
 
         if (icon.parent() == null) {
             icon --> this;
@@ -641,18 +553,19 @@ public class ChuGUI extends GGen {
         "Icon_" + iconCount => string debugId;
 
         // Apply debug overrides if component is being debugged
-        if (_debugEnabled && isDebugging(debugId)) {
-            DebugStyles.applyOverrides(debugId);
+        if (_debug.isDebugging(debugId)) {
+            _debug.applyOverrides(debugId, icon);
         }
 
         icon.frame(currentFrame);
         icon.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(debugId)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(debugId));
-            UIStyle.popVar(DebugStyles.countVarOverrides(debugId));
+        if (_debug.isDebugging(debugId)) {
+            _debug.popOverrides(debugId);
         }
+
+        _containerAdvance(icon);
 
         icon @=> lastComponent;
         "Icon" => _lastComponentType;
@@ -667,7 +580,7 @@ public class ChuGUI extends GGen {
         labelPool[labelCount] @=> Label label;
         label.label(text);
 
-        label.pos(pos);
+        if (!_containerSetPos(label)) { label.pos(pos); }
 
         if (label.parent() == null) {
             label --> this;
@@ -677,18 +590,19 @@ public class ChuGUI extends GGen {
         "Label_" + labelCount => string debugId;
 
         // Apply debug overrides if component is being debugged
-        if (_debugEnabled && isDebugging(debugId)) {
-            DebugStyles.applyOverrides(debugId);
+        if (_debug.isDebugging(debugId)) {
+            _debug.applyOverrides(debugId, label);
         }
 
         label.frame(currentFrame);
         label.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(debugId)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(debugId));
-            UIStyle.popVar(DebugStyles.countVarOverrides(debugId));
+        if (_debug.isDebugging(debugId)) {
+            _debug.popOverrides(debugId);
         }
+
+        _containerAdvance(label);
 
         label @=> lastComponent;
         "Label" => _lastComponentType;
@@ -705,7 +619,7 @@ public class ChuGUI extends GGen {
         meter.max(max);
         meter.val(val);
 
-        meter.pos(pos);
+        if (!_containerSetPos(meter)) { meter.pos(pos); }
 
         if (meter.parent() == null) {
             meter --> this;
@@ -715,23 +629,57 @@ public class ChuGUI extends GGen {
         "Meter_" + meterCount => string debugId;
 
         // Apply debug overrides if component is being debugged
-        if (_debugEnabled && isDebugging(debugId)) {
-            DebugStyles.applyOverrides(debugId);
+        if (_debug.isDebugging(debugId)) {
+            _debug.applyOverrides(debugId, meter);
         }
 
         meter.frame(currentFrame);
         meter.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(debugId)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(debugId));
-            UIStyle.popVar(DebugStyles.countVarOverrides(debugId));
+        if (_debug.isDebugging(debugId)) {
+            _debug.popOverrides(debugId);
         }
+
+        _containerAdvance(meter);
 
         meter @=> lastComponent;
         "Meter" => _lastComponentType;
         "" => _lastComponentId;
         meterCount++;
+    }
+
+    // Separator
+    @doc "Render a separator at the given position."
+    fun void separator(vec2 pos) {
+        if (separatorCount == separatorPool.size()) separatorPool << new Separator();
+        separatorPool[separatorCount] @=> Separator sep;
+
+        if (!_containerSetPos(sep)) { sep.pos(pos); }
+
+        if (sep.parent() == null) {
+            sep --> this;
+        }
+
+        "Separator_" + separatorCount => string debugId;
+
+        if (_debug.isDebugging(debugId)) {
+            _debug.applyOverrides(debugId, sep);
+        }
+
+        sep.frame(currentFrame);
+        sep.update();
+
+        if (_debug.isDebugging(debugId)) {
+            _debug.popOverrides(debugId);
+        }
+
+        _containerAdvance(sep);
+
+        sep @=> lastComponent;
+        "Separator" => _lastComponentType;
+        "" => _lastComponentId;
+        separatorCount++;
     }
 
     // ==== Mapped Components (Stateful, Interactive) ====
@@ -746,7 +694,7 @@ public class ChuGUI extends GGen {
     @doc "Render a button with given label and icon at the given position in NDC coordinates; returns 1 if the button is clicked during the current frame."
     fun int button(string label, string icon, vec2 pos, int disabled) {
         label != "" ? label : icon => string key;
-        getID() != "" ? getID() : key => string id;
+        _deduplicateId(getID() != "" ? getID() : key) => string id;
         if (!buttons.isInMap(id)) {
             new MomentaryButton() @=> buttons[id];
         }
@@ -755,25 +703,26 @@ public class ChuGUI extends GGen {
         b.icon(icon);
         b.disabled(disabled);
 
-        b.pos(pos);
+        if (!_containerSetPos(b)) { b.pos(pos); }
 
         if (b.parent() == null) {
             b --> this;
         }
 
         // Apply debug overrides if component is being debugged
-        if (_debugEnabled && isDebugging(id)) {
-            DebugStyles.applyOverrides(id);
+        if (_debug.isDebugging(id)) {
+            _debug.applyOverrides(id, b);
         }
 
         b.frame(currentFrame);
         b.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(id));
+        if (_debug.isDebugging(id)) {
+            _debug.popOverrides(id);
         }
+
+        _containerAdvance(b);
 
         b @=> lastComponent;
         "Button" => _lastComponentType;
@@ -790,7 +739,7 @@ public class ChuGUI extends GGen {
     @doc "Render a toggle button at the given position in NDC coordinates; returns 1 if the button is toggled during the current frame."
     fun int toggleButton(string label, string icon, vec2 pos, int toggled, int disabled) {
         label != "" ? label : icon => string key;
-        getID() != "" ? getID() : key => string id;
+        _deduplicateId(getID() != "" ? getID() : key) => string id;
         if (!toggleBtns.isInMap(id)) {
             new ToggleButton() @=> toggleBtns[id];
         }
@@ -800,28 +749,29 @@ public class ChuGUI extends GGen {
         b.disabled(disabled);
         b.toggled(toggled);
 
-        b.pos(pos);
+        if (!_containerSetPos(b)) { b.pos(pos); }
 
         if (b.parent() == null) {
             b --> this;
         }
 
         // Apply debug overrides if component is being debugged
-        if (_debugEnabled && isDebugging(id)) {
-            DebugStyles.applyOverrides(id);
+        if (_debug.isDebugging(id)) {
+            _debug.applyOverrides(id, b);
         }
 
         b.frame(currentFrame);
         b.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(id));
+        if (_debug.isDebugging(id)) {
+            _debug.popOverrides(id);
         }
 
+        _containerAdvance(b);
+
         b @=> lastComponent;
-        "Button" => _lastComponentType;
+        "ToggleButton" => _lastComponentType;
         id => _lastComponentId;
         return b.toggled();
     }
@@ -831,7 +781,7 @@ public class ChuGUI extends GGen {
     fun float slider(string id, vec2 pos, float min, float max, float val) { return slider(id, pos, min, max, val, false); }
     @doc "Render a slider at the given position in NDC coordinates; returns the value at the current frame."
     fun float slider(string id, vec2 pos, float min, float max, float val, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!sliders.isInMap(_id)) {
             new Slider() @=> sliders[_id];
         }
@@ -841,25 +791,26 @@ public class ChuGUI extends GGen {
         slider.val(val);
         slider.disabled(disabled);
 
-        slider.pos(pos);
+        if (!_containerSetPos(slider)) { slider.pos(pos); }
 
         if (slider.parent() == null) {
             slider --> this;
         }
 
         // Apply debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            DebugStyles.applyOverrides(_id);
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, slider);
         }
 
         slider.frame(currentFrame);
         slider.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(_id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(_id));
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
         }
+
+        _containerAdvance(slider);
 
         slider @=> lastComponent;
         "Slider" => _lastComponentType;
@@ -871,7 +822,7 @@ public class ChuGUI extends GGen {
     fun float discreteSlider(string id, vec2 pos, float min, float max, int steps, float val) { return discreteSlider(id, pos, min, max, steps, val, false); }
     @doc "Render a discrete slider at the given position in NDC coordinates; returns the value at the current frame."
     fun float discreteSlider(string id, vec2 pos, float min, float max, int steps, float val, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!discreteSliders.isInMap(_id)) {
             new DiscreteSlider() @=> discreteSliders[_id];
         }
@@ -882,28 +833,29 @@ public class ChuGUI extends GGen {
         slider.steps(steps);
         slider.disabled(disabled);
 
-        slider.pos(pos);
+        if (!_containerSetPos(slider)) { slider.pos(pos); }
 
         if (slider.parent() == null) {
             slider --> this;
         }
 
         // Apply debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            DebugStyles.applyOverrides(_id);
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, slider);
         }
 
         slider.frame(currentFrame);
         slider.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(_id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(_id));
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
         }
 
+        _containerAdvance(slider);
+
         slider @=> lastComponent;
-        "Slider" => _lastComponentType;
+        "DiscreteSlider" => _lastComponentType;
         _id => _lastComponentId;
         return slider.val();
     }
@@ -913,7 +865,7 @@ public class ChuGUI extends GGen {
     fun int checkbox(string id, vec2 pos, int checked) { return checkbox(id, pos, checked, false); }
     @doc "Render a checkbox at the given position in NDC coordinates; returns 1 if the checkbox is checked during the current frame."
     fun int checkbox(string id, vec2 pos, int checked, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!checkboxes.isInMap(_id)) {
             new Checkbox() @=> checkboxes[_id];
         }
@@ -921,25 +873,26 @@ public class ChuGUI extends GGen {
         checkbox.disabled(disabled);
         checkbox.checked(checked);
 
-        checkbox.pos(pos);
+        if (!_containerSetPos(checkbox)) { checkbox.pos(pos); }
 
         if (checkbox.parent() == null) {
             checkbox --> this;
         }
 
         // Apply debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            DebugStyles.applyOverrides(_id);
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, checkbox);
         }
 
         checkbox.frame(currentFrame);
         checkbox.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(_id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(_id));
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
         }
+
+        _containerAdvance(checkbox);
 
         checkbox @=> lastComponent;
         "Checkbox" => _lastComponentType;
@@ -949,12 +902,12 @@ public class ChuGUI extends GGen {
 
     // Input
     @doc "Render an input field at the given position in NDC coordinates; returns the input at the current frame."
-    fun string input(string label, vec2 pos, string value) { return input(label, pos, value, "", false); }
+    fun string input(string id, vec2 pos, string value) { return input(id, pos, value, "", false); }
     @doc "Render an input field at the given position in NDC coordinates; returns the input at the current frame."
-    fun string input(string label, vec2 pos, string value, string placeholder) { return input(label, pos, value, placeholder, false); }
+    fun string input(string id, vec2 pos, string value, string placeholder) { return input(id, pos, value, placeholder, false); }
     @doc "Render an input field at the given position in NDC coordinates; returns the input at the current frame."
-    fun string input(string label, vec2 pos, string value, string placeholder, int disabled) {
-        getID() != "" ? getID() : label => string _id;
+    fun string input(string id, vec2 pos, string value, string placeholder, int disabled) {
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!inputs.isInMap(_id)) {
             new Input() @=> inputs[_id];
         }
@@ -963,25 +916,26 @@ public class ChuGUI extends GGen {
         input.placeholder(placeholder);
         input.disabled(disabled);
 
-        input.pos(pos);
+        if (!_containerSetPos(input)) { input.pos(pos); }
 
         if (input.parent() == null) {
             input --> this;
         }
 
         // Apply debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            DebugStyles.applyOverrides(_id);
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, input);
         }
 
         input.frame(currentFrame);
         input.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(_id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(_id));
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
         }
+
+        _containerAdvance(input);
 
         input @=> lastComponent;
         "Input" => _lastComponentType;
@@ -991,38 +945,39 @@ public class ChuGUI extends GGen {
 
     // Dropdown
     @doc "Render a dropdown at the given position in NDC coordinates; returns the selected option at the current frame."
-    fun int dropdown(string label, vec2 pos, string options[], int selectedIndex) { return dropdown(label, pos, options, selectedIndex, false); }
+    fun int dropdown(string id, vec2 pos, string options[], int selectedIndex) { return dropdown(id, pos, options, selectedIndex, false); }
     @doc "Render a dropdown at the given position in NDC coordinates; returns the selected option at the current frame."
-    fun int dropdown(string label, vec2 pos, string options[], int selectedIndex, int disabled) {
-        getID() != "" ? getID() : label => string _id;
+    fun int dropdown(string id, vec2 pos, string options[], int selectedIndex, int disabled) {
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!dropdowns.isInMap(_id)) {
             new Dropdown() @=> dropdowns[_id];
         }
         dropdowns[_id] @=> Dropdown dropdown;
-        dropdown.placeholder(label);
+        dropdown.placeholder(id);
         dropdown.options(options);
         dropdown.disabled(disabled);
         dropdown.selectedIndex(selectedIndex);
 
-        dropdown.pos(pos);
+        if (!_containerSetPos(dropdown)) { dropdown.pos(pos); }
 
         if (dropdown.parent() == null) {
             dropdown --> this;
         }
 
         // Apply debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            DebugStyles.applyOverrides(_id);
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, dropdown);
         }
 
         dropdown.frame(currentFrame);
         dropdown.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(_id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(_id));
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
         }
+
+        _containerAdvance(dropdown);
 
         dropdown @=> lastComponent;
         "Dropdown" => _lastComponentType;
@@ -1035,7 +990,7 @@ public class ChuGUI extends GGen {
     fun vec3 colorPicker(string id, vec2 pos, vec3 color) { return colorPicker(id, pos, color, false); }
     @doc "Render a color picker at the given position in NDC coordinates; returns the selected color at the current frame."
     fun vec3 colorPicker(string id, vec2 pos, vec3 color, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!colorPickers.isInMap(_id)) {
             new ColorPicker() @=> colorPickers[_id];
         }
@@ -1043,25 +998,26 @@ public class ChuGUI extends GGen {
         colorPicker.color(color);
         colorPicker.disabled(disabled);
 
-        colorPicker.pos(pos);
+        if (!_containerSetPos(colorPicker)) { colorPicker.pos(pos); }
 
         if (colorPicker.parent() == null) {
             colorPicker --> this;
         }
 
         // Apply debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            DebugStyles.applyOverrides(_id);
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, colorPicker);
         }
 
         colorPicker.frame(currentFrame);
         colorPicker.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(_id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(_id));
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
         }
+
+        _containerAdvance(colorPicker);
 
         colorPicker @=> lastComponent;
         "ColorPicker" => _lastComponentType;
@@ -1074,7 +1030,7 @@ public class ChuGUI extends GGen {
     fun float knob(string id, vec2 pos, float min, float max, float val) { return knob(id, pos, min, max, val, false); }
     @doc "Render a knob at the given position in NDC coordinates; returns the value at the current frame."
     fun float knob(string id, vec2 pos, float min, float max, float val, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!knobs.isInMap(_id)) {
             new Knob() @=> knobs[_id];
         }
@@ -1084,25 +1040,26 @@ public class ChuGUI extends GGen {
         knob.val(val);
         knob.disabled(disabled);
 
-        knob.pos(pos);
+        if (!_containerSetPos(knob)) { knob.pos(pos); }
 
         if (knob.parent() == null) {
             knob --> this;
         }
 
         // Apply debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            DebugStyles.applyOverrides(_id);
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, knob);
         }
 
         knob.frame(currentFrame);
         knob.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(_id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(_id));
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
         }
+
+        _containerAdvance(knob);
 
         knob @=> lastComponent;
         "Knob" => _lastComponentType;
@@ -1110,12 +1067,53 @@ public class ChuGUI extends GGen {
         return knob.val();
     }
 
+    // Discrete Knob
+    @doc "Render a discrete knob at the given position; returns the value at the current frame."
+    fun float discreteKnob(string id, vec2 pos, float min, float max, int steps, float val) { return discreteKnob(id, pos, min, max, steps, val, false); }
+    @doc "Render a discrete knob at the given position; returns the value at the current frame."
+    fun float discreteKnob(string id, vec2 pos, float min, float max, int steps, float val, int disabled) {
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
+        if (!discreteKnobs.isInMap(_id)) {
+            new DiscreteKnob() @=> discreteKnobs[_id];
+        }
+        discreteKnobs[_id] @=> DiscreteKnob dk;
+        dk.min(min);
+        dk.max(max);
+        dk.val(val);
+        dk.steps(steps);
+        dk.disabled(disabled);
+
+        if (!_containerSetPos(dk)) { dk.pos(pos); }
+
+        if (dk.parent() == null) {
+            dk --> this;
+        }
+
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, dk);
+        }
+
+        dk.frame(currentFrame);
+        dk.update();
+
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
+        }
+
+        _containerAdvance(dk);
+
+        dk @=> lastComponent;
+        "DiscreteKnob" => _lastComponentType;
+        _id => _lastComponentId;
+        return dk.val();
+    }
+
     // Radio
     @doc "Render a radio group at the given position in NDC coordinates; returns the selected option at the current frame."
     fun int radio(string groupId, vec2 pos, string options[], int selectedIndex) { return radio(groupId, pos, options, selectedIndex, false); }
     @doc "Render a radio group at the given position in NDC coordinates; returns the selected option at the current frame."
     fun int radio(string groupId, vec2 pos, string options[], int selectedIndex, int disabled) {
-        getID() != "" ? getID() : groupId => string _id;
+        _deduplicateId(getID() != "" ? getID() : groupId) => string _id;
         if (!radios.isInMap(_id)) {
             new Radio() @=> radios[_id];
         }
@@ -1124,25 +1122,26 @@ public class ChuGUI extends GGen {
         radio.selectedIndex(selectedIndex);
         radio.disabled(disabled);
 
-        radio.pos(pos);
+        if (!_containerSetPos(radio)) { radio.pos(pos); }
 
         if (radio.parent() == null) {
             radio --> this;
         }
 
         // Apply debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            DebugStyles.applyOverrides(_id);
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, radio);
         }
 
         radio.frame(currentFrame);
         radio.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(_id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(_id));
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
         }
+
+        _containerAdvance(radio);
 
         radio @=> lastComponent;
         "Radio" => _lastComponentType;
@@ -1152,48 +1151,160 @@ public class ChuGUI extends GGen {
 
     // Spinner
     @doc "Render a spinner at the given position in NDC coordinates; returns the value at the current frame."
-    fun int spinner(string id, vec2 pos, int min, int max, int num) { return spinner(id, pos, min, max, num, false); }
+    fun int spinner(string id, vec2 pos, int min, int max, int val) { return spinner(id, pos, min, max, val, false); }
     @doc "Render a spinner at the given position in NDC coordinates; returns the value at the current frame."
-    fun int spinner(string id, vec2 pos, int min, int max, int num, int disabled) {
-        getID() != "" ? getID() : id => string _id;
+    fun int spinner(string id, vec2 pos, int min, int max, int val, int disabled) {
+        _deduplicateId(getID() != "" ? getID() : id) => string _id;
         if (!spinners.isInMap(_id)) {
             new Spinner() @=> spinners[_id];
         }
         spinners[_id] @=> Spinner spinner;
         spinner.min(min);
-        spinner.num(num);
+        spinner.val(val);
         spinner.max(max);
         spinner.disabled(disabled);
 
-        spinner.pos(pos);
+        if (!_containerSetPos(spinner)) { spinner.pos(pos); }
 
         if (spinner.parent() == null) {
             spinner --> this;
         }
 
         // Apply debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            DebugStyles.applyOverrides(_id);
+        if (_debug.isDebugging(_id)) {
+            _debug.applyOverrides(_id, spinner);
         }
 
         spinner.frame(currentFrame);
         spinner.update();
 
         // Pop debug overrides
-        if (_debugEnabled && isDebugging(_id)) {
-            UIStyle.popColor(DebugStyles.countColorOverrides(_id));
-            UIStyle.popVar(DebugStyles.countVarOverrides(_id));
+        if (_debug.isDebugging(_id)) {
+            _debug.popOverrides(_id);
         }
+
+        _containerAdvance(spinner);
 
         spinner @=> lastComponent;
         "Spinner" => _lastComponentType;
         _id => _lastComponentId;
-        return spinner.num();
+        return spinner.val();
+    }
+
+    // ==== Position-less Overloads (for use inside containers) ====
+
+    // Pooled
+    @doc "Render a GRect. Position determined by container layout."
+    fun void rect() { rect(@(0, 0)); }
+    @doc "Render a GIcon. Position determined by container layout."
+    fun void icon(string iconPath) { icon(iconPath, @(0, 0)); }
+    @doc "Render a label. Position determined by container layout."
+    fun void label(string text) { label(text, @(0, 0)); }
+    @doc "Render a meter. Position determined by container layout."
+    fun void meter(float min, float max, float val) { meter(@(0, 0), min, max, val); }
+    @doc "Render a separator. Position determined by container layout."
+    fun void separator() { separator(@(0, 0)); }
+
+    // Button
+    @doc "Render a button. Position determined by container layout."
+    fun int button(string label) { return button(label, "", @(0, 0), false); }
+    @doc "Render a button. Position determined by container layout."
+    fun int button(string label, int disabled) { return button(label, "", @(0, 0), disabled); }
+    @doc "Render a button with icon. Position determined by container layout."
+    fun int button(string label, string icon) { return button(label, icon, @(0, 0), false); }
+    @doc "Render a button with icon. Position determined by container layout."
+    fun int button(string label, string icon, int disabled) { return button(label, icon, @(0, 0), disabled); }
+
+    // Toggle Button
+    @doc "Render a toggle button. Position determined by container layout."
+    fun int toggleButton(string label, int toggled) { return toggleButton(label, "", @(0, 0), toggled, false); }
+    @doc "Render a toggle button. Position determined by container layout."
+    fun int toggleButton(string label, int toggled, int disabled) { return toggleButton(label, "", @(0, 0), toggled, disabled); }
+    @doc "Render a toggle button with icon. Position determined by container layout."
+    fun int toggleButton(string label, string icon, int toggled) { return toggleButton(label, icon, @(0, 0), toggled, false); }
+    @doc "Render a toggle button with icon. Position determined by container layout."
+    fun int toggleButton(string label, string icon, int toggled, int disabled) { return toggleButton(label, icon, @(0, 0), toggled, disabled); }
+
+    // Slider
+    @doc "Render a slider. Position determined by container layout."
+    fun float slider(string id, float min, float max, float val) { return slider(id, @(0, 0), min, max, val, false); }
+    @doc "Render a slider. Position determined by container layout."
+    fun float slider(string id, float min, float max, float val, int disabled) { return slider(id, @(0, 0), min, max, val, disabled); }
+
+    // Discrete Slider
+    @doc "Render a discrete slider. Position determined by container layout."
+    fun float discreteSlider(string id, float min, float max, int steps, float val) { return discreteSlider(id, @(0, 0), min, max, steps, val, false); }
+    @doc "Render a discrete slider. Position determined by container layout."
+    fun float discreteSlider(string id, float min, float max, int steps, float val, int disabled) { return discreteSlider(id, @(0, 0), min, max, steps, val, disabled); }
+
+    // Checkbox
+    @doc "Render a checkbox. Position determined by container layout."
+    fun int checkbox(string id, int checked) { return checkbox(id, @(0, 0), checked, false); }
+    @doc "Render a checkbox. Position determined by container layout."
+    fun int checkbox(string id, int checked, int disabled) { return checkbox(id, @(0, 0), checked, disabled); }
+
+    // Input
+    @doc "Render an input. Position determined by container layout."
+    fun string input(string id, string value) { return input(id, @(0, 0), value, "", false); }
+    @doc "Render an input. Position determined by container layout."
+    fun string input(string id, string value, string placeholder) { return input(id, @(0, 0), value, placeholder, false); }
+    @doc "Render an input. Position determined by container layout."
+    fun string input(string id, string value, string placeholder, int disabled) { return input(id, @(0, 0), value, placeholder, disabled); }
+
+    // Dropdown
+    @doc "Render a dropdown. Position determined by container layout."
+    fun int dropdown(string id, string options[], int selectedIndex) { return dropdown(id, @(0, 0), options, selectedIndex, false); }
+    @doc "Render a dropdown. Position determined by container layout."
+    fun int dropdown(string id, string options[], int selectedIndex, int disabled) { return dropdown(id, @(0, 0), options, selectedIndex, disabled); }
+
+    // Color Picker
+    @doc "Render a color picker. Position determined by container layout."
+    fun vec3 colorPicker(string id, vec3 color) { return colorPicker(id, @(0, 0), color, false); }
+    @doc "Render a color picker. Position determined by container layout."
+    fun vec3 colorPicker(string id, vec3 color, int disabled) { return colorPicker(id, @(0, 0), color, disabled); }
+
+    // Knob
+    @doc "Render a knob. Position determined by container layout."
+    fun float knob(string id, float min, float max, float val) { return knob(id, @(0, 0), min, max, val, false); }
+    @doc "Render a knob. Position determined by container layout."
+    fun float knob(string id, float min, float max, float val, int disabled) { return knob(id, @(0, 0), min, max, val, disabled); }
+
+    // Discrete Knob
+    @doc "Render a discrete knob. Position determined by container layout."
+    fun float discreteKnob(string id, float min, float max, int steps, float val) { return discreteKnob(id, @(0, 0), min, max, steps, val, false); }
+    @doc "Render a discrete knob. Position determined by container layout."
+    fun float discreteKnob(string id, float min, float max, int steps, float val, int disabled) { return discreteKnob(id, @(0, 0), min, max, steps, val, disabled); }
+
+    // Radio
+    @doc "Render a radio group. Position determined by container layout."
+    fun int radio(string groupId, string options[], int selectedIndex) { return radio(groupId, @(0, 0), options, selectedIndex, false); }
+    @doc "Render a radio group. Position determined by container layout."
+    fun int radio(string groupId, string options[], int selectedIndex, int disabled) { return radio(groupId, @(0, 0), options, selectedIndex, disabled); }
+
+    // Spinner
+    @doc "Render a spinner. Position determined by container layout."
+    fun int spinner(string id, int min, int max, int val) { return spinner(id, @(0, 0), min, max, val, false); }
+    @doc "Render a spinner. Position determined by container layout."
+    fun int spinner(string id, int min, int max, int val, int disabled) { return spinner(id, @(0, 0), min, max, val, disabled); }
+
+    // ==== Spacer ====
+
+    @doc "Advance the current container cursor by the given amount (in current size units). No visual output."
+    fun void spacer(float size) {
+        if (_containerStack.size() == 0) return;
+        UIUtil.sizeToWorld(size) => float worldSize;
+        _containerStack[_containerStack.size()-1] @=> ContainerContext ctx;
+        if (ctx._layout == "row") {
+            ctx.advance(@(worldSize, 0.0));
+        } else {
+            ctx.advance(@(0.0, worldSize));
+        }
     }
 
     // Enums
     "NDC" => static string NDC;
     "WORLD" => static string WORLD;
+    "SCREEN" => static string SCREEN;
 
     // ==== Provided Icons ====
 

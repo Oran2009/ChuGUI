@@ -20,10 +20,10 @@ public class Input extends GComponent {
 
     new MouseState(this, gField) @=> _state;
 
-    0 => static int frameCount;
+    0 => int frameCount;
     int lastKey[0];       // frame counter when key was first pressed
-    20 => int repeatDelay;   // frames before repeating
-    5 => int repeatRate;    // frames between repeats
+    20 => int repeatDelay;
+    5 => int repeatRate;
 
     // ==== Getters and Setters ====
 
@@ -45,7 +45,15 @@ public class Input extends GComponent {
     fun void handleInput() {
         if (!_focused) return;
 
+        UIStyle.varFloat(UIStyle.VAR_INPUT_KEY_REPEAT_DELAY, 20) $ int => repeatDelay;
+        UIStyle.varFloat(UIStyle.VAR_INPUT_KEY_REPEAT_RATE, 5) $ int => repeatRate;
+
         frameCount++;
+        // Prevent unbounded accumulation (overflow after ~414 days at 60fps)
+        if (frameCount > 1000000) {
+            0 => frameCount;
+            lastKey.size(0);
+        }
 
         if (GWindow.keyDown(GWindow.Key_Home)) {
             0 => _cursorPos;
@@ -79,7 +87,10 @@ public class Input extends GComponent {
             ) => int isRepeatable;
             if (!isRepeatable) continue;
 
-            if (k >= lastKey.size()) lastKey.size(k+1);
+            if (k >= lastKey.size()) {
+                if (k >= 512) continue;
+                lastKey.size(k+1);
+            }
             if (lastKey[k]==0) { frameCount => lastKey[k]; }
             frameCount - lastKey[k] => int elapsed;
             
@@ -145,7 +156,7 @@ public class Input extends GComponent {
         }
         // clear released keys
         for (0 => int k; k < lastKey.size(); k++) {
-            if (!GWindow.key(k)) {
+            if (lastKey[k] != 0 && !GWindow.key(k)) {
                 0 => lastKey[k];
             }
         }
@@ -162,13 +173,16 @@ public class Input extends GComponent {
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_INPUT_SIZE, @(3, 0.4))) => vec2 fieldSize;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_TEXT_SIZE, 0.15)) => float textSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_RADIUS, 0.1)) => float borderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_WIDTH, 0.05)) => float borderWidth;
-        UIStyle.varString(UIStyle.VAR_INPUT_FONT, "") => string font;
+        UIStyle.varFloat(UIStyle.VAR_INPUT_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> fieldSize;
+        scale *=> textSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0.1))) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.05))) => float borderWidth;
+        UIStyle.varString(UIStyle.VAR_INPUT_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
-        UIStyle.varVec2(UIStyle.VAR_INPUT_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_INPUT_Z_INDEX, 0.0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_INPUT_ROTATE, 0.0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_INPUT_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_INPUT_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0.0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_INPUT_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0.0)) => float rotate;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_INPUT_DISABLED, fieldColor) => fieldColor;
@@ -202,7 +216,8 @@ public class Input extends GComponent {
         
         // Position text to left side with padding
         fieldSize.x / 2.0 => float halfW;
-        gText.posX(-halfW + 0.05); // 0.05 padding from left edge
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_TEXT_PADDING, 0.05)) => float textPadding;
+        gText.posX(-halfW + textPadding);
 
         // Cursor styling
         @(0.02, textSize) => vec2 cursorSize;
@@ -214,9 +229,9 @@ public class Input extends GComponent {
         
         // Show/hide cursor based on focus and blink state
         if (_focused && _cursorVisible) {
-            gCursor --> this;
-        } else if (gCursor.parent() != null) {
-            gCursor --< this;
+            if (gCursor.parent() == null) gCursor --> this;
+        } else {
+            if (gCursor.parent() != null) gCursor --< this;
         }
 
         applyLayout(fieldSize, controlPoints, zIndex, rotate);
@@ -235,11 +250,12 @@ public class Input extends GComponent {
 
         gText.size() => float textSize;
         
-        textSize * 0.6 => float charWidth;
+        textSize * UIStyle.varFloat(UIStyle.VAR_INPUT_CHAR_WIDTH_RATIO, 0.6) => float charWidth;
         _cursorPos $ float * charWidth => float cursorOffset;
-        
+
         gField.size().x / 2.0 => float halfW;
-        -halfW + 0.05 + cursorOffset => float cursorX;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_INPUT_TEXT_PADDING, 0.05)) => float textPadding;
+        -halfW + textPadding + cursorOffset => float cursorX;
         
         gCursor.posX(cursorX);
     }
@@ -250,6 +266,8 @@ public class Input extends GComponent {
         if (!_disabled) {
             if (_state.pressed() && !_focused) {
                 true => _focused;
+                true => _cursorVisible;
+                0.0 => _cursorTimer;
             } else if (_state.mouseDown() && !_state.hovered()) {
                 false => _focused;
             }
@@ -257,13 +275,16 @@ public class Input extends GComponent {
             if (_focused) {
                 handleInput();
 
-                _cursorTimer + (2.0 / GG.fps()) => _cursorTimer;
+                GG.fps() => float fps;
+                _cursorTimer + (2.0 / ((fps > 0) ? fps : 60.0)) => _cursorTimer;
                 if (_cursorTimer >= 1.0) {
                     0.0 => _cursorTimer;
                     !_cursorVisible => _cursorVisible;
                 }
             } else {
                 false => _cursorVisible;
+                lastKey.size(0);
+                0 => frameCount;
             }
         }
 

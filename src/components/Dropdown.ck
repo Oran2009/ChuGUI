@@ -59,8 +59,8 @@ public class Dropdown extends GComponent {
             gItemRects.size(_options.size());
 
             for (0 => int i; i < _options.size(); i++) {
-                GText t @=> gItems[i];
-                GRect r @=> gItemRects[i];
+                new GText @=> gItems[i];
+                new GRect @=> gItemRects[i];
             }
         }
     }
@@ -75,13 +75,16 @@ public class Dropdown extends GComponent {
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_DROPDOWN_SIZE, @(3, 0.4))) => vec2 size;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_TEXT_SIZE, 0.2)) => float textSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_RADIUS, 0)) => float borderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_WIDTH, 0.1)) => float borderWidth;
-        UIStyle.varString(UIStyle.VAR_DROPDOWN_FONT, "") => string font;
+        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
+        scale *=> textSize;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_DROPDOWN_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.1))) => float borderWidth;
+        UIStyle.varString(UIStyle.VAR_DROPDOWN_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
-        UIStyle.varVec2(UIStyle.VAR_DROPDOWN_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_Z_INDEX, 0.0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_ROTATE, 0.0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_DROPDOWN_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0.0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_DROPDOWN_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0.0)) => float rotate;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_DROPDOWN_DISABLED, color) => color;
@@ -130,6 +133,7 @@ public class Dropdown extends GComponent {
         applyLayout(size, controlPoints, zIndex, rotate);
 
         if (_open) {
+            if (gList.parent() == null) gList --> this;
             _options.size() * size.y => float listH;
             gList.size(@(size.x,listH));
             gList.color(color);
@@ -142,8 +146,8 @@ public class Dropdown extends GComponent {
                 gItemRects[i] @=> GRect r;
                 gItems[i] @=> GText t;
 
-                r --> this;
-                t --> this;
+                if (r.parent() == null) r --> this;
+                if (t.parent() == null) t --> this;
 
                 if (i == _hoveredIndex) {
                     r.color(itemHoveredColor);
@@ -185,7 +189,7 @@ public class Dropdown extends GComponent {
 
     fun void update() {
         _state.update();
-        
+
         if (!_disabled) {
             if (_state.clicked()) {
                 !_open => _open;
@@ -194,16 +198,23 @@ public class Dropdown extends GComponent {
             -1 => _hoveredIndex;
 
             if (_open) {
+                false => int clickedOnItem;
                 for (0 => int i; i < _options.size(); i++) {
                     UIUtil.hovered(this, gItemRects[i]) => int hovered;
-                    if (hovered && _state.mouseState()) {
+                    if (hovered && GWindow.mouseLeftDown()) {
                         i => _selectedIndex;
                         clampSelection();
                         false => _open;
+                        true => clickedOnItem;
                         break;
                     } else if (hovered) {
                         i => _hoveredIndex;
                     }
+                }
+
+                // Close dropdown when clicking outside both field and items
+                if (!clickedOnItem && GWindow.mouseLeftDown() && !_state.hovered() && _hoveredIndex == -1) {
+                    false => _open;
                 }
             }
         }

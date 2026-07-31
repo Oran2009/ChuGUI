@@ -32,14 +32,18 @@ public class RadioOption extends GComponent {
         UIStyle.color(UIStyle.COL_RADIO_LABEL, @(0, 0, 0, 1)) => vec4 labelColor;
 
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_RADIO_SIZE, @(0.3, 0.3))) => vec2 buttonSize;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_RADIUS, 0)) => float borderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_WIDTH, 0.1)) => float borderWidth;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.1))) => float borderWidth;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SPACING, 0.1)) => float labelSpacing;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_LABEL_SIZE, 0.20)) => float labelSize;
-        UIStyle.varString(UIStyle.VAR_RADIO_FONT, "") => string font;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> buttonSize;
+        scale *=> labelSpacing;
+        scale *=> labelSize;
+        UIStyle.varString(UIStyle.VAR_RADIO_FONT, UIStyle.varString(UIStyle.VAR_FONT, "")) => string font;
 
-        UIStyle.varFloat(UIStyle.VAR_RADIO_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_RADIO_ROTATE, 0) => float rotate;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         if (_disabled) {
             UIStyle.color(UIStyle.COL_RADIO_OPTION_DISABLED, @(0.9, 0.9, 0.9, 1)) => buttonColor;
@@ -81,8 +85,8 @@ public class RadioOption extends GComponent {
         gLabel.controlPoints(@(0, 0.5));
         gLabel.posX(buttonSize.x / 2 + labelSpacing);
 
-        this.posZ(zIndex);
-        this.rotZ(rotate);
+        labelSize * _label.length() * 0.6 => float labelW;
+        applyLayout(@(buttonSize.x + labelSpacing + labelW, buttonSize.y), @(0, 0.5), zIndex, rotate);
     }
 
     fun void update() {
@@ -108,7 +112,8 @@ public class Radio extends GComponent {
     fun string[] options() { return _optionLabels; }
 
     fun int selectedIndex() { return _selectedIndex; }
-    fun void selectedIndex(int index) { 
+    fun void selectedIndex(int index) {
+        if (_optionLabels == null || _optionLabels.size() == 0) return;
         Math.clampi(index, 0, _optionLabels.size() - 1) => _selectedIndex;
         updateSelection();
     }
@@ -124,6 +129,7 @@ public class Radio extends GComponent {
     // ==== UIUtility ====
 
     fun int optionsChanged(string options[]) {
+        if (_optionLabels == null) return 1;
         if (options.size() != _optionLabels.size()) {
             return 1;
         }
@@ -140,11 +146,13 @@ public class Radio extends GComponent {
     // ==== Update ====
 
     fun void updateUI() {
-        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_CHECKBOX_ROTATE, 0) => float rotate;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
-        UIStyle.varVec2(UIStyle.VAR_RADIO_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
+        UIStyle.varVec2(UIStyle.VAR_RADIO_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
         UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_RADIO_SPACING, 0.4)) => float spacing;
+        UIStyle.varFloat(UIStyle.VAR_RADIO_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> spacing;
         UIStyle.varString(UIStyle.VAR_RADIO_LAYOUT, "column") => string layout;
 
         for (0 => int i; i < _options.size(); i++) {
@@ -158,6 +166,15 @@ public class Radio extends GComponent {
         }
 
         applyLayout(@(0, 0), controlPoints, zIndex, rotate);
+
+        // Estimate size for container layout
+        UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_RADIO_SIZE, @(0.3, 0.3))) => vec2 buttonSize;
+        _options.size() => int n;
+        if (layout == "row") {
+            @(n > 0 ? (n - 1) * spacing + n * buttonSize.x : 0.0, buttonSize.y) => _computedSize;
+        } else {
+            @(buttonSize.x, n > 0 ? (n - 1) * spacing + n * buttonSize.y : 0.0) => _computedSize;
+        }
     }
 
     fun void updateOptions() {

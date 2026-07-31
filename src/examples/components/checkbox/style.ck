@@ -58,7 +58,7 @@ while(true) {
     // --- Row 3: Custom icon 'star' with yellow color when checked ---
     UIStyle.pushVar(UIStyle.VAR_CHECKBOX_ICON, "star");
     UIStyle.pushColor(UIStyle.COL_CHECKBOX_ICON, Color.BLACK);
-    UIStyle.pushColor(UIStyle.COL_CHECKBOX_PRESSED, @(1, 1, 0, 1)); // yellow
+    UIStyle.pushColor(UIStyle.COL_CHECKBOX_CHECKED, @(1, 1, 0, 1)); // yellow
     gui.checkbox("Star Icon Yellow", @(xLeft, baseY - spacingY * 3), checked2) => checked2;
     UIStyle.popColor(2);
     UIStyle.popVar();

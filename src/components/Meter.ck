@@ -33,12 +33,14 @@ public class Meter extends GComponent {
 
         // Convert sizes from current unit system to world coordinates
         UIUtil.sizeToWorld(UIStyle.varVec2(UIStyle.VAR_METER_SIZE, @(3.0, 0.3))) => vec2 size;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_RADIUS, 0)) => float borderRadius;
-        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_WIDTH, 0.05)) => float borderWidth;
+        UIStyle.varFloat(UIStyle.VAR_METER_SCALE, UIStyle.varFloat(UIStyle.VAR_SCALE, 1.0)) => float scale;
+        scale *=> size;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_RADIUS, UIStyle.varFloat(UIStyle.VAR_BORDER_RADIUS, 0))) => float borderRadius;
+        UIUtil.sizeToWorld(UIStyle.varFloat(UIStyle.VAR_METER_BORDER_WIDTH, UIStyle.varFloat(UIStyle.VAR_BORDER_WIDTH, 0.05))) => float borderWidth;
 
-        UIStyle.varVec2(UIStyle.VAR_METER_CONTROL_POINTS, @(0.5, 0.5)) => vec2 controlPoints;
-        UIStyle.varFloat(UIStyle.VAR_METER_Z_INDEX, 0) => float zIndex;
-        UIStyle.varFloat(UIStyle.VAR_METER_ROTATE, 0) => float rotate;
+        UIStyle.varVec2(UIStyle.VAR_METER_CONTROL_POINTS, UIStyle.varVec2(UIStyle.VAR_CONTROL_POINTS, @(0.5, 0.5))) => vec2 controlPoints;
+        UIStyle.varFloat(UIStyle.VAR_METER_Z_INDEX, UIStyle.varFloat(UIStyle.VAR_Z_INDEX, 0)) => float zIndex;
+        UIStyle.varFloat(UIStyle.VAR_METER_ROTATE, UIStyle.varFloat(UIStyle.VAR_ROTATE, 0)) => float rotate;
 
         // Track
         gTrack.size(size);
@@ -51,15 +53,15 @@ public class Meter extends GComponent {
             (_val - _min) / (_max - _min) => float norm;
             Math.clampf(norm, 0, 1) => norm;
 
-            borderWidth * Math.min(size.x, size.y) => float borderW;
-            size.x - borderW => float innerW;
-            size.y - borderW => float innerH;
+            borderWidth * Math.min(size.x, size.y) * 0.5 => float borderW;
+            size.x - borderW * 2 => float innerW;
+            size.y - borderW * 2 => float innerH;
             innerW * norm => float fillW;
 
-            -size.x/2.0 + borderW/2.0 + fillW/2.0 => float fillCenterX;
+            -size.x/2.0 + borderW + fillW/2.0 => float fillCenterX;
 
             borderRadius * Math.min(innerW, innerH) * 0.5 => float fillRadAbs;
-            fillRadAbs / Math.min(fillW, innerH) => float fillRadFrac;
+            fillRadAbs / Math.max(0.001, Math.min(fillW, innerH)) => float fillRadFrac;
 
             gFill.size(@(fillW, innerH));
             gFill.color(fillColor);

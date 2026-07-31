@@ -20,6 +20,10 @@ public class DebugStyles {
     // Track initialized components
     static int initializedComponents[0];
 
+    // Track push counts from last applyOverrides call (for balanced pop)
+    static int _lastColorPushCount[0];
+    static int _lastVarPushCount[0];
+
     // ==== Helpers ====
 
     fun static string makeKey(string compId, string styleKey) {
@@ -130,6 +134,8 @@ public class DebugStyles {
     fun static void applyOverrides(string compId) {
         string prefix;
         compId + "/" => prefix;
+        0 => int colorCount;
+        0 => int varCount;
 
         // Apply color overrides
         string colorKeys[0];
@@ -138,6 +144,7 @@ public class DebugStyles {
             if (mapKey.find(prefix) == 0 && colorEnabled[mapKey]) {
                 mapKey.substring(prefix.length()) => string styleKey;
                 UIStyle.pushColor(styleKey, colorOverrides[mapKey]);
+                colorCount++;
             }
         }
 
@@ -148,6 +155,7 @@ public class DebugStyles {
             if (mapKey.find(prefix) == 0 && floatEnabled[mapKey]) {
                 mapKey.substring(prefix.length()) => string styleKey;
                 UIStyle.pushVar(styleKey, floatOverrides[mapKey]);
+                varCount++;
             }
         }
 
@@ -158,6 +166,7 @@ public class DebugStyles {
             if (mapKey.find(prefix) == 0 && vec2Enabled[mapKey]) {
                 mapKey.substring(prefix.length()) => string styleKey;
                 UIStyle.pushVar(styleKey, vec2Overrides[mapKey]);
+                varCount++;
             }
         }
 
@@ -168,8 +177,24 @@ public class DebugStyles {
             if (mapKey.find(prefix) == 0 && stringEnabled[mapKey]) {
                 mapKey.substring(prefix.length()) => string styleKey;
                 UIStyle.pushVar(styleKey, stringOverrides[mapKey]);
+                varCount++;
             }
         }
+
+        colorCount => _lastColorPushCount[compId];
+        varCount => _lastVarPushCount[compId];
+    }
+
+    @doc "Get the number of color overrides pushed by the last applyOverrides call for a component."
+    fun static int lastColorPushCount(string compId) {
+        if (_lastColorPushCount.isInMap(compId)) return _lastColorPushCount[compId];
+        return 0;
+    }
+
+    @doc "Get the number of var overrides pushed by the last applyOverrides call for a component."
+    fun static int lastVarPushCount(string compId) {
+        if (_lastVarPushCount.isInMap(compId)) return _lastVarPushCount[compId];
+        return 0;
     }
 
     @doc "Count total enabled color overrides for a component."
